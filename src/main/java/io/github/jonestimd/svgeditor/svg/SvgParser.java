@@ -25,7 +25,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
-import javafx.scene.transform.Affine;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -67,23 +66,7 @@ public class SvgParser {
 
         private void addGroup(Attributes attributes) {
             Group group = new Group();
-            String transform = attributes.getValue("transform");
-            if (transform != null) {
-                String[] values = transform.split("[(),]");
-                if ("translate".equals(values[0]) && values.length == 3) {
-                    group.setTranslateX(Double.parseDouble(values[1]));
-                    group.setTranslateY(Double.parseDouble(values[2]));
-                }
-                else if ("matrix".equals(values[0]) && values.length == 7) {
-                    Double mxx = Double.parseDouble(values[1]);
-                    Double mxy = Double.parseDouble(values[2]);
-                    Double myx = Double.parseDouble(values[3]);
-                    Double myy = Double.parseDouble(values[4]);
-                    Double tx = Double.parseDouble(values[5]);
-                    Double ty = Double.parseDouble(values[6]);
-                    group.getTransforms().add(new Affine(mxx, mxy, tx, myx, myy, ty));
-                }
-            }
+            TransformParser.setTransform(group, attributes);
             group.setUserData(new GroupDefaults(group, attributes));
             if (this.group != null) this.group.getChildren().add(group);
             else nodes.add(group);
@@ -133,7 +116,11 @@ public class SvgParser {
                     image = new Image(new ByteArrayInputStream(data));
                 }
                 else image = new Image(href);
-                addNode(new ImageView(image));
+                ImageView imageView = new ImageView(image);
+                imageView.setX(Double.parseDouble(attributes.getValue("x")));
+                imageView.setY(Double.parseDouble(attributes.getValue("y")));
+                TransformParser.setTransform(imageView, attributes);
+                addNode(imageView);
             }
         }
 
