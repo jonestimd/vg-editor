@@ -3,7 +3,6 @@ package io.github.jonestimd.svgeditor.svg;
 import java.io.ByteArrayInputStream;
 import java.util.Base64;
 import java.util.Optional;
-import java.util.function.Function;
 
 import io.github.jonestimd.svgeditor.GroupDefaults;
 import javafx.scene.Group;
@@ -36,9 +35,9 @@ public class ShapeFactory {
         return Double.valueOf(attributes.getValue(name));
     }
 
-    protected String getString(String name, Function<GroupDefaults, String> getter, String defaultValue) {
+    protected String getString(String name, String defaultValue) {
         String value = attributes.getValue(name);
-        if (value == null && group != null) value = getter.apply((GroupDefaults) group.getUserData());
+        if (value == null && group != null) value = ((GroupDefaults) group.getUserData()).getString(name);
         return value != null ? value : defaultValue;
     }
 
@@ -83,19 +82,17 @@ public class ShapeFactory {
         text.setX(getDouble("x"));
         text.setY(getDouble("y"));
         setStyle(text);
-
-        String fontFamily = getString("font-family", GroupDefaults::getFontFamily, DEFAULT_FONT_FAMILY);
-        String fontWeight = getString("font-weight", GroupDefaults::getFontWeight, DEFAULT_FONT_WEIGHT);
-
-        Double fontSize = null;
-        String fs = attributes.getValue("font-size");
-        if (fs  != null && fs.endsWith("px")) fontSize = Double.parseDouble(fs.substring(0, fs.length()-2));
-        else if (group != null) fontSize = ((GroupDefaults) group.getUserData()).getFontSize();
-        if (fontSize == null) fontSize = DEFAULT_FONT_SIZE;
-
-        Font font = Font.font(fontFamily, FontWeight.findByName(fontWeight), fontSize);
+        String fontFamily = getString("font-family", DEFAULT_FONT_FAMILY);
+        String fontWeight = getString("font-weight", DEFAULT_FONT_WEIGHT);
+        Font font = Font.font(fontFamily, FontWeight.findByName(fontWeight), getFontSize());
         text.setFont(font);
         return text;
+    }
+
+    private double getFontSize() {
+        String size = getString("font-size", null);
+        if (size != null && size.endsWith("px")) return Double.parseDouble(size.substring(0, size.length()-2));
+        return DEFAULT_FONT_SIZE;
     }
 
     private <T extends Shape> T setStyle(T shape) {

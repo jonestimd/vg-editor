@@ -15,7 +15,6 @@ import com.google.common.collect.ImmutableMap;
 import io.github.jonestimd.svgeditor.GroupDefaults;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -109,18 +108,6 @@ public class SvgParser {
 
         private void addImage(Attributes attributes) {
             new ShapeFactory(attributes, group).getImage().ifPresent(this::addNode);
-        }
-
-        private void setStyle(Attributes attributes, Shape shape) {
-            if (this.group != null) {
-                GroupDefaults userData = (GroupDefaults) this.group.getUserData();
-                if (userData != null) {
-                    userData.setStroke(shape);
-                    userData.setFill(shape);
-                }
-            }
-            AttributeParser.setPaint(attributes, "fill", shape::setFill);
-            AttributeParser.setPaint(attributes, "stroke", shape::setStroke);
         }
     }
 }
