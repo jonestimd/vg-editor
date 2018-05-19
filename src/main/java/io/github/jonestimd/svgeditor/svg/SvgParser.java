@@ -40,18 +40,22 @@ public class SvgParser {
                 .put("image", this::addImage)
                 .build();
         private List<Node> nodes = new ArrayList<>();
+        private boolean inDefs = false;
         private Group group = null;
         private Text text = null;
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
             if (uri.equals("http://www.w3.org/2000/svg")) {
-                if (tagHandlers.containsKey(qName)) {
-                    tagHandlers.get(qName).accept(attributes);
-                }
-                else if ("text".equals(qName)) {
-                    text = new ShapeFactory(attributes, group).getText();
-                    addNode(text);
+                if ("defs".equals(qName)) inDefs = true;
+                else if (!inDefs) {
+                    if (tagHandlers.containsKey(qName)) {
+                        tagHandlers.get(qName).accept(attributes);
+                    }
+                    else if ("text".equals(qName)) {
+                        text = new ShapeFactory(attributes, group).getText();
+                        addNode(text);
+                    }
                 }
             }
         }
@@ -59,11 +63,10 @@ public class SvgParser {
         @Override
         public void endElement(String uri, String localName, String qName) {
             if (uri.equals("http://www.w3.org/2000/svg")) {
-                if (qName.equals("g")) {
-                    this.group = (Group) this.group.getParent();
-                }
-                else if ("text".equals(qName)) {
-                    this.text = null;
+                if ("defs".equals(qName)) inDefs = false;
+                else if (!inDefs) {
+                    if ("g".equals(qName)) this.group = (Group) this.group.getParent();
+                    else if ("text".equals(qName)) this.text = null;
                 }
             }
         }
