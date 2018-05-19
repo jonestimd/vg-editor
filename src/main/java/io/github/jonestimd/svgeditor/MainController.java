@@ -38,7 +38,7 @@ public class MainController {
         fileChooser.getExtensionFilters().addAll(
                 new ExtensionFilter("SVG files", "*.svg"),
                 new ExtensionFilter("All files", "*.*"));
-        File file = fileChooser.showOpenDialog(menuBar.getScene().getWindow());
+        File file = fileChooser.showOpenDialog(null);  // workaround for JavaFX bug that disables resizing parent window
         if (file != null) {
             try {
                 diagram.getChildren().clear();
