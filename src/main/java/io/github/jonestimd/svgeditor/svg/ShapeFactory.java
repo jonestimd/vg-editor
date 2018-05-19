@@ -18,6 +18,9 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import org.xml.sax.Attributes;
 
+/**
+ * Factory class for creating shapes from SVG elements.
+ */
 public class ShapeFactory {
     public static final String DEFAULT_FONT_FAMILY = "Dialog";
     public static final String DEFAULT_FONT_WEIGHT = "normal";

@@ -11,6 +11,9 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 import org.xml.sax.Attributes;
 
+/**
+ * Default values for shapes in a {@link Group}.  Stored on the {@link Group} as the user data property.
+ */
 public class GroupDefaults {
     private final Group owner;
     private final Map<String, String> attributes = new HashMap<>();
