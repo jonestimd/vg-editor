@@ -1,5 +1,8 @@
 package io.github.jonestimd.svgeditor;
 
+import java.util.function.Function;
+
+import io.github.jonestimd.svgeditor.svg.AttributeParser;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.paint.Paint;
@@ -10,36 +13,48 @@ public class GroupDefaults {
     private final Group owner;
     private Paint stroke;
     private Paint fill;
+    private String fontFamily;
+    private String fontWeight;
+    private Double fontSize;
 
     public GroupDefaults(Group owner, Attributes attributes) {
         this.owner = owner;
-        String stroke = attributes.getValue("stroke");
-        if (stroke != null) {
-            this.stroke = Paint.valueOf(stroke);
+        this.stroke = AttributeParser.getPaint(attributes, "stroke");
+        this.fill = AttributeParser.getPaint(attributes, "fill");
+        fontFamily = attributes.getValue("font-family");
+        fontWeight = attributes.getValue("font-weight");
+        fontSize = AttributeParser.getFontSize(attributes);
+    }
+
+    private <T> T getValue(Function<GroupDefaults, T> getter) {
+        Parent node = this.owner;
+        T value = getter.apply(this);
+        while (value == null && node != null) {
+            node = node.getParent();
+            value = getter.apply((GroupDefaults) node.getUserData());
         }
-        String fill = attributes.getValue("fill");
-        if (fill != null) {
-            this.fill = Paint.valueOf(fill);
-        }
+        return value;
     }
 
     public void setStroke(Shape shape) {
-        Parent parent = this.owner.getParent();
-        Paint stroke = this.stroke;
-        while (stroke == null && parent != null) {
-            stroke = ((GroupDefaults) parent.getUserData()).stroke;
-            parent = parent.getParent();
-        }
+        Paint stroke = getValue(groupDefaults -> groupDefaults.stroke);
         if (stroke != null) shape.setStroke(stroke);
     }
 
     public void setFill(Shape shape) {
-        Parent parent = this.owner.getParent();
-        Paint fill = this.fill;
-        while (fill == null && parent != null) {
-            fill = ((GroupDefaults) parent.getUserData()).fill;
-            parent = parent.getParent();
-        }
+        Paint fill = getValue(groupDefaults -> groupDefaults.fill);
         if (fill != null) shape.setFill(fill);
+    }
+
+    public String getFontFamily() {
+        return getValue(groupDefaults -> groupDefaults.fontFamily);
+    }
+
+    public String getFontWeight() {
+        return getValue(groupDefaults -> groupDefaults.fontWeight);
+    }
+
+    public Double getFontSize() {
+        return getValue(groupDefaults -> groupDefaults.fontSize);
     }
 }
