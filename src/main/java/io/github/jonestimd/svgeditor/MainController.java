@@ -10,7 +10,6 @@ import javafx.scene.Cursor;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -25,7 +24,6 @@ public class MainController {
     public void initialize() {
         scrollPane.setCursor(Cursor.CROSSHAIR);
         scrollPane.setPrefSize(600, 500);
-        diagram.getChildren().add(new Circle(200, 200, 150));
     }
 
     public void createFile(ActionEvent event) {
