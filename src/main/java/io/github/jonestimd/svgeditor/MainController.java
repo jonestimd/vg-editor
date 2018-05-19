@@ -22,7 +22,7 @@ public class MainController {
     private Pane diagram;
 
     public void initialize() {
-        scrollPane.setCursor(Cursor.CROSSHAIR);
+        diagram.setCursor(Cursor.CROSSHAIR);
         scrollPane.setPrefSize(600, 500);
     }
 
