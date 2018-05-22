@@ -30,19 +30,24 @@ public class SvgParser {
     }
 
     private static class SvgSaxHandler extends DefaultHandler {
+        private Group group = null;
+        private Text text = null;
+
         private Map<String, Consumer<Attributes>> tagHandlers = ImmutableMap.<String, Consumer<Attributes>>builder()
                 .put("svg", this::addGroup)
                 .put("g", this::addGroup)
-                .put("line", this::addLine)
-                .put("circle", this::addCircle)
-                .put("rect", this::addRect)
-                .put("path", this::addPath)
-                .put("image", this::addImage)
+                .put("line", attributes -> addNode(new ShapeFactory(attributes, group).getLine()))
+                .put("circle", attributes -> addNode(new ShapeFactory(attributes, group).getCircle()))
+                .put("ellipse", attributes -> addNode(new ShapeFactory(attributes, group).getEllipse()))
+                .put("rect", attributes -> addNode(new ShapeFactory(attributes, group).getRect()))
+                .put("path", attributes -> addNode(new ShapeFactory(attributes, group).getPath()))
+                .put("polygon", attributes -> addNode(new ShapeFactory(attributes, group).getPolygon()))
+                .put("polyline", attributes -> addNode(new ShapeFactory(attributes, group).getPolyline()))
+                .put("image", attributes -> new ShapeFactory(attributes, group).getImage().ifPresent(this::addNode))
                 .build();
+
         private List<Node> nodes = new ArrayList<>();
         private boolean inDefs = false;
-        private Group group = null;
-        private Text text = null;
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
@@ -91,26 +96,6 @@ public class SvgParser {
         private void addNode(Node node) {
             if (group == null) nodes.add(node);
             else group.getChildren().add(node);
-        }
-
-        private void addLine(Attributes attributes) {
-            addNode(new ShapeFactory(attributes, group).getLine());
-        }
-
-        private void addCircle(Attributes attributes) {
-            addNode(new ShapeFactory(attributes, group).getCircle());
-        }
-
-        private void addRect(Attributes attributes) {
-            addNode(new ShapeFactory(attributes, group).getRect());
-        }
-
-        private void addPath(Attributes attributes) {
-            addNode(new ShapeFactory(attributes, group).getPath());
-        }
-
-        private void addImage(Attributes attributes) {
-            new ShapeFactory(attributes, group).getImage().ifPresent(this::addNode);
         }
     }
 }

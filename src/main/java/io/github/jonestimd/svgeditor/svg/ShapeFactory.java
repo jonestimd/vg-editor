@@ -9,7 +9,10 @@ import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
@@ -52,6 +55,10 @@ public class ShapeFactory {
         return setStyle(new Circle(getDouble("cx"), getDouble("cy"), getDouble("r")));
     }
 
+    public Ellipse getEllipse() {
+        return setStyle(new Ellipse(getDouble("cx"), getDouble("cy"), getDouble("rx"), getDouble("ry")));
+    }
+
     public Rectangle getRect() {
         return setStyle(new Rectangle(getDouble("x"), getDouble("y"), getDouble("width"), getDouble("height")));
     }
@@ -60,6 +67,23 @@ public class ShapeFactory {
         SVGPath path = new SVGPath();
         path.setContent(attributes.getValue("d"));
         return setStyle(path);
+    }
+
+    public Polygon getPolygon() {
+        return setStyle(new Polygon(getPoints()));
+    }
+
+    public Polyline getPolyline() {
+        return setStyle(new Polyline(getPoints()));
+    }
+
+    private double[] getPoints() {
+        String[] xy = attributes.getValue("points").split("(,| +)");
+        double[] points = new double[xy.length];
+        for (int i = 0; i < xy.length; i++) {
+            points[i] = Double.parseDouble(xy[i]);
+        }
+        return points;
     }
 
     public Optional<ImageView> getImage() {
