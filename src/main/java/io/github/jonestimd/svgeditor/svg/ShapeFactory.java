@@ -22,7 +22,7 @@ import org.xml.sax.Attributes;
  * Factory class for creating shapes from SVG elements.
  */
 public class ShapeFactory {
-    public static final String DEFAULT_FONT_FAMILY = "Dialog";
+    public static final String DEFAULT_FONT_FAMILY = "Liberation Sans";
     public static final String DEFAULT_FONT_WEIGHT = "normal";
     public static final double DEFAULT_FONT_SIZE = 12d;
 
@@ -86,6 +86,7 @@ public class ShapeFactory {
         text.setY(getDouble("y"));
         setStyle(text);
         String fontFamily = getString("font-family", DEFAULT_FONT_FAMILY);
+        if (Font.getFontNames(fontFamily).size() == 0) fontFamily = DEFAULT_FONT_FAMILY;
         String fontWeight = getString("font-weight", DEFAULT_FONT_WEIGHT);
         Font font = Font.font(fontFamily, FontWeight.findByName(fontWeight), getFontSize());
         text.setFont(font);
