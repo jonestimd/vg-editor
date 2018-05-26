@@ -6,9 +6,9 @@ import io.github.jonestimd.svgeditor.svg.SvgParser;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Cursor;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -21,9 +21,12 @@ public class MainController {
     @FXML
     private Pane diagram;
 
+    private SelectionController selectionController;
+
     public void initialize() {
-        diagram.setCursor(Cursor.CROSSHAIR);
         scrollPane.setPrefSize(600, 500);
+        selectionController = new SelectionController(diagram);
+        diagram.addEventHandler(MouseEvent.ANY, selectionController);
     }
 
     public void createFile(ActionEvent event) {
@@ -40,7 +43,7 @@ public class MainController {
         if (file != null) {
             try {
                 diagram.getChildren().clear();
-                diagram.getChildren().addAll(SvgParser.parse(file));
+                diagram.getChildren().addAll(new SvgParser().parse(file));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
