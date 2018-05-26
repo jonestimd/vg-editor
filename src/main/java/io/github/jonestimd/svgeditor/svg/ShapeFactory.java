@@ -11,10 +11,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -63,10 +63,8 @@ public class ShapeFactory {
         return setStyle(new Rectangle(getDouble("x"), getDouble("y"), getDouble("width"), getDouble("height")));
     }
 
-    public SVGPath getPath() {
-        SVGPath path = new SVGPath();
-        path.setContent(attributes.getValue("d"));
-        return setStyle(path);
+    public Path getPath() {
+        return setStyle(new PathParser().parse(attributes.getValue("d")));
     }
 
     public Polygon getPolygon() {
@@ -133,6 +131,7 @@ public class ShapeFactory {
         }
         AttributeParser.setPaint(attributes, "fill", shape::setFill);
         AttributeParser.setPaint(attributes, "stroke", shape::setStroke);
+        TransformParser.setTransform(shape, attributes);
         return shape;
     }
 }
