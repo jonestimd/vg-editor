@@ -21,7 +21,17 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class SvgParser {
-    public static Collection<Node> parse(File file) throws IOException, ParserConfigurationException, SAXException {
+    private final Consumer<Node> nodeConsumer;
+
+    public SvgParser() {
+        this(node -> {});
+    }
+
+    public SvgParser(Consumer<Node> nodeConsumer) {
+        this.nodeConsumer = nodeConsumer;
+    }
+
+    public Collection<Node> parse(File file) throws IOException, ParserConfigurationException, SAXException {
         SvgSaxHandler handler = new SvgSaxHandler();
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -29,7 +39,7 @@ public class SvgParser {
         return handler.nodes;
     }
 
-    private static class SvgSaxHandler extends DefaultHandler {
+    private class SvgSaxHandler extends DefaultHandler {
         private Group group = null;
         private Text text = null;
 
@@ -91,11 +101,13 @@ public class SvgParser {
             if (this.group != null) this.group.getChildren().add(group);
             else nodes.add(group);
             this.group = group;
+            nodeConsumer.accept(group);
         }
 
         private void addNode(Node node) {
             if (group == null) nodes.add(node);
             else group.getChildren().add(node);
+            nodeConsumer.accept(node);
         }
     }
 }
