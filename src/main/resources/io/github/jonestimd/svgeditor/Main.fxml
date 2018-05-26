@@ -11,7 +11,7 @@
         <MenuBar fx:id="menuBar">
             <Menu text="%menu.file">
                 <MenuItem text="%file.new" onAction="#createFile" accelerator="%file.new.accelerator"/>
-                <MenuItem text="%file.open" onAction="#openFile"/>
+                <MenuItem text="%file.open" onAction="#openFile" accelerator="%file.open.accelerator"/>
                 <MenuItem text="%file.save" onAction="#saveFile" accelerator="%file.save.accelerator"/>
                 <MenuItem text="%file.saveAs" onAction="#saveFileAs"/>
                 <SeparatorMenuItem/>
