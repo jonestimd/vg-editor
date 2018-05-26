@@ -44,7 +44,7 @@ public class TransformParser {
     }
 
     private static List<Double> parseArgs(String args) {
-        return Arrays.stream(args.split("(,| +)")).map(Double::parseDouble).collect(Collectors.toList());
+        return Arrays.stream(args.trim().split("(, *| +)")).map(Double::parseDouble).collect(Collectors.toList());
     }
 
     private static Translate translate(List<Double> args) {
