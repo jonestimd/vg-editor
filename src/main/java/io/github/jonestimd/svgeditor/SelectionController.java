@@ -5,17 +5,19 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.effect.Blend;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Path;
 import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
 
@@ -24,12 +26,12 @@ public class SelectionController implements EventHandler<MouseEvent> {
 
     private Node highlighted;
     private final Effect highlightEffect = new DropShadow(0, Color.GRAY);
-    private final Shape marker = new Circle(3, Paint.valueOf("#00000000"));
+    private final Shape marker = new Circle(5, new RadialGradient(0, 0, 0.5, 0.5, 0.5, true, CycleMethod.NO_CYCLE,
+            new Stop(0.5, Color.valueOf("#00000000")), new Stop(0.75, Color.YELLOW), new Stop(1, Color.BLACK)));
 
     public SelectionController(Pane diagram) {
         this.diagram = diagram;
-        marker.setStroke(Paint.valueOf("yellow"));
-        marker.setStrokeWidth(1.5);
+        marker.setEffect(new Blend(BlendMode.MULTIPLY));
     }
 
     @Override
