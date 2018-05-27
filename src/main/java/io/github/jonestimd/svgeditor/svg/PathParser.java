@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javafx.geometry.Point2D;
+import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.ClosePath;
 import javafx.scene.shape.CubicCurveTo;
 import javafx.scene.shape.LineTo;
@@ -49,13 +50,15 @@ public class PathParser {
             else if ("q".equals(command)) quadCurveTo(false, args);
             else if ("T".equals(command)) smoothQuadCurveTo(true, args);
             else if ("t".equals(command)) smoothQuadCurveTo(false, args);
+            else if ("A".equals(command)) arcTo(true, args);
+            else if ("a".equals(command)) arcTo(false, args);
             else if ("Z".equalsIgnoreCase(command)) path.getElements().add(new ClosePath());
         }
         return path;
     }
 
     private void setLastPos(PathElement element, double x, double y) {
-        setLastPos(element, x, y, 0, 0);
+        setLastPos(element, x, y, x, y);
     }
 
     private void setLastPos(PathElement element, double x, double y, double cx, double cy) {
@@ -159,6 +162,18 @@ public class PathParser {
             cy -= lastY;
         }
         return new Point2D(cx, cy);
+    }
+
+    private void arcTo(boolean absolute, List<Double> args) {
+        for (int i = 0; i+6 < args.size(); i += 7) {
+            arcTo(absolute, args.get(i), args.get(i+1), args.get(i+2), args.get(i+3) != 0, args.get(i+4) != 0, args.get(i+5), args.get(i+6));
+        }
+    }
+
+    private void arcTo(boolean absolute, double rx, double ry, double xAngle, boolean largeArc, boolean sweep, double x, double y) {
+        ArcTo arcTo = new ArcTo(rx, ry, xAngle, x, y, largeArc, sweep);
+        arcTo.setAbsolute(absolute);
+        setLastPos(arcTo, x, y);
     }
 
     private static List<Double> parseArgs(String args) {
