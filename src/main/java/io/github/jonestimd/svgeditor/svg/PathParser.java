@@ -3,10 +3,12 @@ package io.github.jonestimd.svgeditor.svg;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.ImmutableMap;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.ClosePath;
@@ -17,12 +19,26 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.shape.QuadCurveTo;
 
+import static java.lang.Character.*;
+
 /**
  * Parses the {@code d} attribute of an SVG path.
  * <strong>Note:</strong> This class is not thread safe.
  */
 public class PathParser {
     private static final Pattern SVG_PATTERN = Pattern.compile("([mMlLhHvVcCqQsStTaAzZ])([+\\-,. 0-9]+)?");
+    private static final Map<String, Handler> HANDLER_MAP = ImmutableMap.<String, Handler>builder()
+            .put("m", PathParser::moveTo)
+            .put("l", PathParser::lineTo)
+            .put("h", PathParser::horizontalTo)
+            .put("v", PathParser::verticalTo)
+            .put("c", PathParser::cubicCurveTo)
+            .put("s", PathParser::smoothCubicCurveTo)
+            .put("q", PathParser::quadCurveTo)
+            .put("t", PathParser::smoothQuadCurveTo)
+            .put("a", PathParser::arcTo)
+            .put("z", (parser, absolute, args) -> parser.path.getElements().add(new ClosePath())).build();
+
     private double lastX, lastY, prevCX, prevCY;
     private PathElement lastElement;
     private Path path;
@@ -34,25 +50,8 @@ public class PathParser {
         while (matcher.find()) {
             String command = matcher.group(1);
             List<Double> args = parseArgs(matcher.group(2));
-            if ("M".equals(command)) moveTo(true, args);
-            else if ("m".equals(command)) moveTo(false, args);
-            else if ("L".equals(command)) lineTo(true, args);
-            else if ("l".equals(command)) lineTo(false, args);
-            else if ("H".equals(command)) horizontalTo(true, args);
-            else if ("h".equals(command)) horizontalTo(false, args);
-            else if ("V".equals(command)) verticalTo(true, args);
-            else if ("v".equals(command)) verticalTo(false, args);
-            else if ("C".equals(command)) cubicCurveTo(true, args);
-            else if ("c".equals(command)) cubicCurveTo(false, args);
-            else if ("S".equals(command)) smoothCubicCurveTo(true, args);
-            else if ("s".equals(command)) smoothCubicCurveTo(false, args);
-            else if ("Q".equals(command)) quadCurveTo(true, args);
-            else if ("q".equals(command)) quadCurveTo(false, args);
-            else if ("T".equals(command)) smoothQuadCurveTo(true, args);
-            else if ("t".equals(command)) smoothQuadCurveTo(false, args);
-            else if ("A".equals(command)) arcTo(true, args);
-            else if ("a".equals(command)) arcTo(false, args);
-            else if ("Z".equalsIgnoreCase(command)) path.getElements().add(new ClosePath());
+            Handler handler = HANDLER_MAP.get(command.toLowerCase());
+            if (handler != null) handler.accept(this, isUpperCase(command.charAt(0)), args);
         }
         return path;
     }
@@ -178,5 +177,9 @@ public class PathParser {
 
     private static List<Double> parseArgs(String args) {
         return args != null ? Arrays.stream(args.trim().split("(, *| +)")).map(Double::parseDouble).collect(Collectors.toList()) : Collections.EMPTY_LIST;
+    }
+
+    private interface Handler {
+        void accept(PathParser parser, boolean absolute, List<Double> args);
     }
 }
