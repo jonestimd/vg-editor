@@ -32,7 +32,7 @@ public class SvgEditor extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader();
-        loader.setResources(ResourceBundle.getBundle("io.github.jonestimd.svgeditor.labels"));
+        loader.setResources(ResourceBundle.getBundle("io.github.jonestimd.vgeditor.labels"));
         primaryStage.setScene(new Scene(loader.load(getClass().getResourceAsStream("Main.fxml"))));
         primaryStage.show();
     }
