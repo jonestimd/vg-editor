@@ -21,19 +21,30 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor;
 
-import java.util.ResourceBundle;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Function;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-
-public class SvgEditor extends Application {
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setResources(ResourceBundle.getBundle("io.github.jonestimd.vgeditor.labels"));
-        primaryStage.setScene(new Scene(loader.load(getClass().getResourceAsStream("Main.fxml"))));
-        primaryStage.show();
+public class IterableUtils {
+    public static <T> List<T> minBy(Iterable<T> items, Function<T, Double> getter) {
+        List<T> result = new ArrayList<>();
+        Iterator<T> iterator = items.iterator();
+        if (iterator.hasNext()) {
+            T item = iterator.next();
+            result.add(item);
+            double minValue = getter.apply(item);
+            while (iterator.hasNext()) {
+                item = iterator.next();
+                double value = getter.apply(item);
+                if (value == minValue) result.add(item);
+                else if (value < minValue) {
+                    result.clear();
+                    result.add(item);
+                    minValue = value;
+                }
+            }
+        }
+        return result;
     }
 }

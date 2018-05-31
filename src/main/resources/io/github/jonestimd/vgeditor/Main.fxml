@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.MenuBar?>
 <!--
   ~ The MIT License (MIT)
   ~
@@ -30,6 +23,13 @@
   ~ SOFTWARE.
   -->
 
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="io.github.jonestimd.vgeditor.MainController">
     <top>
         <MenuBar fx:id="menuBar">
