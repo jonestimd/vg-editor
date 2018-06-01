@@ -22,6 +22,8 @@
 package io.github.jonestimd.vgeditor;
 
 import java.util.Iterator;
+import java.util.Optional;
+import java.util.function.BiPredicate;
 
 import javafx.geometry.Point2D;
 import javafx.scene.shape.ArcTo;
@@ -40,42 +42,67 @@ public class PathVisitor {
         this.path = path;
     }
 
-    public boolean findSegment(SegmentPredicate predicate) {
-        final Iterator<Point2D> iterator = new PointIterator();
-        if (iterator.hasNext()) {
-            Point2D last = iterator.next();
-            while (iterator.hasNext()) {
-                Point2D next = iterator.next();
-                if (predicate.visit(last, next)) return true;
-                last = next;
-            }
-        }
-        return false;
+    /**
+     * @return true if at least one element of the path matches the predicate.
+     */
+    public boolean some(SegmentPredicate predicate) {
+        return find(predicate).isPresent();
     }
 
-    private class PointIterator implements Iterator<Point2D> {
-        private final Iterator<PathElement> iterator;
-        private MoveTo start;
+    public Optional<PathElement> find(SegmentPredicate predicate) {
+        final Iterator<PathElement> iterator = path.getElements().iterator();
+        if (iterator.hasNext()) {
+            ElementHandler handler = new ElementHandler(predicate, iterator.next());
+            while (iterator.hasNext()) {
+                PathElement element = iterator.next();
+                if (dispatch(element, handler)) return Optional.of(element);
+            }
+        }
+        return Optional.empty();
+    }
 
-        public PointIterator() {
-            this.iterator = path.getElements().iterator();
+    private class ElementHandler {
+        private final SegmentPredicate predicate;
+        private Point2D start;
+        private Point2D previous;
+
+        public ElementHandler(SegmentPredicate predicate, PathElement first) {
+            this.predicate = predicate;
+            if (first instanceof MoveTo) start = previous = getPoint((MoveTo) first);
+            else throw new IllegalArgumentException("Path does not start with MoveTo");
         }
 
-        @Override
-        public boolean hasNext() {
-            return iterator.hasNext();
+        private <T> boolean test(T element, BiPredicate<Point2D, T> predicate, double nextX, double nextY) {
+            if (predicate.test(previous, element)) return true;
+            previous = new Point2D(nextX, nextY);
+            return false;
         }
 
-        @Override
-        public Point2D next() {
-            PathElement element = iterator.next();
-            if (element instanceof MoveTo) return getPoint(start = (MoveTo) element);
-            if (element instanceof LineTo) return getPoint((LineTo) element);
-            if (element instanceof CubicCurveTo) return getPoint((CubicCurveTo) element);
-            if (element instanceof QuadCurveTo) return getPoint((QuadCurveTo) element);
-            if (element instanceof ArcTo) return getPoint((ArcTo) element);
-            if (element instanceof ClosePath) return getPoint(start);
-            throw new IllegalArgumentException("Unsupported path element: "+element.getClass());
+        public Boolean moveTo(MoveTo moveTo) {
+            start = new Point2D(moveTo.getX(), moveTo.getY());
+            return test(moveTo, predicate::test, moveTo.getX(), moveTo.getY());
+        }
+
+        public Boolean lineTo(LineTo lineTo) {
+            return test(lineTo, predicate::test, lineTo.getX(), lineTo.getY());
+        }
+
+        public Boolean cubicCurveTo(CubicCurveTo cubicCurveTo) {
+            return test(cubicCurveTo, predicate::test, cubicCurveTo.getX(), cubicCurveTo.getY());
+        }
+
+        public Boolean quadCurveTo(QuadCurveTo quadCurveTo) {
+            return test(quadCurveTo, predicate::test, quadCurveTo.getX(), quadCurveTo.getY());
+        }
+
+        public Boolean arcTo(ArcTo arcTo) {
+            return test(arcTo, predicate::test, arcTo.getX(), arcTo.getY());
+        }
+
+        public Boolean closePath(ClosePath closePath) {
+            if (predicate.test(previous, closePath, start)) return true;
+            previous = start;
+            return false;
         }
     }
 
@@ -83,23 +110,22 @@ public class PathVisitor {
         return new Point2D(moveTo.getX(), moveTo.getY());
     }
 
-    private static Point2D getPoint(LineTo lineTo) {
-        return new Point2D(lineTo.getX(), lineTo.getY());
-    }
-
-    private static Point2D getPoint(CubicCurveTo curveTo) {
-        return new Point2D(curveTo.getX(), curveTo.getY());
-    }
-
-    private static Point2D getPoint(QuadCurveTo curveTo) {
-        return new Point2D(curveTo.getX(), curveTo.getY());
-    }
-
-    private static Point2D getPoint(ArcTo arcTo) {
-        return new Point2D(arcTo.getX(), arcTo.getY());
+    private boolean dispatch(PathElement element, ElementHandler handler) {
+        if (element instanceof MoveTo) return handler.moveTo((MoveTo) element);
+        if (element instanceof LineTo) return handler.lineTo((LineTo) element);
+        if (element instanceof CubicCurveTo) return handler.cubicCurveTo((CubicCurveTo) element);
+        if (element instanceof QuadCurveTo) return handler.quadCurveTo((QuadCurveTo) element);
+        if (element instanceof ArcTo) return handler.arcTo((ArcTo) element);
+        if (element instanceof ClosePath) return handler.closePath((ClosePath) element);
+        throw new IllegalArgumentException("Unsupported path element: "+element.getClass());
     }
 
     public interface SegmentPredicate {
-        boolean visit(Point2D p1, Point2D p2);
+        boolean test(Point2D p1, MoveTo moveTo);
+        boolean test(Point2D p1, LineTo lineTo);
+        boolean test(Point2D p1, CubicCurveTo cubicCurveTo);
+        boolean test(Point2D p1, QuadCurveTo quadCurveTo);
+        boolean test(Point2D p1, ArcTo arcTo);
+        boolean test(Point2D p1, ClosePath closePath, Point2D p2);
     }
 }

@@ -26,9 +26,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.function.Predicate;
 
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -51,9 +49,8 @@ import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
 
 public class SelectionController implements EventHandler<MouseEvent> {
-    private static final double HIGHLIGHT_OFFSET = 5;
-    private static final double HIGHLIGHT_SIZE = HIGHLIGHT_OFFSET*2;
-    private static final double SQUARE_HIGHLIGHT_OFFSET = HIGHLIGHT_OFFSET*HIGHLIGHT_OFFSET;
+    public static final double HIGHLIGHT_OFFSET = 5;
+    public static final double HIGHLIGHT_SIZE = HIGHLIGHT_OFFSET*2;
     private final Pane diagram;
 
     private Node highlighted;
@@ -133,6 +130,14 @@ public class SelectionController implements EventHandler<MouseEvent> {
         return matches;
     }
 
+    private static double squareDist(double x1, double y1, double x2, double y2) {
+        return square(x1-x2)+square(y1-y2);
+    }
+
+    private static double square(double v) {
+        return v*v;
+    }
+
     private class HighlightFilter implements Predicate<Node> {
         private final double x;
         private final double y;
@@ -155,43 +160,18 @@ public class SelectionController implements EventHandler<MouseEvent> {
             return node.contains(node.screenToLocal(x, y));
         }
 
+        private boolean test(Polyline polyline) {
+            if (polyline.intersects(polyline.screenToLocal(bounds))) {
+                return new PolylinePredicate(polyline.screenToLocal(x, y)).test(polyline);
+            }
+            return false;
+        }
+
         private boolean test(Path path) {
             if (path.intersects(path.screenToLocal(bounds))) {
-                Point2D cursor = path.screenToLocal(x, y);
-                return new PathVisitor(path).findSegment((p1, p2) -> test(cursor, p1.getX(), p1.getY(), p2.getX(), p2.getY()));
+                return new PathVisitor(path).some(new PathElementPredicate(path.screenToLocal(x, y)));
             }
             return false;
-        }
-
-        private boolean test(Polyline polyline) {
-            ObservableList<Double> points = polyline.getPoints();
-            if (points.size() > 3) {
-                Point2D cursor = polyline.screenToLocal(x, y);
-                double x1 = points.get(0);
-                double y1 = points.get(1);
-                for (int i = 2; i < points.size(); i += 2) {
-                    double x2 = points.get(i);
-                    double y2 = points.get(i+1);
-                    if (test(cursor, x1, y1, x2, y2)) return true;
-                }
-            }
-            return false;
-        }
-
-        private boolean test(Point2D cursor, double x1, double y1, double x2, double y2) {
-            double squareLen = squareDist(x1, y1, x2, y2);
-            if (squareLen == 0) return squareDist(cursor.getX(), cursor.getY(), x1, y1) < SQUARE_HIGHLIGHT_OFFSET;
-            double projection = ((cursor.getX()-x1)*(x2-x1)+(cursor.getY()-y1)*(y2-y1))/squareLen;
-            double squareDist = squareDist(cursor.getX(), cursor.getY(), x1+projection*(x2-x1), y1+projection*(y2-y1));
-            return projection >= 0 && projection <= 1 && squareDist < SQUARE_HIGHLIGHT_OFFSET;
-        }
-
-        private double squareDist(double x1, double y1, double x2, double y2) {
-            return square(x1-x2)+square(y1-y2);
-        }
-
-        private double square(double v) {
-            return v*v;
         }
     }
 }
