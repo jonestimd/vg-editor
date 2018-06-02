@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Stack;
 import java.util.function.Predicate;
 
+import io.github.jonestimd.vgeditor.path.PathSegment;
+import io.github.jonestimd.vgeditor.path.PathVisitor;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -51,9 +53,13 @@ import javafx.scene.shape.Shape;
 public class SelectionController implements EventHandler<MouseEvent> {
     public static final double HIGHLIGHT_OFFSET = 5;
     public static final double HIGHLIGHT_SIZE = HIGHLIGHT_OFFSET*2;
+    public static final double HIGHLIGHT_SIZE_SQUARED = HIGHLIGHT_SIZE*HIGHLIGHT_SIZE;
     private final Pane diagram;
 
     private Node highlighted;
+    private PathSegment<?> pathHighlight;
+    private int polylineHighlight = -1;
+
     private final Effect highlightEffect = new DropShadow(0, Color.GRAY);
     private final Shape marker = new Circle(5, new RadialGradient(0, 0, 0.5, 0.5, 0.5, true, CycleMethod.NO_CYCLE,
             new Stop(0.5, Color.valueOf("#00000000")), new Stop(0.75, Color.YELLOW), new Stop(1, Color.BLACK)));
@@ -61,7 +67,6 @@ public class SelectionController implements EventHandler<MouseEvent> {
     public SelectionController(Pane diagram) {
         this.diagram = diagram;
         marker.setEffect(new Blend(BlendMode.MULTIPLY));
-
     }
 
     public Node getHighlighted() {
@@ -87,15 +92,22 @@ public class SelectionController implements EventHandler<MouseEvent> {
     private void setMarker(Node node, double screenX, double screenY) {
         removeMarker();
         highlighted = node;
-        // if (shape instanceof Polyline) {
-        //     Polyline line = (Polyline) shape;
-        //     Point2D point = line.screenToLocal(screenX, screenY);
-        // }
-        // else {
-        Bounds bounds = node.getBoundsInParent();
-        marker.setTranslateX((bounds.getMinX()+bounds.getMaxX())/2);
-        marker.setTranslateY((bounds.getMinY()+bounds.getMaxY())/2);
-        // }
+        if (node instanceof Path) {
+            Path path = (Path) node;
+            PathSegment<?> segment = new PathVisitor(path).find(new HighlightPathPredicate(path.screenToLocal(screenX, screenY))).get();
+            Point2D midpoint = segment.getMidpoint();
+            marker.setTranslateX(midpoint.getX());
+            marker.setTranslateY(midpoint.getY());
+        }
+        else if (node instanceof Polyline) {
+            Polyline line = (Polyline) node;
+            Point2D point = line.screenToLocal(screenX, screenY);
+        }
+        else {
+            Bounds bounds = node.getBoundsInParent();
+            marker.setTranslateX((bounds.getMinX()+bounds.getMaxX())/2);
+            marker.setTranslateY((bounds.getMinY()+bounds.getMaxY())/2);
+        }
         if (node.getParent() instanceof Group) {
             ((Group) node.getParent()).getChildren().add(marker);
         }
@@ -169,9 +181,22 @@ public class SelectionController implements EventHandler<MouseEvent> {
 
         private boolean test(Path path) {
             if (path.intersects(path.screenToLocal(bounds))) {
-                return new PathVisitor(path).some(new PathElementPredicate(path.screenToLocal(x, y)));
+                return new PathVisitor(path).some(new HighlightPathPredicate(path.screenToLocal(x, y)));
             }
             return false;
+        }
+    }
+
+    private class HighlightPathPredicate implements Predicate<PathSegment<?>> {
+        private final Point2D cursor;
+
+        public HighlightPathPredicate(Point2D cursor) {
+            this.cursor = cursor;
+        }
+
+        @Override
+        public boolean test(PathSegment<?> pathSegment) {
+            return pathSegment.getDistanceSquared(cursor) <= HIGHLIGHT_SIZE_SQUARED;
         }
     }
 }
