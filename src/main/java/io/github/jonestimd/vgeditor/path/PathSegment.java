@@ -27,6 +27,7 @@ import javafx.scene.shape.CubicCurveTo;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.PathElement;
+import javafx.scene.shape.QuadCurveTo;
 
 public abstract class PathSegment<T extends PathElement> {
     protected final Point2D start;
@@ -60,6 +61,7 @@ public abstract class PathSegment<T extends PathElement> {
         if (element instanceof LineTo) return (PathSegment<T>) new LineToSegment(start, (LineTo) element);
         if (element instanceof ClosePath) return (PathSegment<T>) new ClosePathSegment(start, (ClosePath) element, end);
         if (element instanceof CubicCurveTo) return (PathSegment<T>) new CubicCurveToSegment(start, (CubicCurveTo) element);
+        if (element instanceof QuadCurveTo) return (PathSegment<T>) new QuadCurveToSegment(start, (QuadCurveTo) element);
         throw new IllegalArgumentException("Unsupported path element");
     }
 

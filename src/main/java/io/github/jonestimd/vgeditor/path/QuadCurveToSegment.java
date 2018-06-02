@@ -22,17 +22,17 @@
 package io.github.jonestimd.vgeditor.path;
 
 import javafx.geometry.Point2D;
-import javafx.scene.shape.CubicCurveTo;
+import javafx.scene.shape.QuadCurveTo;
 
-public class CubicCurveToSegment extends BezierPathSegment<CubicCurveTo> {
-    public CubicCurveToSegment(Point2D start, CubicCurveTo curveTo) {
+public class QuadCurveToSegment extends BezierPathSegment<QuadCurveTo> {
+    public QuadCurveToSegment(Point2D start, QuadCurveTo curveTo) {
         super(start, curveTo, new Point2D(curveTo.getX(), curveTo.getY()));
     }
 
     protected Point2D bezierPoint(double t) {
-        double u = 1-t, u2 = u*u, u3 = u2*u, t2 = t*t, t3 = t2*t;
-        double x = u3*start.getX()+3*(t*u2*element.getControlX1()+t2*u*element.getControlX2())+t3*element.getX();
-        double y = u3*start.getY()+3*(t*u2*element.getControlY1()+t2*u*element.getControlY2())+t3*element.getY();
+        double u = 1-t, u2 = u*u, t2 = t*t;
+        double x = u2*start.getX()+2*u*t*element.getControlX()+t2*element.getX();
+        double y = u2*start.getY()+2*u*t*element.getControlY()+t2*element.getY();
         return new Point2D(x, y);
     }
 }
