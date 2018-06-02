@@ -28,7 +28,7 @@ import javafx.scene.shape.CubicCurveTo;
 
 public class CubicCurveToSegment extends PathSegment<CubicCurveTo> {
     private static final int SCANS = 25;
-    private static final double ERROR = 1e-4;
+    private static final double ERROR = 1;
 
     public CubicCurveToSegment(Point2D start, CubicCurveTo curveTo) {
         super(start, curveTo, new Point2D(curveTo.getX(), curveTo.getY()));
@@ -71,9 +71,9 @@ public class CubicCurveToSegment extends PathSegment<CubicCurveTo> {
     }
 
     private Point2D bezierPoint(double t) {
-        double u = 1-t;
-        double x = u*u*u*start.getX()+3*(t*u*u*element.getControlX1()+t*t*u*element.getControlX2())+t*t*t*element.getX();
-        double y = u*u*u*start.getY()+3*(t*u*u*element.getControlY1()+t*t*u*element.getControlY2())+t*t*t*element.getY();
+        double u = 1-t, u2 = u*u, u3 = u2*u, t2 = t*t, t3 = t2*t;
+        double x = u3*start.getX()+3*(t*u2*element.getControlX1()+t2*u*element.getControlX2())+t3*element.getX();
+        double y = u3*start.getY()+3*(t*u2*element.getControlY1()+t2*u*element.getControlY2())+t3*element.getY();
         return new Point2D(x, y);
     }
 
