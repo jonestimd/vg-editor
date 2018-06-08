@@ -21,33 +21,45 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.path;
 
+import java.util.function.DoubleFunction;
+
 import javafx.geometry.Point2D;
 import javafx.scene.shape.CubicCurveTo;
 
 public class CubicCurveToSegment extends BezierPathSegment<CubicCurveTo> {
-    private final double c1x, c1y;
-    private final double c2x, c2y;
 
     public CubicCurveToSegment(Point2D start, CubicCurveTo curveTo) {
-        super(start, curveTo, new Point2D(curveTo.getX(), curveTo.getY()));
-        if (element.isAbsolute()) {
-            c1x = element.getControlX1();
-            c1y = element.getControlY1();
-            c2x = element.getControlX2();
-            c2y = element.getControlY2();
-        }
-        else {
-            c1x = element.getControlX1() + start.getX();
-            c1y = element.getControlY1() + start.getY();
-            c2x = element.getControlX2() + start.getX();
-            c2y = element.getControlY2() + start.getY();
-        }
+        super(start, curveTo, new Point2D(curveTo.getX(), curveTo.getY()), new BezierFunction(start, curveTo));
     }
 
-    protected Point2D bezierPoint(double t) {
-        double u = 1-t, u2 = u*u, u3 = u2*u, t2 = t*t, t3 = t2*t;
-        double x = u3*start.getX()+3*(t*u2*c1x+t2*u*c2x)+t3*end.getX();
-        double y = u3*start.getY()+3*(t*u2*c1y+t2*u*c2y)+t3*end.getY();
-        return new Point2D(x, y);
+    private static class BezierFunction implements DoubleFunction<Point2D> {
+        private final Point2D start;
+        private final CubicCurveTo curveTo;
+        private final double c1x, c1y;
+        private final double c2x, c2y;
+
+        public BezierFunction(Point2D start, CubicCurveTo curveTo) {
+            this.start = start;
+            this.curveTo = curveTo;
+            if (curveTo.isAbsolute()) {
+                c1x = curveTo.getControlX1();
+                c1y = curveTo.getControlY1();
+                c2x = curveTo.getControlX2();
+                c2y = curveTo.getControlY2();
+            }
+            else {
+                c1x = curveTo.getControlX1()+start.getX();
+                c1y = curveTo.getControlY1()+start.getY();
+                c2x = curveTo.getControlX2()+start.getX();
+                c2y = curveTo.getControlY2()+start.getY();
+            }
+        }
+
+        public Point2D apply(double t) {
+            double u = 1-t, u2 = u*u, u3 = u2*u, t2 = t*t, t3 = t2*t;
+            double x = u3*start.getX()+3*(t*u2*c1x+t2*u*c2x)+t3*curveTo.getX();
+            double y = u3*start.getY()+3*(t*u2*c1y+t2*u*c2y)+t3*curveTo.getY();
+            return new Point2D(x, y);
+        }
     }
 }

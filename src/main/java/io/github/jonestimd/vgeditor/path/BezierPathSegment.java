@@ -29,14 +29,23 @@ import javafx.scene.shape.PathElement;
 public abstract class BezierPathSegment<T extends PathElement> extends PathSegment<T> {
     private static final int SCANS = 25;
     private static final double ERROR = 1;
+    private final DoubleFunction<Point2D> bezierPoint;
+    private final Point2D[] points;
+    private final Point2D midpoint;
 
-    protected BezierPathSegment(Point2D start, T element, Point2D end) {
+    protected BezierPathSegment(Point2D start, T element, Point2D end, DoubleFunction<Point2D> bezierPoint) {
         super(start, element, end);
+        this.bezierPoint = bezierPoint;
+        this.midpoint = bezierPoint.apply(0.5);
+        points = new Point2D[SCANS+1];
+        for (int i = 0; i <= SCANS ; i++) {
+            points[i] = bezierPoint.apply((0d+i)/SCANS);
+        }
     }
 
     @Override
     public Point2D getMidpoint() {
-        return bezierPoint(0.5);
+        return midpoint;
     }
 
     @Override
@@ -48,7 +57,7 @@ public abstract class BezierPathSegment<T extends PathElement> extends PathSegme
         int mIndex = 0;
         double min = Double.POSITIVE_INFINITY;
         for (int i = SCANS; i >= 0; i--) {
-            double d2 = squaredDistance(cursor, bezierPoint((0d+i)/SCANS));
+            double d2 = squaredDistance(cursor, points[i]);
             if (d2 < min) {
                 min = d2;
                 mIndex = i;
@@ -56,8 +65,8 @@ public abstract class BezierPathSegment<T extends PathElement> extends PathSegme
         }
         double t0 = Math.max((mIndex-1d)/SCANS, 0d);
         double t1 = Math.min((mIndex+1d)/SCANS, 1d);
-        DoubleFunction<Double> getDistance = t -> squaredDistance(cursor, bezierPoint(t));
-        return bezierPoint(localMinimum(t0, t1, getDistance, ERROR));
+        DoubleFunction<Double> getDistance = t -> squaredDistance(cursor, bezierPoint.apply(t));
+        return bezierPoint.apply(localMinimum(t0, t1, getDistance, ERROR));
     }
 
     private double localMinimum(double minX, double maxX, DoubleFunction<Double> func, double error) {
@@ -69,8 +78,6 @@ public abstract class BezierPathSegment<T extends PathElement> extends PathSegme
         }
         return k;
     }
-
-    protected abstract Point2D bezierPoint(double t);
 
     private Point2D interpolate(Point2D p1, Point2D p2, double t) {
         return new Point2D(p1.getX()+t*(p2.getX()-p1.getX()), p1.getY()+t*(p2.getY()-p1.getY()));

@@ -21,7 +21,9 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.path;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -32,6 +34,7 @@ import javafx.scene.shape.PathElement;
 
 public class PathVisitor {
     private final Path path;
+    private final Map<PathElement, PathSegment<?>> segmentMap = new HashMap<>();
 
     public PathVisitor(Path path) {
         this.path = path;
@@ -51,7 +54,12 @@ public class PathVisitor {
             if (first instanceof MoveTo) {
                 Point2D start = getPoint((MoveTo) first), previous = start;
                 while (iterator.hasNext()) {
-                    PathSegment<?> segment = PathSegment.of(previous, iterator.next(), start);
+                    PathElement element = iterator.next();
+                    PathSegment<?> segment = segmentMap.get(element);
+                    if (segment == null) {
+                        segment = PathSegment.of(previous, element, start);
+                        segmentMap.put(element, segment);
+                    }
                     if (predicate.test(segment)) return Optional.of(segment);
                     previous = segment.getEnd();
                     if (segment instanceof MoveToSegment) start = previous;

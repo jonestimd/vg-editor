@@ -21,28 +21,39 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.path;
 
+import java.util.function.DoubleFunction;
+
 import javafx.geometry.Point2D;
 import javafx.scene.shape.QuadCurveTo;
 
 public class QuadCurveToSegment extends BezierPathSegment<QuadCurveTo> {
-    private final double cx, cy;
-
     public QuadCurveToSegment(Point2D start, QuadCurveTo curveTo) {
-        super(start, curveTo, new Point2D(curveTo.getX(), curveTo.getY()));
-        if (element.isAbsolute()) {
-            cx = element.getControlX();
-            cy = element.getControlY();
-        }
-        else {
-            cx = element.getControlX() + start.getX();
-            cy = element.getControlY() + start.getY();
-        }
+        super(start, curveTo, new Point2D(curveTo.getX(), curveTo.getY()), new BezierFunction(start, curveTo));
     }
 
-    protected Point2D bezierPoint(double t) {
-        double u = 1-t, u2 = u*u, t2 = t*t;
-        double x = u2*start.getX()+2*u*t*cx+t2*end.getX();
-        double y = u2*start.getY()+2*u*t*cy+t2*end.getY();
-        return new Point2D(x, y);
+    private static class BezierFunction implements DoubleFunction<Point2D> {
+        private final Point2D start;
+        private final QuadCurveTo curveTo;
+        private final double cx, cy;
+
+        private BezierFunction(Point2D start, QuadCurveTo curveTo) {
+            this.start = start;
+            this.curveTo = curveTo;
+            if (curveTo.isAbsolute()) {
+                cx = curveTo.getControlX();
+                cy = curveTo.getControlY();
+            }
+            else {
+                cx = curveTo.getControlX() + start.getX();
+                cy = curveTo.getControlY() + start.getY();
+            }
+        }
+
+        public Point2D apply(double t) {
+            double u = 1-t, u2 = u*u, t2 = t*t;
+            double x = u2*start.getX()+2*u*t*cx+t2*curveTo.getX();
+            double y = u2*start.getY()+2*u*t*cy+t2*curveTo.getY();
+            return new Point2D(x, y);
+        }
     }
 }

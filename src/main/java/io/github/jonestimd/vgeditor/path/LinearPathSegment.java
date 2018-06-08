@@ -25,26 +25,28 @@ import javafx.geometry.Point2D;
 import javafx.scene.shape.PathElement;
 
 public abstract class LinearPathSegment<T extends PathElement> extends PathSegment<T> {
+    private final Point2D midpoint;
+    private final double squareLen;
+    private final double dx, dy;
+
     protected LinearPathSegment(Point2D start, T element, Point2D end) {
         super(start, element, end);
+        midpoint = new Point2D((start.getX()+end.getX())/2, (start.getY()+end.getY())/2);
+        squareLen = squaredDistance(start, end);
+        dx = end.getX()-start.getX();
+        dy = end.getY()-start.getY();
     }
 
     public Point2D getMidpoint() {
-        return new Point2D((start.getX()+end.getX())/2, (start.getY()+end.getY())/2);
+        return midpoint;
     }
 
     @Override
     public double getDistanceSquared(Point2D cursor) {
-        double cx = cursor.getX(), cy = cursor.getY();
-        double x1 = start.getX(), y1 = start.getY();
-        double x2 = end.getX(), y2 = end.getY();
-        double dx = x2-x1, dy = y2-y1;
-
-        double squareLen = squaredDistance(x1, y1, x2, y2);
-        if (squareLen == 0) return squaredDistance(cx, cy, x1, y1);
-        double projection = ((cx-x1)*dx+(cy-y1)*dy)/squareLen;
-        if (projection < 0) return squaredDistance(cx, cy, x1, y1);
-        if (projection > 1) return squaredDistance(cx, cy, x2, y2);
-        return squaredDistance(cx, cy, x1+projection*dx, y1+projection*dy);
+        if (squareLen == 0) return squaredDistance(cursor, start);
+        double projection = ((cursor.getX()-start.getX())*dx+(cursor.getY()-start.getY())*dy)/squareLen;
+        if (projection < 0) return squaredDistance(cursor, start);
+        if (projection > 1) return squaredDistance(cursor, end);
+        return squaredDistance(cursor.getX(), cursor.getY(), start.getX()+projection*dx, start.getY()+projection*dy);
     }
 }
