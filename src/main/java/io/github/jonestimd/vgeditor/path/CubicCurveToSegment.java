@@ -25,14 +25,29 @@ import javafx.geometry.Point2D;
 import javafx.scene.shape.CubicCurveTo;
 
 public class CubicCurveToSegment extends BezierPathSegment<CubicCurveTo> {
+    private final double c1x, c1y;
+    private final double c2x, c2y;
+
     public CubicCurveToSegment(Point2D start, CubicCurveTo curveTo) {
         super(start, curveTo, new Point2D(curveTo.getX(), curveTo.getY()));
+        if (element.isAbsolute()) {
+            c1x = element.getControlX1();
+            c1y = element.getControlY1();
+            c2x = element.getControlX2();
+            c2y = element.getControlY2();
+        }
+        else {
+            c1x = element.getControlX1() + start.getX();
+            c1y = element.getControlY1() + start.getY();
+            c2x = element.getControlX2() + start.getX();
+            c2y = element.getControlY2() + start.getY();
+        }
     }
 
     protected Point2D bezierPoint(double t) {
         double u = 1-t, u2 = u*u, u3 = u2*u, t2 = t*t, t3 = t2*t;
-        double x = u3*start.getX()+3*(t*u2*element.getControlX1()+t2*u*element.getControlX2())+t3*element.getX();
-        double y = u3*start.getY()+3*(t*u2*element.getControlY1()+t2*u*element.getControlY2())+t3*element.getY();
+        double x = u3*start.getX()+3*(t*u2*c1x+t2*u*c2x)+t3*end.getX();
+        double y = u3*start.getY()+3*(t*u2*c1y+t2*u*c2y)+t3*end.getY();
         return new Point2D(x, y);
     }
 }

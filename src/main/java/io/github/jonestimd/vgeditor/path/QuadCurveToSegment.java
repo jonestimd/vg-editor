@@ -25,14 +25,24 @@ import javafx.geometry.Point2D;
 import javafx.scene.shape.QuadCurveTo;
 
 public class QuadCurveToSegment extends BezierPathSegment<QuadCurveTo> {
+    private final double cx, cy;
+
     public QuadCurveToSegment(Point2D start, QuadCurveTo curveTo) {
         super(start, curveTo, new Point2D(curveTo.getX(), curveTo.getY()));
+        if (element.isAbsolute()) {
+            cx = element.getControlX();
+            cy = element.getControlY();
+        }
+        else {
+            cx = element.getControlX() + start.getX();
+            cy = element.getControlY() + start.getY();
+        }
     }
 
     protected Point2D bezierPoint(double t) {
         double u = 1-t, u2 = u*u, t2 = t*t;
-        double x = u2*start.getX()+2*u*t*element.getControlX()+t2*element.getX();
-        double y = u2*start.getY()+2*u*t*element.getControlY()+t2*element.getY();
+        double x = u2*start.getX()+2*u*t*cx+t2*end.getX();
+        double y = u2*start.getY()+2*u*t*cy+t2*end.getY();
         return new Point2D(x, y);
     }
 }
