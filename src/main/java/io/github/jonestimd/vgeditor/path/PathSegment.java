@@ -22,6 +22,7 @@
 package io.github.jonestimd.vgeditor.path;
 
 import javafx.geometry.Point2D;
+import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.ClosePath;
 import javafx.scene.shape.CubicCurveTo;
 import javafx.scene.shape.LineTo;
@@ -36,8 +37,8 @@ public abstract class PathSegment<T extends PathElement> {
 
     protected PathSegment(Point2D start, T element, Point2D end) {
         this.start = start;
-        this.end = end;
         this.element = element;
+        this.end = element.isAbsolute() ? end : end.add(start);
     }
 
     public Point2D getStart() {
@@ -62,6 +63,7 @@ public abstract class PathSegment<T extends PathElement> {
         if (element instanceof ClosePath) return (PathSegment<T>) new ClosePathSegment(start, (ClosePath) element, end);
         if (element instanceof CubicCurveTo) return (PathSegment<T>) new CubicCurveToSegment(start, (CubicCurveTo) element);
         if (element instanceof QuadCurveTo) return (PathSegment<T>) new QuadCurveToSegment(start, (QuadCurveTo) element);
+        if (element instanceof ArcTo) return (PathSegment<T>) new ArcToSegment(start, (ArcTo) element);
         throw new IllegalArgumentException("Unsupported path element");
     }
 
