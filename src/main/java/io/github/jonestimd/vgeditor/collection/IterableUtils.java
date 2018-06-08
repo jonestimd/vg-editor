@@ -19,7 +19,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor;
+package io.github.jonestimd.vgeditor.collection;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,6 +27,11 @@ import java.util.List;
 import java.util.function.Function;
 
 public class IterableUtils {
+    /**
+     * Find the items in an {@link Iterable} for which a function's result is minimal.  If multiple items have the minimal
+     * result then they are all returned.
+     * @return the items for which the result of {@code getter} is the smallest
+     */
     public static <T> List<T> minBy(Iterable<T> items, Function<T, Double> getter) {
         List<T> result = new ArrayList<>();
         Iterator<T> iterator = items.iterator();

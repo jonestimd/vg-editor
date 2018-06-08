@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.function.Predicate;
 
+import io.github.jonestimd.vgeditor.collection.IterableUtils;
 import io.github.jonestimd.vgeditor.path.PathSegment;
 import io.github.jonestimd.vgeditor.path.PathVisitor;
 import javafx.event.EventHandler;
