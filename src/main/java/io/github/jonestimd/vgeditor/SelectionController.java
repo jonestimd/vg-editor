@@ -27,6 +27,7 @@ import java.util.Stack;
 import java.util.function.Predicate;
 
 import io.github.jonestimd.vgeditor.collection.IterableUtils;
+import io.github.jonestimd.vgeditor.collection.LruCache;
 import io.github.jonestimd.vgeditor.path.PathSegment;
 import io.github.jonestimd.vgeditor.path.PathVisitor;
 import javafx.event.EventHandler;
@@ -55,7 +56,10 @@ public class SelectionController implements EventHandler<MouseEvent> {
     public static final double HIGHLIGHT_OFFSET = 5;
     public static final double HIGHLIGHT_SIZE = HIGHLIGHT_OFFSET*2;
     public static final double HIGHLIGHT_SIZE_SQUARED = HIGHLIGHT_SIZE*HIGHLIGHT_SIZE;
+    public static final int PATH_CACHE_SIZE = 30;
     private final Pane diagram;
+
+    private final LruCache<Path, PathVisitor> pathVisitorCache = new LruCache<>(PATH_CACHE_SIZE);
 
     private Node highlighted;
     private PathSegment<?> pathHighlight;
@@ -95,7 +99,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
         highlighted = node;
         if (node instanceof Path) {
             Path path = (Path) node;
-            PathSegment<?> segment = new PathVisitor(path).find(new HighlightPathPredicate(path.screenToLocal(screenX, screenY))).get();
+            PathSegment<?> segment = pathVisitorCache.get(path, PathVisitor::new).find(new HighlightPathPredicate(path.screenToLocal(screenX, screenY))).get();
             Point2D midpoint = segment.getMidpoint();
             marker.setTranslateX(midpoint.getX());
             marker.setTranslateY(midpoint.getY());
@@ -182,7 +186,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
 
         private boolean test(Path path) {
             if (path.intersects(path.screenToLocal(bounds))) {
-                return new PathVisitor(path).some(new HighlightPathPredicate(path.screenToLocal(x, y)));
+                return pathVisitorCache.get(path, PathVisitor::new).some(new HighlightPathPredicate(path.screenToLocal(x, y)));
             }
             return false;
         }
