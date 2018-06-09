@@ -19,13 +19,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor;
+package io.github.jonestimd.vgeditor.svg;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import io.github.jonestimd.vgeditor.svg.AttributeParser;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.paint.Paint;

@@ -19,34 +19,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.path;
+package io.github.jonestimd.vgeditor.shape.path;
 
 import javafx.geometry.Point2D;
-import javafx.scene.shape.PathElement;
+import javafx.scene.shape.LineTo;
 
-public abstract class LinearPathSegment<T extends PathElement> extends PathSegment<T> {
-    private final Point2D midpoint;
-    private final double squareLen;
-    private final double dx, dy;
-
-    protected LinearPathSegment(Point2D start, T element, Point2D end) {
-        super(start, element, end);
-        midpoint = new Point2D((start.getX()+end.getX())/2, (start.getY()+end.getY())/2);
-        squareLen = squaredDistance(start, end);
-        dx = end.getX()-start.getX();
-        dy = end.getY()-start.getY();
-    }
-
-    public Point2D getMidpoint() {
-        return midpoint;
-    }
-
-    @Override
-    public double getDistanceSquared(Point2D cursor) {
-        if (squareLen == 0) return squaredDistance(cursor, start);
-        double projection = ((cursor.getX()-start.getX())*dx+(cursor.getY()-start.getY())*dy)/squareLen;
-        if (projection < 0) return squaredDistance(cursor, start);
-        if (projection > 1) return squaredDistance(cursor, end);
-        return squaredDistance(cursor.getX(), cursor.getY(), start.getX()+projection*dx, start.getY()+projection*dy);
+public class LineToSegment extends LinearPathSegment<LineTo> {
+    public LineToSegment(Point2D start, LineTo lineTo) {
+        super(start, lineTo, new Point2D(lineTo.getX(), lineTo.getY()));
     }
 }

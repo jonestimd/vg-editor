@@ -25,7 +25,6 @@ import java.io.ByteArrayInputStream;
 import java.util.Base64;
 import java.util.Optional;
 
-import io.github.jonestimd.vgeditor.GroupDefaults;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;

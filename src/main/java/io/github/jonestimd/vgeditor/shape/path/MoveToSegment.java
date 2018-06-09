@@ -19,14 +19,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor;
+package io.github.jonestimd.vgeditor.shape.path;
 
-import javafx.geometry.Bounds;
-import javafx.scene.Node;
+import javafx.geometry.Point2D;
+import javafx.scene.shape.MoveTo;
 
-public class Nodes {
-    public static double boundingArea(Node node) {
-        Bounds bounds = node.getBoundsInLocal();
-        return bounds.getWidth()*bounds.getHeight();
+public class MoveToSegment extends LinearPathSegment<MoveTo> {
+    public MoveToSegment(Point2D start, MoveTo moveTo) {
+        super(start, moveTo, new Point2D(moveTo.getX(), moveTo.getY()));
     }
 }

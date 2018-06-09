@@ -33,7 +33,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.jonestimd.vgeditor.GroupDefaults;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.text.Text;
