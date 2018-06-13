@@ -19,30 +19,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.shape;
+package io.github.jonestimd.vgeditor.scene.shape.path;
 
-import java.util.function.Predicate;
-
-import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
-import javafx.scene.shape.Polyline;
+import javafx.scene.shape.MoveTo;
 
-public class PolylinePredicate extends LineSegmentPredicate implements Predicate<Polyline> {
-    public PolylinePredicate(Point2D cursor) {
-        super(cursor);
-    }
-
-    public boolean test(Polyline polyline) {
-        ObservableList<Double> points = polyline.getPoints();
-        if (points.size() > 2) {
-            double x1 = points.get(0);
-            double y1 = points.get(1);
-            for (int i = 2; i < points.size(); i += 2) {
-                double x2 = points.get(i);
-                double y2 = points.get(i+1);
-                if (isInHighlightRange(x1, y1, x2, y2)) return true;
-            }
-        }
-        return false;
+public class MoveToSegment extends LinearPathSegment<MoveTo> {
+    public MoveToSegment(Point2D start, MoveTo moveTo) {
+        super(start, moveTo, new Point2D(moveTo.getX(), moveTo.getY()));
     }
 }

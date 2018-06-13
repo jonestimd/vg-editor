@@ -19,13 +19,36 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.shape.path;
+package io.github.jonestimd.vgeditor;
 
-import javafx.geometry.Point2D;
-import javafx.scene.shape.MoveTo;
+public enum NodeAnchor {
+    TOP_LEFT,
+    TOP_CENTER,
+    TOP_RIGHT,
+    LEFT,
+    CENTER,
+    RIGHT,
+    BOTTOM_LEFT,
+    BOTTOM_CENTER,
+    BOTTOM_RIGHT;
 
-public class MoveToSegment extends LinearPathSegment<MoveTo> {
-    public MoveToSegment(Point2D start, MoveTo moveTo) {
-        super(start, moveTo, new Point2D(moveTo.getX(), moveTo.getY()));
+    public boolean isLeft() {
+        return name().endsWith("LEFT");
+    }
+
+    public boolean isRight() {
+        return name().endsWith("RIGHT");
+    }
+
+    public boolean isTop() {
+        return name().startsWith("TOP");
+    }
+
+    public boolean isBottom() {
+        return name().startsWith("BOTTOM");
+    }
+
+    public static NodeAnchor decode(String value) {
+        return Enum.valueOf(NodeAnchor.class, value.toUpperCase().replace('-', '_'));
     }
 }

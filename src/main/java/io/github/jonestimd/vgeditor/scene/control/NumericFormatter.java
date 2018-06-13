@@ -19,13 +19,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.shape.path;
+package io.github.jonestimd.vgeditor.scene.control;
 
-import javafx.geometry.Point2D;
-import javafx.scene.shape.LineTo;
+import java.util.function.UnaryOperator;
+import java.util.regex.Pattern;
 
-public class LineToSegment extends LinearPathSegment<LineTo> {
-    public LineToSegment(Point2D start, LineTo lineTo) {
-        super(start, lineTo, new Point2D(lineTo.getX(), lineTo.getY()));
+import javafx.scene.control.TextFormatter;
+
+public class NumericFormatter<V> extends TextFormatter<V> {
+    private static final Pattern DOUBLE_PATTERN = Pattern.compile("-?\\d*(\\.\\d*)?");
+    private static final UnaryOperator<Change> DOUBLE_FILTER = (change) ->
+            DOUBLE_PATTERN.matcher(change.getControlNewText()).matches() ? change : null;
+
+    public static NumericFormatter<Double> forDouble() {
+        return new NumericFormatter<>(DOUBLE_FILTER);
+    }
+
+    protected NumericFormatter(UnaryOperator<Change> filter) {
+        super(filter);
     }
 }

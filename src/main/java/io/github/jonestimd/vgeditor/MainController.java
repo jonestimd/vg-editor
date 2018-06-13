@@ -42,6 +42,8 @@ public class MainController {
     @FXML
     private Pane diagram;
 
+    private ToolPaneLoader toolPaneLoader = new ToolPaneLoader();
+
     private SelectionController selectionController;
 
     public void initialize() {
@@ -81,5 +83,13 @@ public class MainController {
 
     public void exitApplication(ActionEvent event) {
         Platform.exit();
+    }
+
+    public void addRectangle(ActionEvent event) {
+        NodeController<?> controller = toolPaneLoader.show("RectangleTool.fxml");
+        // TODO check for incomplete shape
+        controller.newNode();
+        diagram.getChildren().add(controller.getNode());
+        // TODO set focus on first input
     }
 }

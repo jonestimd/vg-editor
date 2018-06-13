@@ -28,10 +28,10 @@ import java.util.function.Predicate;
 
 import io.github.jonestimd.vgeditor.collection.IterableUtils;
 import io.github.jonestimd.vgeditor.collection.LruCache;
-import io.github.jonestimd.vgeditor.shape.Nodes;
-import io.github.jonestimd.vgeditor.shape.PolylinePredicate;
-import io.github.jonestimd.vgeditor.shape.path.PathSegment;
-import io.github.jonestimd.vgeditor.shape.path.PathVisitor;
+import io.github.jonestimd.vgeditor.scene.Nodes;
+import io.github.jonestimd.vgeditor.scene.shape.PolylinePredicate;
+import io.github.jonestimd.vgeditor.scene.shape.path.PathSegment;
+import io.github.jonestimd.vgeditor.scene.shape.path.PathVisitor;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
   ~ The MIT License (MIT)
   ~
@@ -30,20 +31,23 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="io.github.jonestimd.vgeditor.MainController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.121" fx:controller="io.github.jonestimd.vgeditor.MainController">
     <top>
         <MenuBar fx:id="menuBar">
             <Menu text="%menu.file">
-                <MenuItem text="%file.new" onAction="#createFile" accelerator="%file.new.accelerator"/>
-                <MenuItem text="%file.open" onAction="#openFile" accelerator="%file.open.accelerator"/>
-                <MenuItem text="%file.save" onAction="#saveFile" accelerator="%file.save.accelerator"/>
-                <MenuItem text="%file.saveAs" onAction="#saveFileAs"/>
-                <SeparatorMenuItem/>
-                <MenuItem text="E_xit" onAction="#exitApplication"/>
+                <MenuItem accelerator="%file.new.accelerator" onAction="#createFile" text="%file.new" />
+                <MenuItem accelerator="%file.open.accelerator" onAction="#openFile" text="%file.open" />
+                <MenuItem accelerator="%file.save.accelerator" onAction="#saveFile" text="%file.save" />
+                <MenuItem onAction="#saveFileAs" text="%file.saveAs" />
+                <SeparatorMenuItem />
+                <MenuItem onAction="#exitApplication" text="E_xit" />
+            </Menu>
+            <Menu text="%menu.insert">
+                <MenuItem accelerator="%insert.rectangle.accelerator" onAction="#addRectangle" text="%insert.rectangle" />
             </Menu>
         </MenuBar>
     </top>
     <center>
-        <ScrollPane fx:id="scrollPane"><Pane fx:id="diagram"/></ScrollPane>
+        <ScrollPane fx:id="scrollPane"><Pane fx:id="diagram" /></ScrollPane>
     </center>
 </BorderPane>
