@@ -26,5 +26,5 @@ import javafx.scene.Node;
 public interface NodeController<T extends Node> {
     T getNode();
 
-    void newNode();
+    boolean newNode();
 }

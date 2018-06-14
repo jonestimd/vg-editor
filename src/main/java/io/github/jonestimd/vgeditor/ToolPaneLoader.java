@@ -26,9 +26,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.github.jonestimd.vgeditor.scene.Nodes;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -43,7 +45,8 @@ public class ToolPaneLoader {
     private Pair<NodeController<?>, Pane> controllerPane;
     private final Map<String, Pair<NodeController<?>, Pane>> fileControllers = new HashMap<>();
 
-    public ToolPaneLoader() {
+    public ToolPaneLoader(ObservableMap<KeyCombination, Runnable> accelerators) {
+        scene.getAccelerators().putAll(accelerators);
         stage.setScene(scene);
     }
 
@@ -55,6 +58,7 @@ public class ToolPaneLoader {
         }
         Nodes.visit(controllerPane.getValue(), TextField.class, (field) -> field.setText(""));
         stage.show();
+        stage.requestFocus();
         return controllerPane.getKey();
     }
 

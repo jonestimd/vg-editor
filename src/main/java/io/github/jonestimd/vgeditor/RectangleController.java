@@ -48,8 +48,12 @@ public class RectangleController implements NodeController<Rectangle> {
     }
 
     @Override
-    public void newNode() {
-        this.node = new Rectangle();
+    public boolean newNode() {
+        if (this.node == null || this.node.getWidth() > 0 && this.node.getHeight() > 0) {
+            this.node = new Rectangle();
+            return true;
+        }
+        return false;
     }
 
     public void selectAnchor(ActionEvent event) {

@@ -25,8 +25,11 @@ import java.io.File;
 
 import io.github.jonestimd.vgeditor.svg.SvgParser;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
@@ -42,7 +45,7 @@ public class MainController {
     @FXML
     private Pane diagram;
 
-    private ToolPaneLoader toolPaneLoader = new ToolPaneLoader();
+    private ToolPaneLoader toolPaneLoader;
 
     private SelectionController selectionController;
 
@@ -50,6 +53,13 @@ public class MainController {
         scrollPane.setPrefSize(600, 500);
         selectionController = new SelectionController(diagram);
         diagram.addEventHandler(MouseEvent.ANY, selectionController);
+        diagram.sceneProperty().addListener(new ChangeListener<Scene>() {
+            @Override
+            public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
+                toolPaneLoader = new ToolPaneLoader(newValue.getAccelerators());
+                diagram.sceneProperty().removeListener(this);
+            }
+        });
     }
 
     public void createFile(ActionEvent event) {
@@ -86,10 +96,8 @@ public class MainController {
     }
 
     public void addRectangle(ActionEvent event) {
+        System.out.println("addRectangle");
         NodeController<?> controller = toolPaneLoader.show("RectangleTool.fxml");
-        // TODO check for incomplete shape
-        controller.newNode();
-        diagram.getChildren().add(controller.getNode());
-        // TODO set focus on first input
+        if (controller.newNode()) diagram.getChildren().add(controller.getNode());
     }
 }
