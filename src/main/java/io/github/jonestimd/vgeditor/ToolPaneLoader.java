@@ -26,11 +26,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.github.jonestimd.vgeditor.scene.Nodes;
-import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -38,6 +37,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Pair;
 
 public class ToolPaneLoader {
+    private final Pane diagram;
     private final FXMLLoader loader = new FXMLLoader();
     private final Stage stage = new Stage(StageStyle.UTILITY);
     private final Scene scene = new Scene(new VBox());
@@ -45,15 +45,22 @@ public class ToolPaneLoader {
     private Pair<NodeController<?>, Pane> controllerPane;
     private final Map<String, Pair<NodeController<?>, Pane>> fileControllers = new HashMap<>();
 
-    public ToolPaneLoader(ObservableMap<KeyCombination, Runnable> accelerators) {
-        scene.getAccelerators().putAll(accelerators);
+    public ToolPaneLoader(Pane diagram) {
+        this.diagram = diagram;
+        scene.getAccelerators().putAll(diagram.getScene().getAccelerators());
         stage.setScene(scene);
+        diagram.getScene().addEventHandler(MouseEvent.ANY, event -> {
+            if (controllerPane != null && controllerPane.getValue().getScene().getWindow().isShowing()) {
+                controllerPane.getKey().handle(event);
+            }
+        });
     }
 
     public NodeController<?> show(String fileName) {
         if (!fileName.equals(this.fileName)) {
             this.fileName = fileName;
             controllerPane = fileControllers.computeIfAbsent(fileName, this::load);
+            controllerPane.getKey().setPane(diagram);
             scene.setRoot(controllerPane.getValue());
         }
         Nodes.visit(controllerPane.getValue(), TextField.class, (field) -> field.setText(""));

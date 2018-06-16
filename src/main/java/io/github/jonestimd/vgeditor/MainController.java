@@ -49,14 +49,15 @@ public class MainController {
 
     private SelectionController selectionController;
 
+    // TODO close tool windows and exit when scene is closed
     public void initialize() {
         scrollPane.setPrefSize(600, 500);
         selectionController = new SelectionController(diagram);
-        diagram.addEventHandler(MouseEvent.ANY, selectionController);
         diagram.sceneProperty().addListener(new ChangeListener<Scene>() {
             @Override
             public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
-                toolPaneLoader = new ToolPaneLoader(newValue.getAccelerators());
+                diagram.getScene().addEventHandler(MouseEvent.ANY, selectionController);
+                toolPaneLoader = new ToolPaneLoader(diagram);
                 diagram.sceneProperty().removeListener(this);
             }
         });

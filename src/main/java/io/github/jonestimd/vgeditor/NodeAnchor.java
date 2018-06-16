@@ -22,33 +22,37 @@
 package io.github.jonestimd.vgeditor;
 
 public enum NodeAnchor {
-    TOP_LEFT,
-    TOP_CENTER,
-    TOP_RIGHT,
-    LEFT,
-    CENTER,
-    RIGHT,
-    BOTTOM_LEFT,
-    BOTTOM_CENTER,
-    BOTTOM_RIGHT;
+    TOP_LEFT(-1, -1),
+    TOP_CENTER(0, -1),
+    TOP_RIGHT(1, -1),
+    LEFT(-1, 0),
+    CENTER(0, 0),
+    RIGHT(1, 0),
+    BOTTOM_LEFT(-1, 1),
+    BOTTOM_CENTER(0, 1),
+    BOTTOM_RIGHT(1, 1);
+
+    public final int dx;
+    public final int dy;
+
+    NodeAnchor(int dx, int dy) {
+        this.dx = dx;
+        this.dy = dy;
+    }
 
     public boolean isLeft() {
-        return name().endsWith("LEFT");
+        return dx < 0;
     }
 
     public boolean isRight() {
-        return name().endsWith("RIGHT");
+        return dx > 0;
     }
 
     public boolean isTop() {
-        return name().startsWith("TOP");
+        return dy < 0;
     }
 
     public boolean isBottom() {
-        return name().startsWith("BOTTOM");
-    }
-
-    public static NodeAnchor decode(String value) {
-        return Enum.valueOf(NodeAnchor.class, value.toUpperCase().replace('-', '_'));
+        return dy > 0;
     }
 }

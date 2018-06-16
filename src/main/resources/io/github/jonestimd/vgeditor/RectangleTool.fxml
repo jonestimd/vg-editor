@@ -45,32 +45,32 @@
         </Label>
     </HBox>
     <Label text="anchor x:" />
-    <TextField id="x" onKeyReleased="#inputChange">
+    <TextField fx:id="anchorX" onKeyReleased="#setNodeX">
         <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
     </TextField>
     <Label text="anchor y:" />
-    <TextField id="y" onKeyReleased="#inputChange">
+    <TextField fx:id="anchorY" onKeyReleased="#setNodeY">
         <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
     </TextField>
     <Label text="width:" />
-    <TextField id="width" onKeyReleased="#inputChange">
+    <TextField fx:id="width" onKeyReleased="#setNodeWidth">
         <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
     </TextField>
     <Label text="height:" />
-    <TextField id="height" onKeyReleased="#inputChange">
+    <TextField fx:id="height" onKeyReleased="#setNodeHeight">
         <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
     </TextField>
     <Label text="anchor:" />
-    <GridPane alignment="CENTER" hgap="3" style="-fx-border-width: 1; -fx-border-style: solid;" vgap="3">
+    <GridPane fx:id="anchorParent" alignment="CENTER" hgap="3" style="-fx-border-width: 1; -fx-border-style: solid;" vgap="3">
         <padding><Insets bottom="5.0" left="5.0" right="5.0" top="5.0" /></padding>
-        <RadioButton toggleGroup="$anchor" id="top-left" selected="true" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-        <RadioButton toggleGroup="$anchor" id="top-center" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-        <RadioButton toggleGroup="$anchor" id="top-right" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-        <RadioButton toggleGroup="$anchor" id="left" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-        <RadioButton toggleGroup="$anchor" id="center" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <RadioButton toggleGroup="$anchor" id="right" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-        <RadioButton toggleGroup="$anchor" id="bottom-left" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-        <RadioButton toggleGroup="$anchor" id="bottom-center" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <RadioButton toggleGroup="$anchor" id="bottom-right" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+        <RadioButton toggleGroup="$anchor" id="TOP_LEFT" selected="true" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <RadioButton toggleGroup="$anchor" id="TOP_CENTER" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <RadioButton toggleGroup="$anchor" id="TOP_RIGHT" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+        <RadioButton toggleGroup="$anchor" id="LEFT" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <RadioButton toggleGroup="$anchor" id="CENTER" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <RadioButton toggleGroup="$anchor" id="RIGHT" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <RadioButton toggleGroup="$anchor" id="BOTTOM_LEFT" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <RadioButton toggleGroup="$anchor" id="BOTTOM_CENTER" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <RadioButton toggleGroup="$anchor" id="BOTTOM_RIGHT" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="2" />
     </GridPane>
 </VBox>
