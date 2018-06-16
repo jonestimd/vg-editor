@@ -21,6 +21,9 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor;
 
+import javafx.geometry.Dimension2D;
+import javafx.geometry.Point2D;
+
 public enum NodeAnchor {
     TOP_LEFT(-1, -1),
     TOP_CENTER(0, -1),
@@ -54,5 +57,24 @@ public enum NodeAnchor {
 
     public boolean isBottom() {
         return dy > 0;
+    }
+
+    /**
+     * Get the appropriate anchor for the start point based on the end point.
+     */
+    public NodeAnchor adjust(Point2D start, Point2D end) {
+        if (this == CENTER) return this;
+        boolean above = end.getY() < start.getY();
+        if (dx == 0) return above ? BOTTOM_CENTER : TOP_CENTER;
+        boolean left = end.getX() < start.getX();
+        if (dy == 0) return left ? RIGHT : LEFT;
+        if (left) return above ? BOTTOM_RIGHT : TOP_RIGHT;
+        return above ? BOTTOM_LEFT : TOP_LEFT;
+    }
+
+    public Dimension2D getSize(Point2D start, Point2D end) {
+        double width = Math.abs(start.getX()-end.getX());
+        double height = Math.abs(start.getY()-end.getY());
+        return new Dimension2D(width * (dx == 0 ? 2 : 1), height * (dy == 0 ? 2 : 1));
     }
 }

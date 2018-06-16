@@ -23,9 +23,9 @@ package io.github.jonestimd.vgeditor;
 
 import java.util.Optional;
 
-import io.github.jonestimd.vgeditor.scene.Nodes;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.RadioButton;
@@ -140,39 +140,17 @@ public class RectangleController implements NodeController<Rectangle> {
         }
         else if (mouseDragging) {
             Point2D point = diagram.screenToLocal(event.getScreenX(), event.getScreenY());
-            final double height = Math.abs(point.getY()-startDrag.getY());
-            final double width = Math.abs(point.getX()-startDrag.getX());
-            if (nodeAnchor == NodeAnchor.CENTER) {
-                setWidth(width*2);
-                setHeight(height*2);
-            }
-            else if (nodeAnchor.dx == 0 && nodeAnchor.dy != 0) {
-                selectAnchor(point.getY() < startDrag.getY() ? NodeAnchor.BOTTOM_CENTER : NodeAnchor.TOP_CENTER);
-                setWidth(width*2);
-                setHeight(height);
-            }
-            else if (nodeAnchor.dx != 0 && nodeAnchor.dy == 0) {
-                selectAnchor(point.getX() < startDrag.getX() ? NodeAnchor.RIGHT : NodeAnchor.LEFT);
-                setWidth(width);
-                setHeight(height*2);
-            }
-            else { // adjust corner anchor
-                if (point.getX() < startDrag.getX()) {
-                    selectAnchor(point.getY() < startDrag.getY() ? NodeAnchor.BOTTOM_RIGHT : NodeAnchor.TOP_RIGHT);
-                }
-                else {
-                    selectAnchor(point.getY() < startDrag.getY() ? NodeAnchor.BOTTOM_LEFT : NodeAnchor.TOP_LEFT);
-                }
-                setWidth(width);
-                setHeight(height);
-            }
+            selectAnchor(nodeAnchor.adjust(startDrag, point));
+            setSize(nodeAnchor.getSize(startDrag, point));
         }
     }
 
     private void selectAnchor(NodeAnchor anchor) {
-        setAnchor(anchor);
-        Optional<Node> button = anchorParent.getChildren().stream().filter(node -> anchor.name().equals(node.getId())).findFirst();
-        button.ifPresent(node -> ((RadioButton) node).setSelected(true));
+        if (anchor != this.nodeAnchor) {
+            setAnchor(anchor);
+            Optional<Node> button = anchorParent.getChildren().stream().filter(node -> anchor.name().equals(node.getId())).findFirst();
+            button.ifPresent(node -> ((RadioButton) node).setSelected(true));
+        }
     }
 
     private void setAnchorX(double x) {
@@ -183,6 +161,11 @@ public class RectangleController implements NodeController<Rectangle> {
     private void setAnchorY(double y) {
         node.setY(y);
         anchorY.setText(Double.toString(y));
+    }
+
+    private void setSize(Dimension2D size) {
+        setWidth(size.getWidth());
+        setHeight(size.getHeight());
     }
 
     private void setWidth(double width) {
