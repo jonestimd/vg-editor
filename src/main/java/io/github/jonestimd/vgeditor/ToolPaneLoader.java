@@ -24,29 +24,35 @@ package io.github.jonestimd.vgeditor;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import io.github.jonestimd.vgeditor.scene.Nodes;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import javafx.util.Pair;
 
 public class ToolPaneLoader {
+    private static final double MIN_WIDTH = 180;
     private final Pane diagram;
     private final FXMLLoader loader = new FXMLLoader();
     private final Stage stage = new Stage(StageStyle.UTILITY);
-    private final Scene scene = new Scene(new VBox());
     private String fileName;
     private Pair<NodeController<?>, Pane> controllerPane;
     private final Map<String, Pair<NodeController<?>, Pane>> fileControllers = new HashMap<>();
 
     public ToolPaneLoader(Pane diagram) {
+        loader.setResources(ResourceBundle.getBundle("io.github.jonestimd.vgeditor.labels"));
         this.diagram = diagram;
+        Scene scene = new Scene(new VBox());
         scene.getAccelerators().putAll(diagram.getScene().getAccelerators());
         stage.setScene(scene);
         diagram.getScene().addEventHandler(MouseEvent.ANY, event -> {
@@ -57,16 +63,26 @@ public class ToolPaneLoader {
     }
 
     public NodeController<?> show(String fileName) {
+        if (fileControllers.isEmpty()) locateWindow();
         if (!fileName.equals(this.fileName)) {
             this.fileName = fileName;
             controllerPane = fileControllers.computeIfAbsent(fileName, this::load);
             controllerPane.getKey().setPane(diagram);
-            scene.setRoot(controllerPane.getValue());
+            stage.getScene().setRoot(controllerPane.getValue());
         }
         Nodes.visit(controllerPane.getValue(), TextField.class, (field) -> field.setText(""));
         stage.show();
         stage.requestFocus();
         return controllerPane.getKey();
+    }
+
+    private void locateWindow() {
+        Rectangle2D bounds = Screen.getPrimary().getBounds();
+        Window mainWindow = diagram.getScene().getWindow();
+        stage.setY(mainWindow.getY());
+        double x = mainWindow.getX()+mainWindow.getWidth();
+        if (x+MIN_WIDTH > bounds.getMaxX()) x = bounds.getMaxX()-MIN_WIDTH;
+        stage.setX(x);
     }
 
     private Pair<NodeController<?>, Pane> load(String fileName) {
