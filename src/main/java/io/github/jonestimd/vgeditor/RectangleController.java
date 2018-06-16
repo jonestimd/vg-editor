@@ -28,6 +28,8 @@ import javafx.fxml.FXML;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
@@ -36,9 +38,11 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class RectangleController implements NodeController<Rectangle> {
+    private static final double DEFAULT_STROKE_WIDTH = 1;
     private Pane diagram;
     private Rectangle node;
     private NodeAnchor nodeAnchor = NodeAnchor.TOP_LEFT;
@@ -55,8 +59,22 @@ public class RectangleController implements NodeController<Rectangle> {
     private TextField height;
     @FXML
     private GridPane anchorParent;
+    @FXML
+    private ColorPicker fillColor;
+    @FXML
+    private ColorPicker strokeColor;
+    @FXML
+    private TextField strokeWidthInput;
 
     private Point2D startDrag;
+    private boolean fill;
+    private boolean stroke = true;
+    private double strokeWidth = DEFAULT_STROKE_WIDTH;
+
+    public void initialize() {
+        fillColor.setValue(Color.BLACK);
+        strokeColor.setValue(Color.BLACK);
+    }
 
     @Override
     public void setPane(Pane diagram) {
@@ -71,7 +89,19 @@ public class RectangleController implements NodeController<Rectangle> {
     @Override
     public boolean newNode() {
         if (this.node == null || this.node.getWidth() > 0 && this.node.getHeight() > 0) {
+            anchorX.setText("");
+            anchorY.setText("");
+            width.setText("");
+            height.setText("");
+
             this.node = new Rectangle();
+            if (!fill) node.setFill(null);
+            else node.setFill(fillColor.getValue());
+            if (!stroke) node.setStroke(null);
+            else {
+                node.setStroke(strokeColor.getValue());
+                node.setStrokeWidth(strokeWidth);
+            }
             return true;
         }
         return false;
@@ -83,45 +113,52 @@ public class RectangleController implements NodeController<Rectangle> {
 
     private void setAnchor(NodeAnchor nodeAnchor) {
         this.nodeAnchor = nodeAnchor;
-        if (this.nodeAnchor.isLeft()) node.setTranslateX(0);
-        else if (this.nodeAnchor.isRight()) node.setTranslateX(-node.getWidth());
-        else node.setTranslateX(-node.getWidth()/2);
-        if (this.nodeAnchor.isTop()) node.setTranslateY(0);
-        else if (this.nodeAnchor.isBottom()) node.setTranslateY(-node.getHeight());
-        else node.setTranslateY(-node.getHeight()/2);
+        nodeAnchor.translateX(node, node.getWidth());
+        nodeAnchor.translateY(node, node.getHeight());
     }
 
-    private double parseInput(KeyEvent event) {
+    private double parseInput(KeyEvent event, double defaultValue) {
         String text = ((TextInputControl) event.getSource()).getText();
-        return text.length() > 0 ? Double.parseDouble(text) : 0d;
+        return text.length() > 0 ? Double.parseDouble(text) : defaultValue;
     }
 
     public void setNodeX(KeyEvent event) {
-        node.setX(parseInput(event));
+        node.setX(parseInput(event, 0d));
     }
 
     public void setNodeY(KeyEvent event) {
-        node.setY(parseInput(event));
+        node.setY(parseInput(event, 0d));
     }
 
     public void setNodeWidth(KeyEvent event) {
-        setNodeWidth(parseInput(event));
+        setNodeWidth(parseInput(event, 0d));
     }
 
     public void setNodeHeight(KeyEvent event) {
-        setNodeHeight(parseInput(event));
+        setNodeHeight(parseInput(event, 0d));
     }
 
     private void setNodeWidth(double width) {
         node.setWidth(width);
-        if (nodeAnchor.isRight()) node.setTranslateX(-node.getWidth());
-        else if (!nodeAnchor.isLeft()) node.setTranslateX(-node.getWidth()/2);
+        nodeAnchor.translateX(node, width);
     }
 
     private void setNodeHeight(double height) {
         node.setHeight(height);
-        if (nodeAnchor.isBottom()) node.setTranslateY(-node.getHeight());
-        else if (!nodeAnchor.isTop()) node.setTranslateY(-node.getHeight()/2);
+        nodeAnchor.translateY(node, height);
+    }
+
+    public void setFillColor(ActionEvent event) {
+        node.setFill(fillColor.getValue());
+    }
+
+    public void setStrokeColor(ActionEvent event) {
+        node.setStroke(strokeColor.getValue());
+    }
+
+    public void setStrokeWidth(KeyEvent event) {
+        strokeWidth = parseInput(event, DEFAULT_STROKE_WIDTH);
+        node.setStrokeWidth(strokeWidth);
     }
 
     @Override
@@ -176,5 +213,18 @@ public class RectangleController implements NodeController<Rectangle> {
     private void setHeight(double height) {
         setNodeHeight(height);
         this.height.setText(Double.toString(height));
+    }
+
+    public void setFill(ActionEvent event) {
+        CheckBox source = (CheckBox) event.getSource();
+        fill = source.isSelected();
+        fillColor.setDisable(!fill);
+    }
+
+    public void setStroke(ActionEvent event) {
+        CheckBox source = (CheckBox) event.getSource();
+        stroke = source.isSelected();
+        strokeColor.setDisable(!stroke);
+        strokeWidthInput.setDisable(!stroke);
     }
 }

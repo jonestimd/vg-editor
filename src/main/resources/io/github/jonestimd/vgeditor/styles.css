@@ -1,0 +1,12 @@
+.control-group {
+    -fx-border-width: 1;
+    -fx-border-style: solid;
+    -fx-border-color: #aaa, #ccc #fff #fff #ccc;
+    -fx-border-insets: 1, 2;
+    -fx-padding: 5;
+}
+
+GridPane.form {
+    -fx-hgap: 3;
+    -fx-vgap: 3;
+}

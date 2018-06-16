@@ -26,11 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import io.github.jonestimd.vgeditor.scene.Nodes;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -41,7 +39,7 @@ import javafx.stage.Window;
 import javafx.util.Pair;
 
 public class ToolPaneLoader {
-    private static final double MIN_WIDTH = 180;
+    private static final double MIN_WIDTH = 250;
     private final Pane diagram;
     private final FXMLLoader loader = new FXMLLoader();
     private final Stage stage = new Stage(StageStyle.UTILITY);
@@ -54,6 +52,7 @@ public class ToolPaneLoader {
         this.diagram = diagram;
         Scene scene = new Scene(new VBox());
         scene.getAccelerators().putAll(diagram.getScene().getAccelerators());
+        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
         stage.setScene(scene);
         diagram.getScene().addEventHandler(MouseEvent.ANY, event -> {
             if (controllerPane != null && controllerPane.getValue().getScene().getWindow().isShowing()) {
@@ -70,7 +69,6 @@ public class ToolPaneLoader {
             controllerPane.getKey().setPane(diagram);
             stage.getScene().setRoot(controllerPane.getValue());
         }
-        Nodes.visit(controllerPane.getValue(), TextField.class, (field) -> field.setText(""));
         stage.show();
         stage.requestFocus();
         return controllerPane.getKey();
@@ -87,7 +85,8 @@ public class ToolPaneLoader {
 
     private Pair<NodeController<?>, Pane> load(String fileName) {
         try {
-            Pane root = loader.load(getClass().getResourceAsStream(fileName));
+            loader.setLocation(getClass().getResource(fileName));
+            Pane root = loader.load();
             return new Pair<>(loader.getController(), root);
         } catch (IOException e) {
             throw new RuntimeException(e);

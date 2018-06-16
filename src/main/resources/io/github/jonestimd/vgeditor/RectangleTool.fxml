@@ -24,7 +24,8 @@
   -->
 
 <?import io.github.jonestimd.vgeditor.scene.control.NumericFormatter?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
@@ -35,42 +36,61 @@
 <?import javafx.scene.text.Font?>
 <VBox style="-fx-border-width: 2; -fx-border-style: solid; -fx-border-color: transparent;"
       xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="io.github.jonestimd.vgeditor.RectangleController">
+      fx:controller="io.github.jonestimd.vgeditor.RectangleController" spacing="2">
     <fx:define>
         <ToggleGroup fx:id="anchor"/>
     </fx:define>
     <HBox alignment="CENTER">
-        <Label text="Rectangle" underline="true">
-          <font><Font name="System Bold" size="13.0" /></font>
+        <Label text="%title.rectangle" underline="true">
+          <font><Font name="System Bold" size="13.0"/></font>
         </Label>
     </HBox>
-    <Label text="anchor x:" />
-    <TextField fx:id="anchorX" onKeyReleased="#setNodeX">
-        <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
-    </TextField>
-    <Label text="anchor y:" />
-    <TextField fx:id="anchorY" onKeyReleased="#setNodeY">
-        <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
-    </TextField>
-    <Label text="width:" />
-    <TextField fx:id="width" onKeyReleased="#setNodeWidth">
-        <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
-    </TextField>
-    <Label text="height:" />
-    <TextField fx:id="height" onKeyReleased="#setNodeHeight">
-        <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
-    </TextField>
-    <Label text="anchor:" />
-    <GridPane fx:id="anchorParent" alignment="CENTER" hgap="3" style="-fx-border-width: 1; -fx-border-style: solid;" vgap="3">
-        <padding><Insets bottom="5.0" left="5.0" right="5.0" top="5.0" /></padding>
-        <RadioButton toggleGroup="$anchor" id="TOP_LEFT" selected="true" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-        <RadioButton toggleGroup="$anchor" id="TOP_CENTER" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-        <RadioButton toggleGroup="$anchor" id="TOP_RIGHT" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-        <RadioButton toggleGroup="$anchor" id="LEFT" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-        <RadioButton toggleGroup="$anchor" id="CENTER" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <RadioButton toggleGroup="$anchor" id="RIGHT" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-        <RadioButton toggleGroup="$anchor" id="BOTTOM_LEFT" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-        <RadioButton toggleGroup="$anchor" id="BOTTOM_CENTER" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <RadioButton toggleGroup="$anchor" id="BOTTOM_RIGHT" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+    <GridPane styleClass="form, control-group">
+        <Label text="%anchor.x" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="RIGHT"/>
+        <TextField fx:id="anchorX" onKeyReleased="#setNodeX" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS">
+            <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
+        </TextField>
+        <Label text="%anchor.y" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.halignment="RIGHT"/>
+        <TextField fx:id="anchorY" onKeyReleased="#setNodeY" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
+        </TextField>
+        <Label text="%width" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.halignment="RIGHT"/>
+        <TextField fx:id="width" onKeyReleased="#setNodeWidth" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
+        </TextField>
+        <Label text="%height" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.halignment="RIGHT"/>
+        <TextField fx:id="height" onKeyReleased="#setNodeHeight" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
+        </TextField>
     </GridPane>
+    <Label text="%anchor"/>
+    <GridPane fx:id="anchorParent" styleClass="control-group" alignment="CENTER" hgap="3" vgap="3">
+        <RadioButton toggleGroup="$anchor" id="TOP_LEFT" selected="true" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <RadioButton toggleGroup="$anchor" id="TOP_CENTER" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <RadioButton toggleGroup="$anchor" id="TOP_RIGHT" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+        <RadioButton toggleGroup="$anchor" id="LEFT" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <RadioButton toggleGroup="$anchor" id="CENTER" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <RadioButton toggleGroup="$anchor" id="RIGHT" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        <RadioButton toggleGroup="$anchor" id="BOTTOM_LEFT" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <RadioButton toggleGroup="$anchor" id="BOTTOM_CENTER" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <RadioButton toggleGroup="$anchor" id="BOTTOM_RIGHT" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+    </GridPane>
+    <VBox alignment="CENTER" styleClass="control-group">
+        <HBox alignment="CENTER">
+            <CheckBox text="%fill" onAction="#setFill" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+            <ColorPicker fx:id="fillColor" onAction="#setFillColor" disable="true"/>
+        </HBox>
+    </VBox>
+    <VBox styleClass="control-group" spacing="3">
+        <HBox alignment="CENTER">
+            <CheckBox text="%stroke" selected="true" onAction="#setStroke" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+            <ColorPicker fx:id="strokeColor" onAction="#setStrokeColor"/>
+        </HBox>
+        <HBox alignment="CENTER">
+            <Label text="%stroke.width"/>
+            <TextField fx:id="strokeWidthInput" text="1" onKeyReleased="#setStrokeWidth" HBox.hgrow="ALWAYS">
+                <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
+            </TextField>
+        </HBox>
+    </VBox>
 </VBox>

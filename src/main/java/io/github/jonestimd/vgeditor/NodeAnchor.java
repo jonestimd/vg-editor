@@ -23,6 +23,7 @@ package io.github.jonestimd.vgeditor;
 
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 
 public enum NodeAnchor {
     TOP_LEFT(-1, -1),
@@ -70,6 +71,18 @@ public enum NodeAnchor {
         if (dy == 0) return left ? RIGHT : LEFT;
         if (left) return above ? BOTTOM_RIGHT : TOP_RIGHT;
         return above ? BOTTOM_LEFT : TOP_LEFT;
+    }
+
+    public void translateX(Node node, double width) {
+        if (isLeft()) node.setTranslateX(0);
+        else if (isRight()) node.setTranslateX(-width);
+        else node.setTranslateX(-width/2);
+    }
+
+    public void translateY(Node node, double height) {
+        if (isTop()) node.setTranslateY(0);
+        else if (isBottom()) node.setTranslateY(-height);
+        else node.setTranslateY(-height/2);
     }
 
     public Dimension2D getSize(Point2D start, Point2D end) {
