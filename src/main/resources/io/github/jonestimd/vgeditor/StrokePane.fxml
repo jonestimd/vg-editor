@@ -29,8 +29,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.CheckBox?>
-<!-- TODO spacing in CSS? -->
-<VBox styleClass="control-group" spacing="3"
+<VBox styleClass="control-group"
       xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="io.github.jonestimd.vgeditor.scene.control.StrokePaneController">
     <HBox alignment="CENTER">

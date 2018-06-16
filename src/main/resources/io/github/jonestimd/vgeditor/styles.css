@@ -6,7 +6,20 @@
     -fx-padding: 5;
 }
 
+VBox.control-group {
+    -fx-spacing: 3;
+}
+
+VBox.form {
+    -fx-spacing: 2;
+}
+
 GridPane.form {
     -fx-hgap: 3;
     -fx-vgap: 3;
+}
+
+Label.heading {
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
 }

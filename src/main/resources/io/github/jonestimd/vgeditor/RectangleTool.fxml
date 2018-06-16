@@ -31,17 +31,15 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 <VBox style="-fx-border-width: 2; -fx-border-style: solid; -fx-border-color: transparent;"
       xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="io.github.jonestimd.vgeditor.scene.control.RectangleController" spacing="2">
+      fx:controller="io.github.jonestimd.vgeditor.scene.control.RectangleController"
+      styleClass="form">
     <fx:define>
         <ToggleGroup fx:id="anchor"/>
     </fx:define>
     <HBox alignment="CENTER">
-        <Label text="%title.rectangle" underline="true">
-          <font><Font name="System Bold" size="13.0"/></font>
-        </Label>
+        <Label text="%title.rectangle" underline="true" styleClass="heading"/>
     </HBox>
     <GridPane styleClass="form, control-group">
         <Label text="%anchor.x" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="RIGHT"/>
