@@ -24,8 +24,6 @@
   -->
 
 <?import io.github.jonestimd.vgeditor.scene.control.NumericFormatter?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
@@ -36,7 +34,7 @@
 <?import javafx.scene.text.Font?>
 <VBox style="-fx-border-width: 2; -fx-border-style: solid; -fx-border-color: transparent;"
       xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="io.github.jonestimd.vgeditor.RectangleController" spacing="2">
+      fx:controller="io.github.jonestimd.vgeditor.scene.control.RectangleController" spacing="2">
     <fx:define>
         <ToggleGroup fx:id="anchor"/>
     </fx:define>
@@ -75,22 +73,6 @@
         <RadioButton toggleGroup="$anchor" id="BOTTOM_CENTER" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
         <RadioButton toggleGroup="$anchor" id="BOTTOM_RIGHT" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
     </GridPane>
-    <VBox alignment="CENTER" styleClass="control-group">
-        <HBox alignment="CENTER">
-            <CheckBox text="%fill" onAction="#setFill" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
-            <ColorPicker fx:id="fillColor" onAction="#setFillColor" disable="true"/>
-        </HBox>
-    </VBox>
-    <VBox styleClass="control-group" spacing="3">
-        <HBox alignment="CENTER">
-            <CheckBox text="%stroke" selected="true" onAction="#setStroke" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
-            <ColorPicker fx:id="strokeColor" onAction="#setStrokeColor"/>
-        </HBox>
-        <HBox alignment="CENTER">
-            <Label text="%stroke.width"/>
-            <TextField fx:id="strokeWidthInput" text="1" onKeyReleased="#setStrokeWidth" HBox.hgrow="ALWAYS">
-                <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
-            </TextField>
-        </HBox>
-    </VBox>
+    <fx:include source="FillPane.fxml" fx:id="fillPane"/>
+    <fx:include source="StrokePane.fxml" fx:id="strokePane"/>
 </VBox>
