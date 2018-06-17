@@ -23,8 +23,7 @@ package io.github.jonestimd.vgeditor.scene.control;
 
 import java.util.Optional;
 
-import io.github.jonestimd.vgeditor.NodeAnchor;
-import io.github.jonestimd.vgeditor.NodeController;
+import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Dimension2D;

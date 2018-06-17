@@ -32,7 +32,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.121"
-            fx:controller="io.github.jonestimd.vgeditor.MainController">
+            fx:controller="io.github.jonestimd.vgeditor.scene.control.MainController">
     <top>
         <MenuBar fx:id="menuBar">
             <Menu text="%menu.file">

@@ -23,7 +23,7 @@ package io.github.jonestimd.vgeditor.scene.shape;
 
 import javafx.geometry.Point2D;
 
-import static io.github.jonestimd.vgeditor.SelectionController.*;
+import static io.github.jonestimd.vgeditor.scene.control.SelectionController.*;
 
 public abstract class LineSegmentPredicate {
     protected static final double SQUARE_HIGHLIGHT_OFFSET = HIGHLIGHT_OFFSET*HIGHLIGHT_OFFSET;
