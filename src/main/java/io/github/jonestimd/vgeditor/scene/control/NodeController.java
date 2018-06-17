@@ -21,13 +21,10 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
-import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 
-public interface NodeController<T extends Node> extends EventHandler<MouseEvent> {
-    void setPane(Pane diagram);
+public interface NodeController<T extends Node> {
+    MouseInputHandler getMouseHandler();
 
     T getNode();
 

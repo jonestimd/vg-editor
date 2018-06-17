@@ -57,7 +57,7 @@ public class ToolPaneLoader {
         stage.setScene(scene);
         diagram.getScene().addEventHandler(MouseEvent.ANY, event -> {
             if (controllerPane != null && controllerPane.getValue().getScene().getWindow().isShowing()) {
-                controllerPane.getKey().handle(event);
+                controllerPane.getKey().getMouseHandler().handle(controllerPane.getValue(), event);
             }
         });
     }
@@ -67,7 +67,6 @@ public class ToolPaneLoader {
         if (!fileName.equals(this.fileName)) {
             this.fileName = fileName;
             controllerPane = fileControllers.computeIfAbsent(fileName, this::load);
-            controllerPane.getKey().setPane(diagram);
             stage.getScene().setRoot(controllerPane.getValue());
         }
         stage.show();

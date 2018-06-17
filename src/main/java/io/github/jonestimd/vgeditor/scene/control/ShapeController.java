@@ -32,16 +32,11 @@ import javafx.scene.Node;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
 
 public abstract class ShapeController<T extends Shape> implements NodeController<T> {
-    private Pane diagram;
     private NodeAnchor nodeAnchor = NodeAnchor.TOP_LEFT;
-    private boolean mouseDragging;
     @FXML
     private TextField anchorX;
     @FXML
@@ -57,13 +52,13 @@ public abstract class ShapeController<T extends Shape> implements NodeController
     @FXML
     private StrokePaneController strokePaneController;
 
-    private Point2D startDrag;
+    private final MouseInputHandler mouseInputHandler = new MouseInputHandler(this::startDrag, this::continueDrag);
 
     private T node;
 
     @Override
-    public void setPane(Pane diagram) {
-        this.diagram = diagram;
+    public MouseInputHandler getMouseHandler() {
+        return mouseInputHandler;
     }
 
     @Override
@@ -139,25 +134,16 @@ public abstract class ShapeController<T extends Shape> implements NodeController
 
     protected abstract void setHeight(T node, double height);
 
-    @Override
-    public void handle(MouseEvent event) {
-        if (event.getEventType() == MouseEvent.MOUSE_PRESSED && event.getButton() == MouseButton.PRIMARY) {
-            startDrag = diagram.screenToLocal(event.getScreenX(), event.getScreenY());
-            setAnchorX(startDrag.getX());
-            setAnchorY(startDrag.getY());
-        }
-        else if (event.getEventType() == MouseEvent.DRAG_DETECTED && event.getButton() == MouseButton.PRIMARY) {
-            this.mouseDragging = true;
-            diagram.startFullDrag();
-        }
-        else if (event.getEventType() == MouseEvent.MOUSE_RELEASED && mouseDragging) {
-            this.mouseDragging = false;
-        }
-        else if (mouseDragging) {
-            Point2D point = diagram.screenToLocal(event.getScreenX(), event.getScreenY());
-            selectAnchor(nodeAnchor.adjust(startDrag, point));
-            setSize(nodeAnchor.getSize(startDrag, point));
-        }
+    private void startDrag(Point2D point) {
+        setX(node, point.getX());
+        setY(node, point.getY());
+        anchorX.setText(Double.toString(point.getX()));
+        anchorY.setText(Double.toString(point.getY()));
+    }
+
+    private void continueDrag(Point2D start, Point2D end) {
+        selectAnchor(nodeAnchor.adjust(start, end));
+        setSize(nodeAnchor.getSize(start, end));
     }
 
     private void selectAnchor(NodeAnchor anchor) {
@@ -166,16 +152,6 @@ public abstract class ShapeController<T extends Shape> implements NodeController
             Optional<Node> button = anchorParent.getChildren().stream().filter(node -> anchor.name().equals(node.getId())).findFirst();
             button.ifPresent(node -> ((RadioButton) node).setSelected(true));
         }
-    }
-
-    private void setAnchorX(double x) {
-        setX(node, x);
-        anchorX.setText(Double.toString(x));
-    }
-
-    private void setAnchorY(double y) {
-        setY(node, y);
-        anchorY.setText(Double.toString(y));
     }
 
     private void setSize(Dimension2D size) {
