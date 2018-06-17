@@ -97,7 +97,6 @@ public class MainController {
     }
 
     public void addRectangle(ActionEvent event) {
-        System.out.println("addRectangle");
         NodeController<?> controller = toolPaneLoader.show("RectangleTool.fxml");
         if (controller.newNode()) diagram.getChildren().add(controller.getNode());
     }
