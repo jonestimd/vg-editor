@@ -85,6 +85,7 @@ public abstract class ShapeController<T extends Shape> implements NodeController
             height.setText("");
             fillPaneController.setNode(node);
             strokePaneController.setNode(node);
+            anchorX.requestFocus();
             return true;
         }
         return false;
