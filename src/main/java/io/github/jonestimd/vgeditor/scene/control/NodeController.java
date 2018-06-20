@@ -29,4 +29,6 @@ public interface NodeController<T extends Node> {
     T getNode();
 
     boolean newNode();
+
+    void cancelCreate();
 }

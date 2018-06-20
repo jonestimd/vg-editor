@@ -24,13 +24,13 @@ package io.github.jonestimd.vgeditor.scene.control;
 import javafx.scene.shape.Rectangle;
 
 public class RectangleController extends ShapeController<Rectangle> {
+    public RectangleController() {
+        super(Rectangle::new);
+    }
+
     @Override
-    protected Rectangle onAddNode() {
-        Rectangle node = this.getNode();
-        if (node == null || node.getWidth() > 0 && node.getHeight() > 0) {
-            return new Rectangle();
-        }
-        return node;
+    public boolean isValid(Rectangle node) {
+        return node.getWidth() > 0 && node.getHeight() > 0;
     }
 
     @Override

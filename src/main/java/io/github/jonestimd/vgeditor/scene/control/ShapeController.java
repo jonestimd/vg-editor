@@ -22,17 +22,21 @@
 package io.github.jonestimd.vgeditor.scene.control;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
 
 public abstract class ShapeController<T extends Shape> implements NodeController<T> {
@@ -53,8 +57,13 @@ public abstract class ShapeController<T extends Shape> implements NodeController
     private StrokePaneController strokePaneController;
 
     private final MouseInputHandler mouseInputHandler = new MouseInputHandler(this::startDrag, this::continueDrag);
+    private final Supplier<T> nodeFactory;
 
     private T node;
+
+    protected ShapeController(Supplier<T> nodeFactory) {
+        this.nodeFactory = nodeFactory;
+    }
 
     @Override
     public MouseInputHandler getMouseHandler() {
@@ -68,9 +77,8 @@ public abstract class ShapeController<T extends Shape> implements NodeController
 
     @Override
     public boolean newNode() {
-        T node = onAddNode();
-        if (node != this.node) {
-            this.node = node;
+        if (node == null || isValid(node)) {
+            this.node = nodeFactory.get();
             anchorX.setText("");
             anchorY.setText("");
             width.setText("");
@@ -82,10 +90,18 @@ public abstract class ShapeController<T extends Shape> implements NodeController
         return false;
     }
 
-    /**
-     * @return the current node if it is incomplete or a new node
-     */
-    protected abstract T onAddNode();
+    @Override
+    public void cancelCreate() {
+        if (node != null && !isValid(node)) {
+            Parent parent = node.getParent();
+            if (parent instanceof Pane) ((Pane) parent).getChildren().remove(node);
+            else if (parent instanceof Group) ((Group) parent).getChildren().remove(node);
+            else throw new IllegalStateException("Unexpected parent type: " + parent.getClass().getName());
+            node = null;
+        }
+    }
+
+    protected abstract boolean isValid(T node);
 
     public void selectAnchor(ActionEvent event) {
         setAnchor(NodeAnchor.valueOf(((RadioButton) event.getSource()).getId()));
@@ -98,6 +114,7 @@ public abstract class ShapeController<T extends Shape> implements NodeController
     }
 
     protected abstract double getWidth(T node);
+
     protected abstract double getHeight(T node);
 
     public void setNodeX(KeyEvent event) {
