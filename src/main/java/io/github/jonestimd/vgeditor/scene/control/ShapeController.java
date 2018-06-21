@@ -21,9 +21,11 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -32,6 +34,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
@@ -55,14 +58,27 @@ public abstract class ShapeController<T extends Shape> implements NodeController
     private FillPaneController fillPaneController;
     @FXML
     private StrokePaneController strokePaneController;
+    @FXML
+    private Button newButton;
 
     private final MouseInputHandler mouseInputHandler = new MouseInputHandler(this::startDrag, this::continueDrag);
     private final Supplier<T> nodeFactory;
+    private final Map<String, KeyHandler<T>> keyHandlers = ImmutableMap.of(
+            "anchorX", this::setX,
+            "anchorY", this::setY,
+            "width", this::setWidth,
+            "height", this::setHeight);
 
+    private Pane diagram;
     private T node;
 
     protected ShapeController(Supplier<T> nodeFactory) {
         this.nodeFactory = nodeFactory;
+    }
+
+    @Override
+    public void setDiagram(Pane diagram) {
+        this.diagram = diagram;
     }
 
     @Override
@@ -76,7 +92,7 @@ public abstract class ShapeController<T extends Shape> implements NodeController
     }
 
     @Override
-    public boolean newNode() {
+    public void newNode() {
         if (node == null || isValid(node)) {
             this.node = nodeFactory.get();
             anchorX.setText("");
@@ -86,9 +102,8 @@ public abstract class ShapeController<T extends Shape> implements NodeController
             fillPaneController.setNode(node);
             strokePaneController.setNode(node);
             anchorX.requestFocus();
-            return true;
+            diagram.getChildren().add(node);
         }
-        return false;
     }
 
     @Override
@@ -104,6 +119,18 @@ public abstract class ShapeController<T extends Shape> implements NodeController
 
     protected abstract boolean isValid(T node);
 
+    public void deleteNode() {
+        anchorX.setText("");
+        anchorY.setText("");
+        width.setText("");
+        height.setText("");
+        setX(node, 0);
+        setY(node, 0);
+        setNodeHeight(0);
+        setNodeHeight(0);
+        anchorX.requestFocus();
+    }
+
     public void selectAnchor(ActionEvent event) {
         setAnchor(NodeAnchor.valueOf(((RadioButton) event.getSource()).getId()));
     }
@@ -118,21 +145,13 @@ public abstract class ShapeController<T extends Shape> implements NodeController
 
     protected abstract double getHeight(T node);
 
-    public void setNodeX(KeyEvent event) {
-        setX(node, TextFields.parseDouble(event, 0));
+    public void onKeyEvent(KeyEvent event) {
+        keyHandlers.get(((Node) event.getTarget()).getId()).accept(node, TextFields.parseDouble(event, 0d));
+        newButton.setDisable(!isValid(node));
     }
 
     protected abstract void setX(T node, double x);
-
-    public void setNodeY(KeyEvent event) {
-        setY(node, TextFields.parseDouble(event, 0d));
-    }
-
     protected abstract void setY(T node, double y);
-
-    public void setNodeWidth(KeyEvent event) {
-        setWidth(node, TextFields.parseDouble(event, 0d));
-    }
 
     private void setNodeWidth(double width) {
         setWidth(node, width);
@@ -140,10 +159,6 @@ public abstract class ShapeController<T extends Shape> implements NodeController
     }
 
     protected abstract void setWidth(T node, double width);
-
-    public void setNodeHeight(KeyEvent event) {
-        setHeight(node, TextFields.parseDouble(event, 0d));
-    }
 
     private void setNodeHeight(double height) {
         setHeight(node, height);
@@ -162,6 +177,7 @@ public abstract class ShapeController<T extends Shape> implements NodeController
     private void continueDrag(Point2D start, Point2D end) {
         selectAnchor(nodeAnchor.adjust(start, end));
         setSize(nodeAnchor.getSize(start, end));
+        newButton.setDisable(!isValid(node));
     }
 
     private void selectAnchor(NodeAnchor anchor) {
@@ -185,5 +201,9 @@ public abstract class ShapeController<T extends Shape> implements NodeController
     private void setHeight(double height) {
         setNodeHeight(height);
         this.height.setText(Double.toString(height));
+    }
+
+    private interface KeyHandler<T> {
+        void accept(T node, double value);
     }
 }

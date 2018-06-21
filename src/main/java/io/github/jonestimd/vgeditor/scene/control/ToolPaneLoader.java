@@ -58,7 +58,7 @@ public class ToolPaneLoader {
         stage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, event -> controllerPane.getKey().cancelCreate());
         diagram.getScene().addEventHandler(MouseEvent.ANY, event -> {
             if (controllerPane != null && controllerPane.getValue().getScene().getWindow().isShowing()) {
-                controllerPane.getKey().getMouseHandler().handle(controllerPane.getValue(), event);
+                controllerPane.getKey().getMouseHandler().handle(diagram, event);
             }
         });
     }
@@ -68,11 +68,12 @@ public class ToolPaneLoader {
         if (!fileName.equals(this.fileName)) {
             this.fileName = fileName;
             controllerPane = fileControllers.computeIfAbsent(fileName, this::load);
+            controllerPane.getKey().setDiagram(diagram);
             stage.getScene().setRoot(controllerPane.getValue());
         }
         stage.show();
         stage.requestFocus();
-        if (controllerPane.getKey().newNode()) diagram.getChildren().add(controllerPane.getKey().getNode());
+        controllerPane.getKey().newNode();
         return controllerPane.getKey();
     }
 

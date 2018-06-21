@@ -22,13 +22,16 @@
 package io.github.jonestimd.vgeditor.scene.control;
 
 import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 
 public interface NodeController<T extends Node> {
+    void setDiagram(Pane diagram);
+
     MouseInputHandler getMouseHandler();
 
     T getNode();
 
-    boolean newNode();
+    void newNode();
 
     void cancelCreate();
 }
