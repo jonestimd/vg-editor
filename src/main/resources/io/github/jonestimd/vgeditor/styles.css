@@ -1,3 +1,10 @@
+ScrollPane.diagram > .viewport {
+    -fx-background-color: transparent;
+}
+ScrollPane.diagram {
+    -fx-background-color: white;
+}
+
 .control-group {
     -fx-border-width: 1;
     -fx-border-style: solid;
