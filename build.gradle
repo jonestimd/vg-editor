@@ -1,5 +1,5 @@
 group = 'io.github.jonestimd'
-version '1.0-SNAPSHOT'
+version = '1.0-SNAPSHOT'
 
 buildscript {
     repositories {
@@ -25,4 +25,6 @@ allprojects {
 dependencies {
     compile( group: 'com.google.guava', name: 'guava', version: '25.0-jre' )
     testCompile( group: 'junit', name: 'junit', version: '4.12' )
+    testCompile( group: 'org.assertj', name: 'assertj-swing-junit', version: '3.5.0' )
+    testCompile( group: 'org.mockito', name: 'mockito-core', version: '1.9.0' )
 }
