@@ -33,7 +33,9 @@ public class VectorGraphicsEditor extends Application {
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader();
         loader.setResources(ResourceBundle.getBundle("io.github.jonestimd.vgeditor.labels"));
-        primaryStage.setScene(new Scene(loader.load(getClass().getResourceAsStream("Main.fxml"))));
+        Scene scene = new Scene(loader.load(getClass().getResourceAsStream("Main.fxml")));
+        scene.getStylesheets().add(getClass().getResource("/io/github/jonestimd/vgeditor/styles.css").toExternalForm());
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 }
