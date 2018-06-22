@@ -49,6 +49,6 @@
         </MenuBar>
     </top>
     <center>
-        <ScrollPane fx:id="scrollPane"><Pane fx:id="diagram" /></ScrollPane>
+        <ScrollPane fx:id="scrollPane" styleClass="diagram"><Pane fx:id="diagram"/></ScrollPane>
     </center>
 </BorderPane>
