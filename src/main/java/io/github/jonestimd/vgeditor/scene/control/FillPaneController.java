@@ -45,12 +45,14 @@ public class FillPaneController {
     }
 
     private void setFill() {
-        if (!fill) node.setFill(null);
-        else node.setFill(fillColor.getValue());
+        if (node != null) {
+            if (fill) node.setFill(fillColor.getValue());
+            else node.setFill(null);
+        }
     }
 
-    public void setFillColor(ActionEvent event) {
-        node.setFill(fillColor.getValue());
+    public void setFillColor() {
+        if (node != null) node.setFill(fillColor.getValue());
     }
 
     public void setFill(ActionEvent event) {

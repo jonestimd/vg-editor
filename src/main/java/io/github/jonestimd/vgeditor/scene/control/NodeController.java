@@ -30,8 +30,4 @@ public interface NodeController<T extends Node> {
     MouseInputHandler getMouseHandler();
 
     T getNode();
-
-    void newNode();
-
-    void cancelCreate();
 }

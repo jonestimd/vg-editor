@@ -36,7 +36,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 import javafx.util.Pair;
 
 public class ToolPaneLoader {
@@ -55,7 +54,6 @@ public class ToolPaneLoader {
         scene.getAccelerators().putAll(diagram.getScene().getAccelerators());
         scene.getStylesheets().add(getClass().getResource("/io/github/jonestimd/vgeditor/styles.css").toExternalForm());
         stage.setScene(scene);
-        stage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, event -> controllerPane.getKey().cancelCreate());
         diagram.getScene().addEventHandler(MouseEvent.ANY, event -> {
             if (controllerPane != null && controllerPane.getValue().getScene().getWindow().isShowing()) {
                 controllerPane.getKey().getMouseHandler().handle(diagram, event);
@@ -73,7 +71,6 @@ public class ToolPaneLoader {
         }
         stage.show();
         stage.requestFocus();
-        controllerPane.getKey().newNode();
         return controllerPane.getKey();
     }
 

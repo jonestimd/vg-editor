@@ -73,6 +73,11 @@ public enum NodeAnchor {
         return above ? BOTTOM_LEFT : TOP_LEFT;
     }
 
+    public void translate(Node node, double width, double height) {
+        this.translateX(node, width);
+        this.translateY(node, height);
+    }
+
     public void translateX(Node node, double width) {
         if (isLeft()) node.setTranslateX(0);
         else if (isRight()) node.setTranslateX(-width);

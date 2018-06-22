@@ -21,12 +21,18 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
+import java.util.OptionalDouble;
+
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyEvent;
 
 public class TextFields {
     public static double parseDouble(KeyEvent event, double defaultValue) {
-        String text = ((TextInputControl) event.getSource()).getText();
-        return text.length() > 0 ? Double.parseDouble(text) : defaultValue;
+        return parseDouble((TextInputControl) event.getSource()).orElse(defaultValue);
+    }
+
+    public static OptionalDouble parseDouble(TextInputControl inputControl) {
+        String text = inputControl.getText();
+        return text.matches("-?\\.?\\d+") ? OptionalDouble.of(Double.parseDouble(text)) : OptionalDouble.empty();
     }
 }

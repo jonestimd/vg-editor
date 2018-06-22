@@ -51,20 +51,22 @@ public class StrokePaneController {
     }
 
     private void setStroke() {
-        if (!stroke) node.setStroke(null);
-        else {
-            node.setStroke(strokeColor.getValue());
-            node.setStrokeWidth(strokeWidth);
+        if (node != null) {
+            if (stroke) {
+                node.setStroke(strokeColor.getValue());
+                node.setStrokeWidth(strokeWidth);
+            }
+            else node.setStroke(null);
         }
     }
 
-    public void setStrokeColor(ActionEvent event) {
-        node.setStroke(strokeColor.getValue());
+    public void setStrokeColor() {
+        if (node != null) node.setStroke(strokeColor.getValue());
     }
 
     public void setStrokeWidth(KeyEvent event) {
         strokeWidth = TextFields.parseDouble(event, DEFAULT_STROKE_WIDTH);
-        node.setStrokeWidth(strokeWidth);
+        if (node != null) node.setStrokeWidth(strokeWidth);
     }
 
     public void setStroke(ActionEvent event) {

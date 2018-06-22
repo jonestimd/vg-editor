@@ -29,21 +29,6 @@ public class RectangleController extends ShapeController<Rectangle> {
     }
 
     @Override
-    public boolean isValid(Rectangle node) {
-        return node.getWidth() > 0 && node.getHeight() > 0;
-    }
-
-    @Override
-    protected double getWidth(Rectangle node) {
-        return node.getWidth();
-    }
-
-    @Override
-    protected double getHeight(Rectangle node) {
-        return node.getHeight();
-    }
-
-    @Override
     protected void setX(Rectangle node, double x) {
         node.setX(x);
     }
