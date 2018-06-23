@@ -33,6 +33,6 @@ public class TextFields {
 
     public static OptionalDouble parseDouble(TextInputControl inputControl) {
         String text = inputControl.getText();
-        return text.matches("-?\\.?\\d+") ? OptionalDouble.of(Double.parseDouble(text)) : OptionalDouble.empty();
+        return text.matches("-?\\.?\\d+(\\.\\d*)?") ? OptionalDouble.of(Double.parseDouble(text)) : OptionalDouble.empty();
     }
 }
