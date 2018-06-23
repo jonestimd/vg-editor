@@ -43,23 +43,17 @@
     <HBox alignment="CENTER">
         <Label text="%title.rectangle" underline="true" styleClass="heading"/>
     </HBox>
+    <fx:include source="BasicShapeForm.fxml" fx:id="basicShape"/>
+    <Label text="%corner.arc"/>
     <GridPane styleClass="form, control-group">
-        <TextField fx:id="anchorX" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS">
+        <TextField fx:id="arcWidth" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS">
             <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
         </TextField>
-        <Label text="%anchor.x" mnemonicParsing="true" labelFor="$anchorX" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="RIGHT"/>
-        <TextField fx:id="anchorY" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <Label text="%corner.arc.width" mnemonicParsing="true" labelFor="$arcWidth" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="RIGHT"/>
+        <TextField fx:id="arcHeight" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="1">
             <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
         </TextField>
-        <Label text="%anchor.y" mnemonicParsing="true" labelFor="$anchorY" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.halignment="RIGHT"/>
-        <TextField fx:id="width" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="2">
-            <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
-        </TextField>
-        <Label text="%width" mnemonicParsing="true" labelFor="$width" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.halignment="RIGHT"/>
-        <TextField fx:id="height" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="3">
-            <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
-        </TextField>
-        <Label text="%height" mnemonicParsing="true" labelFor="$height" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.halignment="RIGHT"/>
+        <Label text="%corner.arc.height" mnemonicParsing="true" labelFor="$arcHeight" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.halignment="RIGHT"/>
     </GridPane>
     <Label text="%anchor"/>
     <GridPane fx:id="anchorParent" styleClass="control-group" alignment="CENTER" hgap="3" vgap="3">

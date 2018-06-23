@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ The MIT License (MIT)
+  ~
+  ~ Copyright (c) 2018 Tim Jones
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<?import io.github.jonestimd.vgeditor.scene.control.NumericFormatter?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<GridPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="io.github.jonestimd.vgeditor.scene.control.FormController"
+          fx:id="root" styleClass="form, control-group">
+    <TextField fx:id="anchorX" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS">
+        <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
+    </TextField>
+    <Label text="%anchor.x" mnemonicParsing="true" labelFor="$anchorX" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="RIGHT"/>
+    <TextField fx:id="anchorY" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
+    </TextField>
+    <Label text="%anchor.y" mnemonicParsing="true" labelFor="$anchorY" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.halignment="RIGHT"/>
+    <TextField fx:id="width" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
+    </TextField>
+    <Label text="%width" mnemonicParsing="true" labelFor="$width" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.halignment="RIGHT"/>
+    <TextField fx:id="height" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="3">
+        <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
+    </TextField>
+    <Label text="%height" mnemonicParsing="true" labelFor="$height" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.halignment="RIGHT"/>
+    <TextField fx:id="rotation" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="4">
+        <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
+    </TextField>
+    <Label text="%rotation" mnemonicParsing="true" labelFor="$rotation" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.halignment="RIGHT"/>
+</GridPane>

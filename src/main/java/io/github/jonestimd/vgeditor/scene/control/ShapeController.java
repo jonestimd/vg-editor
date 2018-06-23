@@ -21,12 +21,13 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
+import java.util.function.DoubleConsumer;
 import java.util.function.Supplier;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import javafx.event.ActionEvent;
@@ -38,30 +39,24 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
 
-public abstract class ShapeController<T extends Shape> implements NodeController<T> {
+public class ShapeController<T extends Shape> implements NodeController<T> {
     private static final String ID_ANCHOR_X = "anchorX";
     private static final String ID_ANCHOR_Y = "anchorY";
     private static final String ID_WIDTH = "width";
     private static final String ID_HEIGHT = "height";
+    private static final String ID_ROTATION = "rotation";
+    private static final List<String> REQUIRED_FIELDS = ImmutableList.of(ID_ANCHOR_X, ID_ANCHOR_Y, ID_WIDTH, ID_HEIGHT);
+    private static final Map<String, Double> DEFAULT_VALUES = ImmutableMap.of(ID_ROTATION, 0d);
 
     private NodeAnchor nodeAnchor = NodeAnchor.TOP_LEFT;
     @FXML
-    private TextField anchorX;
-    @FXML
-    private TextField anchorY;
-    @FXML
-    private TextField width;
-    @FXML
-    private TextField height;
-    @FXML
     private GridPane anchorParent;
+    @FXML
+    private FormController basicShapeController;
     @FXML
     private FillPaneController fillPaneController;
     @FXML
@@ -71,19 +66,39 @@ public abstract class ShapeController<T extends Shape> implements NodeController
 
     private final MouseInputHandler mouseInputHandler = new MouseInputHandler(this::startDrag, this::continueDrag);
     private final Supplier<T> nodeFactory;
-    private final Map<String, KeyHandler<T>> keyHandlers = ImmutableMap.of(
-            ID_ANCHOR_X, this::setX,
-            ID_ANCHOR_Y, this::setY,
-            ID_WIDTH, this::setWidth,
-            ID_HEIGHT, this::setHeight);
+    private final ShapeAdapter<T> adapter;
+    private final Map<String, DoubleConsumer> fieldHandlers = ImmutableMap.of(
+            ID_ANCHOR_X, this::setNodeX,
+            ID_ANCHOR_Y, this::setNodeY,
+            ID_WIDTH, this::setNodeWidth,
+            ID_HEIGHT, this::setNodeHeight,
+            ID_ROTATION, this::setRotation);
 
     private Pane diagram;
     private T node;
 
-    private final Map<String, Double> values = new HashMap<>();
-
-    protected ShapeController(Supplier<T> nodeFactory) {
+    protected ShapeController(Supplier<T> nodeFactory, ShapeAdapter<T> adapter) {
         this.nodeFactory = nodeFactory;
+        this.adapter = adapter;
+    }
+
+    public void initialize() {
+        basicShapeController.addListener(change -> {
+            if (isValid()) {
+                if (node == null) createNode();
+                String fieldId = change.getKey();
+                fieldHandlers.get(fieldId).accept(getFieldValue(fieldId));
+            }
+            else if (node != null) {
+                diagram.getChildren().remove(node);
+                clearNode();
+            }
+            newButton.setDisable(!isValid());
+        });
+    }
+
+    private Double getFieldValue(String fieldId) {
+        return basicShapeController.getValue(fieldId, DEFAULT_VALUES.get(fieldId));
     }
 
     @Override
@@ -103,12 +118,8 @@ public abstract class ShapeController<T extends Shape> implements NodeController
 
     public void newNode() {
         clearNode();
-        anchorX.setText("");
-        anchorY.setText("");
-        width.setText("");
-        height.setText("");
-        values.clear();
-        anchorX.requestFocus();
+        basicShapeController.clear();
+        basicShapeController.getField(ID_ANCHOR_X).requestFocus();
     }
 
     private void clearNode() {
@@ -118,7 +129,8 @@ public abstract class ShapeController<T extends Shape> implements NodeController
     }
 
     protected boolean isValid() {
-        return values.size() == 4 && values.get(ID_WIDTH) > 0 && values.get(ID_HEIGHT) > 0;
+        return basicShapeController.validFields().containsAll(REQUIRED_FIELDS)
+                && getFieldValue(ID_WIDTH) > 0 && getFieldValue(ID_HEIGHT) > 0;
     }
 
     public void deleteNode() {
@@ -137,46 +149,47 @@ public abstract class ShapeController<T extends Shape> implements NodeController
 
     private void setAnchor(NodeAnchor nodeAnchor) {
         this.nodeAnchor = nodeAnchor;
-        if (node != null) this.nodeAnchor.translate(node, values.get(ID_WIDTH), values.get(ID_HEIGHT));
+        if (node != null) this.nodeAnchor.translate(node, getFieldValue(ID_WIDTH), getFieldValue(ID_HEIGHT));
     }
 
-    public void onKeyEvent(KeyEvent event) {
-        TextInputControl source = (TextInputControl) event.getSource();
-        OptionalDouble optionalValue = TextFields.parseDouble(source);
-        if (optionalValue.isPresent()) {
-            values.put(source.getId(), optionalValue.getAsDouble());
-            if (isValid()) {
-                if (node == null) createNode();
-                keyHandlers.get(((Node) event.getTarget()).getId()).accept(node, values.get(source.getId()));
-            }
-        }
-        else values.remove(source.getId());
-        newButton.setDisable(!isValid());
+    private void setNodeX(double x) {
+        adapter.setX(node, x);
     }
 
-    protected abstract void setX(T node, double x);
-    protected abstract void setY(T node, double y);
-    protected abstract void setWidth(T node, double width);
-    protected abstract void setHeight(T node, double height);
+    private void setNodeY(double y) {
+        adapter.setY(node, y);
+    }
+
+    private void setNodeWidth(double width) {
+        adapter.setWidth(node, width);
+        this.nodeAnchor.translate(node, width, getFieldValue(ID_HEIGHT));
+    }
+
+    private void setNodeHeight(double height) {
+        adapter.setHeight(node, height);
+        this.nodeAnchor.translate(node, getFieldValue(ID_WIDTH), height);
+    }
+
+    private void setRotation(double rotation) {
+        node.setRotate(rotation);
+        this.nodeAnchor.translate(node, getFieldValue(ID_WIDTH), getFieldValue(ID_HEIGHT));
+    }
 
     private void setNodeSize() {
-        setWidth(node, values.get(ID_WIDTH));
-        setHeight(node, values.get(ID_HEIGHT));
+        setNodeWidth(getFieldValue(ID_WIDTH));
+        setNodeHeight(getFieldValue(ID_HEIGHT));
+        nodeAnchor.translate(node, adapter.getWidth(node), adapter.getHeight(node));
     }
 
     private void startDrag(Point2D point) {
         newNode();
-        setFieldValue(anchorX, point.getX(), ID_ANCHOR_X);
-        setFieldValue(anchorY, point.getY(), ID_ANCHOR_Y);
+        basicShapeController.setValue(ID_ANCHOR_X, point.getX());
+        basicShapeController.setValue(ID_ANCHOR_Y, point.getY());
         if (isValid()) {
-            setX(node, point.getX());
-            setY(node, point.getY());
+            setNodeX(point.getX());
+            setNodeY(point.getY());
+            nodeAnchor.translate(node, adapter.getWidth(node), adapter.getHeight(node));
         }
-    }
-
-    private void setFieldValue(TextField field, double value, String id) {
-        field.setText(Double.toString(value));
-        values.put(id, value);
     }
 
     private void continueDrag(Point2D start, Point2D end) {
@@ -184,8 +197,7 @@ public abstract class ShapeController<T extends Shape> implements NodeController
         setSize(nodeAnchor.getSize(start, end));
         if (isValid()) {
             if (node == null) createNode();
-            nodeAnchor.translate(node, values.get(ID_WIDTH), values.get(ID_HEIGHT));
-            setNodeSize();
+            else setNodeSize();
         }
         else if (node != null) {
             diagram.getChildren().remove(node);
@@ -194,10 +206,11 @@ public abstract class ShapeController<T extends Shape> implements NodeController
         newButton.setDisable(!isValid());
     }
 
-    private void createNode() {
+    protected void createNode() {
         node = nodeFactory.get();
-        setX(node, values.get(ID_ANCHOR_X));
-        setY(node, values.get(ID_ANCHOR_Y));
+        setNodeX(getFieldValue(ID_ANCHOR_X));
+        setNodeY(getFieldValue(ID_ANCHOR_Y));
+        node.setRotate(getFieldValue(ID_ROTATION));
         setNodeSize();
         fillPaneController.setNode(node);
         strokePaneController.setNode(node);
@@ -213,11 +226,16 @@ public abstract class ShapeController<T extends Shape> implements NodeController
     }
 
     private void setSize(Dimension2D size) {
-        setFieldValue(width, size.getWidth(), ID_WIDTH);
-        setFieldValue(height, size.getHeight(), ID_HEIGHT);
+        basicShapeController.setValue(ID_WIDTH, size.getWidth());
+        basicShapeController.setValue(ID_HEIGHT, size.getHeight());
     }
 
-    private interface KeyHandler<T> {
-        void accept(T node, double value);
+    protected interface ShapeAdapter<T> {
+        void setX(T node, double x);
+        void setY(T node, double y);
+        double getWidth(T node);
+        double getHeight(T node);
+        void setWidth(T node, double width);
+        void setHeight(T node, double height);
     }
 }

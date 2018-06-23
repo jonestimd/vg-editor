@@ -25,6 +25,8 @@ import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 
+import static java.lang.Math.*;
+
 public enum NodeAnchor {
     TOP_LEFT(-1, -1),
     TOP_CENTER(0, -1),
@@ -36,28 +38,29 @@ public enum NodeAnchor {
     BOTTOM_CENTER(0, 1),
     BOTTOM_RIGHT(1, 1);
 
-    public final int dx;
-    public final int dy;
+    private static double alignLeftX(double halfWidth, double angle) {
+        return halfWidth*cos(angle);
+    }
+
+    private static double alignLeftY(double halfWidth, double angle) {
+        return halfWidth*sin(angle);
+    }
+
+    private static double alignTopX(double halfHeight, double angle) {
+        return -halfHeight*sin(angle);
+    }
+
+    private static double alignTopY(double halfHeight, double angle) {
+        return halfHeight*cos(angle);
+    }
+
+    // normalized anchor offset from center
+    private final int dy;
+    private final int dx;
 
     NodeAnchor(int dx, int dy) {
         this.dx = dx;
         this.dy = dy;
-    }
-
-    public boolean isLeft() {
-        return dx < 0;
-    }
-
-    public boolean isRight() {
-        return dx > 0;
-    }
-
-    public boolean isTop() {
-        return dy < 0;
-    }
-
-    public boolean isBottom() {
-        return dy > 0;
     }
 
     /**
@@ -73,21 +76,19 @@ public enum NodeAnchor {
         return above ? BOTTOM_LEFT : TOP_LEFT;
     }
 
+    /**
+     * Set the node's translation based on the anchor and its rotation.
+     * @param node the node to translate
+     * @param width the node width
+     * @param height the node height
+     */
     public void translate(Node node, double width, double height) {
-        this.translateX(node, width);
-        this.translateY(node, height);
+        translate(node, Math.toRadians(node.getRotate()), width/2, height/2);
     }
 
-    public void translateX(Node node, double width) {
-        if (isLeft()) node.setTranslateX(0);
-        else if (isRight()) node.setTranslateX(-width);
-        else node.setTranslateX(-width/2);
-    }
-
-    public void translateY(Node node, double height) {
-        if (isTop()) node.setTranslateY(0);
-        else if (isBottom()) node.setTranslateY(-height);
-        else node.setTranslateY(-height/2);
+    private void translate(Node node, double angle, double halfWidth, double halfHeight) {
+        node.setTranslateX(-dx*alignLeftX(halfWidth, angle)-dy*alignTopX(halfHeight, angle)-halfWidth);
+        node.setTranslateY(-dx*alignLeftY(halfWidth, angle)-dy*alignTopY(halfHeight, angle)-halfHeight);
     }
 
     public Dimension2D getSize(Point2D start, Point2D end) {
