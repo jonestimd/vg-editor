@@ -37,6 +37,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Line;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.WindowEvent;
 
 public class MainController {
     public static final double PADDING = 10;
@@ -55,7 +56,6 @@ public class MainController {
 
     private SelectionController selectionController;
 
-    // TODO close tool windows and exit when scene is closed
     public void initialize() {
         scrollPane.setPrefSize(600, 500);
         selectionController = new SelectionController(diagram);
@@ -66,9 +66,10 @@ public class MainController {
         diagram.sceneProperty().addListener(new ChangeListener<Scene>() {
             @Override
             public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
+                diagram.sceneProperty().removeListener(this);
                 diagram.getScene().addEventHandler(MouseEvent.ANY, selectionController);
                 toolPaneLoader = new ToolPaneLoader(diagram);
-                diagram.sceneProperty().removeListener(this);
+                diagram.getScene().getWindow().addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, MainController.this::onClose);
             }
         });
         scrollPane.viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
@@ -123,5 +124,9 @@ public class MainController {
 
     public void addRectangle(ActionEvent event) {
         toolPaneLoader.show("RectangleTool.fxml");
+    }
+
+    private void onClose(WindowEvent event) {
+        System.exit(0);
     }
 }
