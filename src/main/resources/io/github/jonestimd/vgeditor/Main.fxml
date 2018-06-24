@@ -31,7 +31,6 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Line?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.121"
             fx:controller="io.github.jonestimd.vgeditor.scene.control.MainController">
@@ -52,13 +51,13 @@
     </top>
     <center>
         <ScrollPane fx:id="scrollPane">
-            <Pane>
+            <Group>
                 <Group fx:id="axes">
                     <Line fx:id="xAxis" styleClass="axis"/>
                     <Line fx:id="yAxis" styleClass="axis"/>
                 </Group>
                 <Group fx:id="diagram"/>
-            </Pane>
+            </Group>
         </ScrollPane>
     </center>
 </BorderPane>

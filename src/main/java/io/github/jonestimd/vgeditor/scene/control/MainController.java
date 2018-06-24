@@ -72,24 +72,20 @@ public class MainController {
             }
         });
         scrollPane.viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
-            adjustAxes(diagram.getLayoutX(), diagram.getLayoutY(), newValue);
+            adjustAxes(diagram.getBoundsInLocal(), newValue);
         });
         diagram.boundsInLocalProperty().addListener((observable, oldValue, newValue) -> {
-            double minX = PADDING-Math.min(0, newValue.getMinX());
-            double minY = PADDING-Math.min(0, newValue.getMinY());
-            diagram.setLayoutX(minX);
-            diagram.setLayoutY(minY);
-            axes.setLayoutX(minX);
-            axes.setLayoutY(minY);
-            adjustAxes(minX, minY, scrollPane.getViewportBounds());
+            adjustAxes(newValue, scrollPane.getViewportBounds());
         });
     }
 
-    private void adjustAxes(double minX, double minY, Bounds viewportBounds) {
-        xAxis.setStartX(-minX);
-        xAxis.setEndX(Math.max(diagram.getBoundsInLocal().getMaxX()+PADDING, viewportBounds.getMaxX()-minX));
-        yAxis.setStartY(-minY);
-        yAxis.setEndY(Math.max(diagram.getBoundsInLocal().getMaxY()+PADDING, viewportBounds.getMaxY()-minY));
+    private void adjustAxes(Bounds diagramBounds, Bounds viewportBounds) {
+        double minX = Math.min(0, diagramBounds.getMinX())-PADDING;
+        double minY = Math.min(0, diagramBounds.getMinY())-PADDING;
+        xAxis.setStartX(minX);
+        xAxis.setEndX(Math.max(diagram.getBoundsInLocal().getMaxX()+PADDING, viewportBounds.getMaxX()+minX-1));
+        yAxis.setStartY(minY);
+        yAxis.setEndY(Math.max(diagram.getBoundsInLocal().getMaxY()+PADDING, viewportBounds.getMaxY()+minY-1));
     }
 
     public void createFile(ActionEvent event) {
