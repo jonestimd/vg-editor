@@ -46,8 +46,6 @@ public class MainController {
     @FXML
     private Group diagram;
     @FXML
-    private Group axes;
-    @FXML
     private Line xAxis = new Line();
     @FXML
     private Line yAxis = new Line();
@@ -59,10 +57,6 @@ public class MainController {
     public void initialize() {
         scrollPane.setPrefSize(600, 500);
         selectionController = new SelectionController(diagram);
-        diagram.setLayoutX(PADDING);
-        diagram.setLayoutY(PADDING);
-        axes.setLayoutX(PADDING);
-        axes.setLayoutY(PADDING);
         diagram.sceneProperty().addListener(new ChangeListener<Scene>() {
             @Override
             public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
