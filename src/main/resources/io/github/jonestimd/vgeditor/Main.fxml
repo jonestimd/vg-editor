@@ -29,12 +29,14 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.Group?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Line?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.121"
             fx:controller="io.github.jonestimd.vgeditor.scene.control.MainController">
     <top>
-        <MenuBar fx:id="menuBar">
+        <MenuBar>
             <Menu text="%menu.file">
                 <MenuItem accelerator="%file.new.accelerator" onAction="#createFile" text="%file.new" />
                 <MenuItem accelerator="%file.open.accelerator" onAction="#openFile" text="%file.open" />
@@ -49,6 +51,14 @@
         </MenuBar>
     </top>
     <center>
-        <ScrollPane fx:id="scrollPane" styleClass="diagram"><Pane fx:id="diagram"/></ScrollPane>
+        <ScrollPane fx:id="scrollPane">
+            <Pane>
+                <Group fx:id="axes">
+                    <Line fx:id="xAxis" styleClass="axis"/>
+                    <Line fx:id="yAxis" styleClass="axis"/>
+                </Group>
+                <Group fx:id="diagram"/>
+            </Pane>
+        </ScrollPane>
     </center>
 </BorderPane>

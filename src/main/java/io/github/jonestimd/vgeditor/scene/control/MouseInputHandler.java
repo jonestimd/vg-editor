@@ -25,9 +25,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javafx.geometry.Point2D;
+import javafx.scene.Parent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 
 public class MouseInputHandler {
     private boolean mouseDragging;
@@ -41,7 +41,7 @@ public class MouseInputHandler {
         this.continueDrag = continueDrag;
     }
 
-    public void handle(Pane diagram, MouseEvent event) {
+    public void handle(Parent diagram, MouseEvent event) {
         if (event.getEventType() == MouseEvent.MOUSE_PRESSED && event.getButton() == MouseButton.PRIMARY) {
             startPoint = diagram.screenToLocal(event.getScreenX(), event.getScreenY());
             startDrag.accept(startPoint);

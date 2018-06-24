@@ -30,3 +30,8 @@ Label.heading {
     -fx-font-weight: bold;
     -fx-font-size: 14;
 }
+
+Line.axis {
+    -fx-stroke: red;
+    -fx-stroke-width: 0.5;
+}

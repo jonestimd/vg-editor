@@ -59,7 +59,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
     public static final double HIGHLIGHT_SIZE = HIGHLIGHT_OFFSET*2;
     public static final double HIGHLIGHT_SIZE_SQUARED = HIGHLIGHT_SIZE*HIGHLIGHT_SIZE;
     public static final int PATH_CACHE_SIZE = 30;
-    private final Pane diagram;
+    private final Group diagram;
 
     private final LruCache<Path, PathVisitor> pathVisitorCache = new LruCache<>(PATH_CACHE_SIZE);
 
@@ -71,7 +71,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
     private final Shape marker = new Circle(5, new RadialGradient(0, 0, 0.5, 0.5, 0.5, true, CycleMethod.NO_CYCLE,
             new Stop(0.5, Color.valueOf("#00000000")), new Stop(0.75, Color.YELLOW), new Stop(1, Color.BLACK)));
 
-    public SelectionController(Pane diagram) {
+    public SelectionController(Group diagram) {
         this.diagram = diagram;
         marker.setEffect(new Blend(BlendMode.MULTIPLY));
     }

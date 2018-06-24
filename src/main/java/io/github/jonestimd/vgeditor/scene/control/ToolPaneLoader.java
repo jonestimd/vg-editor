@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -40,14 +41,14 @@ import javafx.util.Pair;
 
 public class ToolPaneLoader {
     private static final double MIN_WIDTH = 250;
-    private final Pane diagram;
+    private final Group diagram;
     private final FXMLLoader loader = new FXMLLoader();
     private final Stage stage = new Stage(StageStyle.UTILITY);
     private String fileName;
     private Pair<NodeController<?>, Pane> controllerPane;
     private final Map<String, Pair<NodeController<?>, Pane>> fileControllers = new HashMap<>();
 
-    public ToolPaneLoader(Pane diagram) {
+    public ToolPaneLoader(Group diagram) {
         loader.setResources(ResourceBundle.getBundle("io.github.jonestimd.vgeditor.labels"));
         this.diagram = diagram;
         Scene scene = new Scene(new VBox());

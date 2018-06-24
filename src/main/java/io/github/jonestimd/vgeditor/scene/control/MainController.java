@@ -29,21 +29,27 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
+import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
+import javafx.scene.shape.Line;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 public class MainController {
-    @FXML
-    private MenuBar menuBar;
+    public static final double PADDING = 10;
     @FXML
     private ScrollPane scrollPane;
     @FXML
-    private Pane diagram;
+    private Group diagram;
+    @FXML
+    private Group axes;
+    @FXML
+    private Line xAxis = new Line();
+    @FXML
+    private Line yAxis = new Line();
 
     private ToolPaneLoader toolPaneLoader;
 
@@ -53,6 +59,10 @@ public class MainController {
     public void initialize() {
         scrollPane.setPrefSize(600, 500);
         selectionController = new SelectionController(diagram);
+        diagram.setLayoutX(PADDING);
+        diagram.setLayoutY(PADDING);
+        axes.setLayoutX(PADDING);
+        axes.setLayoutY(PADDING);
         diagram.sceneProperty().addListener(new ChangeListener<Scene>() {
             @Override
             public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
@@ -61,6 +71,25 @@ public class MainController {
                 diagram.sceneProperty().removeListener(this);
             }
         });
+        scrollPane.viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
+            adjustAxes(diagram.getLayoutX(), diagram.getLayoutY(), newValue);
+        });
+        diagram.boundsInLocalProperty().addListener((observable, oldValue, newValue) -> {
+            double minX = PADDING-Math.min(0, newValue.getMinX());
+            double minY = PADDING-Math.min(0, newValue.getMinY());
+            diagram.setLayoutX(minX);
+            diagram.setLayoutY(minY);
+            axes.setLayoutX(minX);
+            axes.setLayoutY(minY);
+            adjustAxes(minX, minY, scrollPane.getViewportBounds());
+        });
+    }
+
+    private void adjustAxes(double minX, double minY, Bounds viewportBounds) {
+        xAxis.setStartX(-minX);
+        xAxis.setEndX(Math.max(diagram.getBoundsInLocal().getMaxX()+PADDING, viewportBounds.getMaxX()-minX));
+        yAxis.setStartY(-minY);
+        yAxis.setEndY(Math.max(diagram.getBoundsInLocal().getMaxY()+PADDING, viewportBounds.getMaxY()-minY));
     }
 
     public void createFile(ActionEvent event) {

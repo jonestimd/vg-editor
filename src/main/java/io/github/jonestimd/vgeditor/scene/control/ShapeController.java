@@ -74,7 +74,7 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
             ID_HEIGHT, this::setNodeHeight,
             ID_ROTATION, this::setRotation);
 
-    private Pane diagram;
+    private Group diagram;
     private T node;
 
     protected ShapeController(Supplier<T> nodeFactory, ShapeAdapter<T> adapter) {
@@ -102,7 +102,7 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
     }
 
     @Override
-    public void setDiagram(Pane diagram) {
+    public void setDiagram(Group diagram) {
         this.diagram = diagram;
     }
 
