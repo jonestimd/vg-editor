@@ -87,8 +87,8 @@ public enum NodeAnchor {
     }
 
     private void translate(Node node, double angle, double halfWidth, double halfHeight) {
-        node.setTranslateX(-dx*alignLeftX(halfWidth, angle)-dy*alignTopX(halfHeight, angle)-halfWidth);
-        node.setTranslateY(-dx*alignLeftY(halfWidth, angle)-dy*alignTopY(halfHeight, angle)-halfHeight);
+        node.setLayoutX(-dx*alignLeftX(halfWidth, angle)-dy*alignTopX(halfHeight, angle)-halfWidth);
+        node.setLayoutY(-dx*alignLeftY(halfWidth, angle)-dy*alignTopY(halfHeight, angle)-halfHeight);
     }
 
     public Dimension2D getSize(Point2D start, Point2D end) {

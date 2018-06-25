@@ -120,7 +120,7 @@ public class NodeAnchorTest {
 
         anchor.translate(rectangle, WIDTH, HEIGHT);
 
-        assertThat(rectangle.getTranslateX()).as("x offset").isEqualTo(expectedX, offset(0.0000001));
-        assertThat(rectangle.getTranslateY()).as("y offset").isEqualTo(expectedY, offset(0.0000001));
+        assertThat(rectangle.getLayoutX()).as("x offset").isEqualTo(expectedX, offset(0.0000001));
+        assertThat(rectangle.getLayoutY()).as("y offset").isEqualTo(expectedY, offset(0.0000001));
     }
 }

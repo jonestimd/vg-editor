@@ -103,8 +103,8 @@ public class SelectionController implements EventHandler<MouseEvent> {
             Path path = (Path) node;
             PathSegment<?> segment = pathVisitorCache.get(path, PathVisitor::new).find(new HighlightPathPredicate(path.screenToLocal(screenX, screenY))).get();
             Point2D midpoint = segment.getMidpoint();
-            marker.setTranslateX(midpoint.getX());
-            marker.setTranslateY(midpoint.getY());
+            marker.setLayoutX(midpoint.getX());
+            marker.setLayoutY(midpoint.getY());
         }
         else if (node instanceof Polyline) {
             Polyline line = (Polyline) node;
@@ -112,8 +112,8 @@ public class SelectionController implements EventHandler<MouseEvent> {
         }
         else {
             Bounds bounds = node.getBoundsInParent();
-            marker.setTranslateX((bounds.getMinX()+bounds.getMaxX())/2);
-            marker.setTranslateY((bounds.getMinY()+bounds.getMaxY())/2);
+            marker.setLayoutX((bounds.getMinX()+bounds.getMaxX())/2);
+            marker.setLayoutY((bounds.getMinY()+bounds.getMaxY())/2);
         }
         if (node.getParent() instanceof Group) {
             ((Group) node.getParent()).getChildren().add(marker);
