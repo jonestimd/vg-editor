@@ -34,6 +34,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -49,6 +50,8 @@ public class MainController {
     private Line xAxis = new Line();
     @FXML
     private Line yAxis = new Line();
+    @FXML
+    private Circle marker;
 
     private ToolPaneLoader toolPaneLoader;
 
@@ -56,7 +59,7 @@ public class MainController {
 
     public void initialize() {
         scrollPane.setPrefSize(600, 500);
-        selectionController = new SelectionController(diagram);
+        selectionController = new SelectionController(diagram, marker);
         diagram.sceneProperty().addListener(new ChangeListener<Scene>() {
             @Override
             public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {

@@ -39,17 +39,10 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.effect.Blend;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
@@ -68,12 +61,11 @@ public class SelectionController implements EventHandler<MouseEvent> {
     private int polylineHighlight = -1;
 
     private final Effect highlightEffect = new DropShadow(0, Color.GRAY);
-    private final Shape marker = new Circle(5, new RadialGradient(0, 0, 0.5, 0.5, 0.5, true, CycleMethod.NO_CYCLE,
-            new Stop(0.5, Color.valueOf("#00000000")), new Stop(0.75, Color.YELLOW), new Stop(1, Color.BLACK)));
+    private final Shape marker;
 
-    public SelectionController(Group diagram) {
+    public SelectionController(Group diagram, Shape marker) {
         this.diagram = diagram;
-        marker.setEffect(new Blend(BlendMode.MULTIPLY));
+        this.marker = marker;
     }
 
     public Node getHighlighted() {
@@ -89,22 +81,23 @@ public class SelectionController implements EventHandler<MouseEvent> {
         Point2D point = diagram.screenToLocal(x, y);
         List<Node> nodes = findNodes(diagram, new HighlightFilter(x, y));
         List<Node> matches = IterableUtils.minBy(nodes, Nodes::boundingArea); // TODO check path elements
-        if (matches.isEmpty()) removeMarker();
+        if (matches.isEmpty()) hideMarker();
         else {
             Node node = matches.get(0);
-            if (node != highlighted) setMarker(node, x, y);
+            if (node != highlighted) showMarker(node, x, y);
         }
     }
 
-    private void setMarker(Node node, double screenX, double screenY) {
-        removeMarker();
+    private void showMarker(Node node, double screenX, double screenY) {
+        hideMarker();
         highlighted = node;
         if (node instanceof Path) {
             Path path = (Path) node;
-            PathSegment<?> segment = pathVisitorCache.get(path, PathVisitor::new).find(new HighlightPathPredicate(path.screenToLocal(screenX, screenY))).get();
+            PathSegment<?> segment = pathVisitorCache.get(path, PathVisitor::new)
+                    .find(new HighlightPathPredicate(path.screenToLocal(screenX, screenY)))
+                    .orElseThrow(IllegalStateException::new);
             Point2D midpoint = segment.getMidpoint();
-            marker.setLayoutX(midpoint.getX());
-            marker.setLayoutY(midpoint.getY());
+            setMarker(node, midpoint.getX(), midpoint.getY());
         }
         else if (node instanceof Polyline) {
             Polyline line = (Polyline) node;
@@ -112,25 +105,20 @@ public class SelectionController implements EventHandler<MouseEvent> {
         }
         else {
             Bounds bounds = node.getBoundsInParent();
-            marker.setLayoutX((bounds.getMinX()+bounds.getMaxX())/2);
-            marker.setLayoutY((bounds.getMinY()+bounds.getMaxY())/2);
+            setMarker(node, (bounds.getMinX()+bounds.getMaxX())/2, (bounds.getMinY()+bounds.getMaxY())/2);
         }
-        if (node.getParent() instanceof Group) {
-            ((Group) node.getParent()).getChildren().add(marker);
-        }
-        else {
-            diagram.getChildren().add(marker);
-        }
+        marker.setVisible(true);
     }
 
-    private void removeMarker() {
+    private void setMarker(Node node, double localX, double localY) {
+        Point2D onDiagram = diagram.sceneToLocal(node.localToScene(localX, localY));
+        marker.setLayoutX(onDiagram.getX());
+        marker.setLayoutY(onDiagram.getY());
+    }
+
+    private void hideMarker() {
         highlighted = null;
-        if (marker.getParent() instanceof Group) {
-            ((Group) marker.getParent()).getChildren().remove(marker);
-        }
-        else if (marker.getParent() instanceof Pane) {
-            ((Pane) marker.getParent()).getChildren().remove(marker);
-        }
+        marker.setVisible(false);
     }
 
     private List<Node> findNodes(Parent root, Predicate<Node> filter) {
