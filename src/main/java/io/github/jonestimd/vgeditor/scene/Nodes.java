@@ -21,6 +21,8 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene;
 
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -43,5 +45,20 @@ public class Nodes {
 
     public static <T extends Node> void visit(Parent root, Class<T> type, Consumer<T> visitor) {
         visit(root, type::isInstance, (node) -> visitor.accept(type.cast(node)));
+    }
+
+    public static <T extends Node> T findById(Parent root, String id, Class<T> type) {
+        return findFirstById(root, id, type).orElseThrow(NoSuchElementException::new);
+    }
+
+    public static <T extends Node> Optional<T> findFirstById(Parent root, String id, Class<T> type) {
+        for (Node node : root.getChildrenUnmodifiable()) {
+            if (type.isInstance(node) && id.equals(node.getId())) return Optional.of(type.cast(node));
+            if (node instanceof Parent) {
+                Optional<T> child = findFirstById((Parent) node, id, type);
+                if (child.isPresent()) return child;
+            }
+        }
+        return Optional.empty();
     }
 }
