@@ -45,6 +45,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
 public class SelectionController implements EventHandler<MouseEvent> {
@@ -77,14 +78,13 @@ public class SelectionController implements EventHandler<MouseEvent> {
         if (event.getEventType() == MouseEvent.MOUSE_MOVED) onMouseMoved(event.getScreenX(), event.getScreenY());
     }
 
-    private void onMouseMoved(double x, double y) {
-        Point2D point = diagram.screenToLocal(x, y);
-        List<Node> nodes = findNodes(diagram, new HighlightFilter(x, y));
+    private void onMouseMoved(double screenX, double screenY) {
+        List<Node> nodes = findNodes(diagram, new HighlightFilter(screenX, screenY));
         List<Node> matches = IterableUtils.minBy(nodes, Nodes::boundingArea); // TODO check path elements
         if (matches.isEmpty()) hideMarker();
         else {
             Node node = matches.get(0);
-            if (node != highlighted) showMarker(node, x, y);
+            if (node != highlighted) showMarker(node, screenX, screenY);
         }
     }
 
@@ -104,7 +104,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
             Point2D point = line.screenToLocal(screenX, screenY);
         }
         else {
-            Bounds bounds = node.getBoundsInParent();
+            Bounds bounds = node.getBoundsInLocal();
             setMarker(node, (bounds.getMinX()+bounds.getMaxX())/2, (bounds.getMinY()+bounds.getMaxY())/2);
         }
         marker.setVisible(true);
@@ -146,37 +146,48 @@ public class SelectionController implements EventHandler<MouseEvent> {
     }
 
     private class HighlightFilter implements Predicate<Node> {
-        private final double x;
-        private final double y;
+        private final double screenX;
+        private final double screenY;
         private final Bounds bounds;
 
-        public HighlightFilter(double x, double y) {
-            this.x = x;
-            this.y = y;
-            this.bounds = new BoundingBox(x-HIGHLIGHT_OFFSET, y-HIGHLIGHT_OFFSET, HIGHLIGHT_SIZE, HIGHLIGHT_SIZE);
+        public HighlightFilter(double screenX, double screenY) {
+            this.screenX = screenX;
+            this.screenY = screenY;
+            this.bounds = new BoundingBox(screenX-HIGHLIGHT_OFFSET, screenY-HIGHLIGHT_OFFSET, HIGHLIGHT_SIZE, HIGHLIGHT_SIZE);
         }
 
         public boolean test(Node node) {
-            if (node == marker) return false;
             if (node instanceof Polyline) return test((Polyline) node);
             if (node instanceof Path) return test((Path) node);
+            if (node instanceof Rectangle) return test((Rectangle) node);
             Bounds nodeBounds = node.getBoundsInLocal();
             if (node instanceof Parent || nodeBounds.getWidth() < HIGHLIGHT_SIZE || nodeBounds.getHeight() < HIGHLIGHT_SIZE) {
                 return node.screenToLocal(bounds).intersects(nodeBounds);
             }
-            return node.contains(node.screenToLocal(x, y));
+            return node.contains(node.screenToLocal(screenX, screenY));
+        }
+
+        private boolean test(Rectangle rectangle) {
+            Point2D localPoint = rectangle.screenToLocal(screenX, screenY);
+            if (rectangle.getFill() == null) {
+                return localPoint.getX() > rectangle.getX()-HIGHLIGHT_OFFSET && localPoint.getX() < rectangle.getX()+rectangle.getWidth()+HIGHLIGHT_OFFSET
+                        && localPoint.getY() > rectangle.getY()-HIGHLIGHT_OFFSET && localPoint.getY() < rectangle.getY()+rectangle.getHeight()+HIGHLIGHT_OFFSET
+                        && (localPoint.getX() < rectangle.getX()+HIGHLIGHT_OFFSET || localPoint.getX() > rectangle.getX()+rectangle.getWidth()-HIGHLIGHT_OFFSET
+                        || localPoint.getY() < rectangle.getY()+HIGHLIGHT_OFFSET || localPoint.getY() > rectangle.getY()+rectangle.getHeight()-HIGHLIGHT_OFFSET);
+            }
+            return rectangle.contains(localPoint);
         }
 
         private boolean test(Polyline polyline) {
             if (polyline.intersects(polyline.screenToLocal(bounds))) {
-                return new PolylinePredicate(polyline.screenToLocal(x, y)).test(polyline);
+                return new PolylinePredicate(polyline.screenToLocal(screenX, screenY)).test(polyline);
             }
             return false;
         }
 
         private boolean test(Path path) {
             if (path.intersects(path.screenToLocal(bounds))) {
-                return pathVisitorCache.get(path, PathVisitor::new).some(new HighlightPathPredicate(path.screenToLocal(x, y)));
+                return pathVisitorCache.get(path, PathVisitor::new).some(new HighlightPathPredicate(path.screenToLocal(screenX, screenY)));
             }
             return false;
         }
