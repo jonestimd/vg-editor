@@ -19,24 +19,25 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.scene.shape;
+package io.github.jonestimd.vgeditor.scene.control.selection;
 
 import javafx.geometry.Point2D;
 
-import static io.github.jonestimd.vgeditor.scene.control.SelectionController.*;
+import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
 
 public abstract class LineSegmentPredicate {
     protected static final double SQUARE_HIGHLIGHT_OFFSET = HIGHLIGHT_OFFSET*HIGHLIGHT_OFFSET;
-    protected final Point2D cursor;
+    protected final double screenX, screenY;
 
-    protected LineSegmentPredicate(Point2D cursor) {
-        this.cursor = cursor;
+    protected LineSegmentPredicate(double screenX, double screenY) {
+        this.screenX = screenX;
+        this.screenY = screenY;
     }
 
     /**
      * @return true if the line segment defined by the 2 points is within the highlight range of the {@code cursor}.
      */
-    protected boolean isInHighlightRange(double x1, double y1, double x2, double y2) {
+    protected boolean isInHighlightRange(Point2D cursor, double x1, double y1, double x2, double y2) {
         double squareLen = squareDist(x1, y1, x2, y2);
         if (squareLen == 0) return squareDist(cursor.getX(), cursor.getY(), x1, y1) < SQUARE_HIGHLIGHT_OFFSET;
         double projection = ((cursor.getX()-x1)*(x2-x1)+(cursor.getY()-y1)*(y2-y1))/squareLen;

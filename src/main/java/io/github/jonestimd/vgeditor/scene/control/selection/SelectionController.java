@@ -19,7 +19,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.scene.control;
+package io.github.jonestimd.vgeditor.scene.control.selection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,6 @@ import java.util.function.Predicate;
 import io.github.jonestimd.vgeditor.collection.IterableUtils;
 import io.github.jonestimd.vgeditor.collection.LruCache;
 import io.github.jonestimd.vgeditor.scene.Nodes;
-import io.github.jonestimd.vgeditor.scene.shape.PolylinePredicate;
 import io.github.jonestimd.vgeditor.scene.shape.path.PathSegment;
 import io.github.jonestimd.vgeditor.scene.shape.path.PathVisitor;
 import javafx.event.EventHandler;
@@ -82,14 +81,10 @@ public class SelectionController implements EventHandler<MouseEvent> {
         List<Node> nodes = findNodes(diagram, new HighlightFilter(screenX, screenY));
         List<Node> matches = IterableUtils.minBy(nodes, Nodes::boundingArea); // TODO check path elements
         if (matches.isEmpty()) hideMarker();
-        else {
-            Node node = matches.get(0);
-            if (node != highlighted) showMarker(node, screenX, screenY);
-        }
+        else showMarker(matches.get(0), screenX, screenY);
     }
 
     private void showMarker(Node node, double screenX, double screenY) {
-        hideMarker();
         highlighted = node;
         if (node instanceof Path) {
             Path path = (Path) node;
@@ -102,6 +97,10 @@ public class SelectionController implements EventHandler<MouseEvent> {
         else if (node instanceof Polyline) {
             Polyline line = (Polyline) node;
             Point2D point = line.screenToLocal(screenX, screenY);
+        }
+        else if (node instanceof Rectangle) {
+            Point2D location = RectanglePredicate.getMarkerLocation(screenX, screenY, (Rectangle) node);
+            setMarker(node, location.getX(), location.getY());
         }
         else {
             Bounds bounds = node.getBoundsInLocal();
@@ -137,29 +136,25 @@ public class SelectionController implements EventHandler<MouseEvent> {
         return matches;
     }
 
-    private static double squareDist(double x1, double y1, double x2, double y2) {
-        return square(x1-x2)+square(y1-y2);
-    }
-
-    private static double square(double v) {
-        return v*v;
-    }
-
     private class HighlightFilter implements Predicate<Node> {
         private final double screenX;
         private final double screenY;
         private final Bounds bounds;
+        private final RectanglePredicate rectanglePredicate;
+        private final PolylinePredicate polylinePredicate;
 
         public HighlightFilter(double screenX, double screenY) {
             this.screenX = screenX;
             this.screenY = screenY;
             this.bounds = new BoundingBox(screenX-HIGHLIGHT_OFFSET, screenY-HIGHLIGHT_OFFSET, HIGHLIGHT_SIZE, HIGHLIGHT_SIZE);
+            this.rectanglePredicate = new RectanglePredicate(screenX, screenY);
+            this.polylinePredicate = new PolylinePredicate(screenX, screenY);
         }
 
         public boolean test(Node node) {
             if (node instanceof Polyline) return test((Polyline) node);
             if (node instanceof Path) return test((Path) node);
-            if (node instanceof Rectangle) return test((Rectangle) node);
+            if (node instanceof Rectangle) return rectanglePredicate.test((Rectangle) node);
             Bounds nodeBounds = node.getBoundsInLocal();
             if (node instanceof Parent || nodeBounds.getWidth() < HIGHLIGHT_SIZE || nodeBounds.getHeight() < HIGHLIGHT_SIZE) {
                 return node.screenToLocal(bounds).intersects(nodeBounds);
@@ -167,22 +162,8 @@ public class SelectionController implements EventHandler<MouseEvent> {
             return node.contains(node.screenToLocal(screenX, screenY));
         }
 
-        private boolean test(Rectangle rectangle) {
-            Point2D localPoint = rectangle.screenToLocal(screenX, screenY);
-            if (rectangle.getFill() == null) {
-                return localPoint.getX() > rectangle.getX()-HIGHLIGHT_OFFSET && localPoint.getX() < rectangle.getX()+rectangle.getWidth()+HIGHLIGHT_OFFSET
-                        && localPoint.getY() > rectangle.getY()-HIGHLIGHT_OFFSET && localPoint.getY() < rectangle.getY()+rectangle.getHeight()+HIGHLIGHT_OFFSET
-                        && (localPoint.getX() < rectangle.getX()+HIGHLIGHT_OFFSET || localPoint.getX() > rectangle.getX()+rectangle.getWidth()-HIGHLIGHT_OFFSET
-                        || localPoint.getY() < rectangle.getY()+HIGHLIGHT_OFFSET || localPoint.getY() > rectangle.getY()+rectangle.getHeight()-HIGHLIGHT_OFFSET);
-            }
-            return rectangle.contains(localPoint);
-        }
-
         private boolean test(Polyline polyline) {
-            if (polyline.intersects(polyline.screenToLocal(bounds))) {
-                return new PolylinePredicate(polyline.screenToLocal(screenX, screenY)).test(polyline);
-            }
-            return false;
+            return polyline.intersects(polyline.screenToLocal(bounds)) && polylinePredicate.test(polyline);
         }
 
         private boolean test(Path path) {
@@ -190,19 +171,6 @@ public class SelectionController implements EventHandler<MouseEvent> {
                 return pathVisitorCache.get(path, PathVisitor::new).some(new HighlightPathPredicate(path.screenToLocal(screenX, screenY)));
             }
             return false;
-        }
-    }
-
-    private class HighlightPathPredicate implements Predicate<PathSegment<?>> {
-        private final Point2D cursor;
-
-        public HighlightPathPredicate(Point2D cursor) {
-            this.cursor = cursor;
-        }
-
-        @Override
-        public boolean test(PathSegment<?> pathSegment) {
-            return pathSegment.getDistanceSquared(cursor) <= HIGHLIGHT_SIZE_SQUARED;
         }
     }
 }
