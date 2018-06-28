@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -62,7 +63,8 @@ public class ToolPaneLoader {
         });
     }
 
-    public NodeController<?> show(String fileName) {
+    @SuppressWarnings("unchecked")
+    public <T extends Node> NodeController<T> show(String fileName) {
         if (fileControllers.isEmpty()) locateWindow();
         if (!fileName.equals(this.fileName)) {
             this.fileName = fileName;
@@ -72,7 +74,7 @@ public class ToolPaneLoader {
         }
         stage.show();
         stage.requestFocus();
-        return controllerPane.getKey();
+        return (NodeController<T>) controllerPane.getKey();
     }
 
     private void locateWindow() {

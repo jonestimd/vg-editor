@@ -30,4 +30,6 @@ public interface NodeController<T extends Node> {
     MouseInputHandler getMouseHandler();
 
     T getNode();
+
+    void setNode(T node);
 }

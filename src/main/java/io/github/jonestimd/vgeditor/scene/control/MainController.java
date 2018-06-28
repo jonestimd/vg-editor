@@ -37,6 +37,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.WindowEvent;
@@ -61,6 +62,9 @@ public class MainController {
     public void initialize() {
         scrollPane.setPrefSize(600, 500);
         selectionController = new SelectionController(diagram, marker);
+        selectionController.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue instanceof Rectangle) editRectangle((Rectangle) newValue);
+        });
         diagram.sceneProperty().addListener(new ChangeListener<Scene>() {
             @Override
             public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
@@ -120,8 +124,13 @@ public class MainController {
         Platform.exit();
     }
 
-    public void addRectangle(ActionEvent event) {
+    public void addRectangle() {
         toolPaneLoader.show("RectangleTool.fxml");
+    }
+
+    public void editRectangle(Rectangle rectangle) {
+        NodeController<Rectangle> controller = toolPaneLoader.show("RectangleTool.fxml");
+        controller.setNode(rectangle);
     }
 
     private void onClose(WindowEvent event) {

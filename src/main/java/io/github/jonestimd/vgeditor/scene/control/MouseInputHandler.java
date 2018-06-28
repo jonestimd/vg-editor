@@ -44,11 +44,11 @@ public class MouseInputHandler {
     public void handle(Parent diagram, MouseEvent event) {
         if (event.getEventType() == MouseEvent.MOUSE_PRESSED && event.getButton() == MouseButton.PRIMARY) {
             startPoint = diagram.screenToLocal(event.getScreenX(), event.getScreenY());
-            startDrag.accept(startPoint);
         }
         else if (event.getEventType() == MouseEvent.DRAG_DETECTED && event.getButton() == MouseButton.PRIMARY) {
             this.mouseDragging = true;
             diagram.startFullDrag();
+            startDrag.accept(startPoint);
         }
         else if (event.getEventType() == MouseEvent.MOUSE_RELEASED && mouseDragging) {
             this.mouseDragging = false;

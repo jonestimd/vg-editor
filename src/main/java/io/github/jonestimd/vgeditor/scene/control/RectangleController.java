@@ -36,6 +36,16 @@ public class RectangleController extends ShapeController<Rectangle> {
     public static final String ID_ARC_HEIGHT = "arcHeight";
     private static final ShapeAdapter<Rectangle> ADAPTER = new ShapeAdapter<Rectangle>() {
         @Override
+        public double getX(Rectangle node) {
+            return node.getX();
+        }
+
+        @Override
+        public double getY(Rectangle node) {
+            return node.getY();
+        }
+
+        @Override
         public void setX(Rectangle node, double x) {
             node.setX(x);
         }
@@ -82,6 +92,13 @@ public class RectangleController extends ShapeController<Rectangle> {
     public void onKeyEvent(KeyEvent event) {
         TextInputControl field = (TextInputControl) event.getSource();
         fieldHandlers.get(field.getId()).accept(TextFields.parseDouble(field).orElse(0));
+    }
+
+    @Override
+    public void setNode(Rectangle node) {
+        super.setNode(node);
+        arcWidth.setText(numberFormat.format(node.getArcWidth()/2));
+        arcHeight.setText(numberFormat.format(node.getArcHeight()/2));
     }
 
     private void setNodeArcWidth(double width) {

@@ -21,44 +21,57 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 
 public class FillPaneController {
     @FXML
+    private CheckBox fill;
+    @FXML
     private ColorPicker fillColor;
 
-    private boolean fill;
     private Shape node;
 
     public void initialize() {
         fillColor.setValue(Color.BLACK);
     }
 
-    public void setNode(Shape node) {
+    public void editNode(Shape node) {
         this.node = node;
-        setFill();
+        Paint nodeFill = node.getFill();
+        if (nodeFill != null) {
+            fill.setSelected(true);
+            fillColor.setValue((Color) nodeFill);
+            fillColor.setDisable(false);
+        }
+        else {
+            fill.setSelected(false);
+            fillColor.setDisable(true);
+        }
     }
 
-    private void setFill() {
+    public void newNode(Shape node) {
+        this.node = node;
+        setNodeFill();
+    }
+
+    private void setNodeFill() {
         if (node != null) {
-            if (fill) node.setFill(fillColor.getValue());
+            if (fill.isSelected()) node.setFill(fillColor.getValue());
             else node.setFill(null);
         }
     }
 
-    public void setFillColor() {
+    public void onFillColorChange() {
         if (node != null) node.setFill(fillColor.getValue());
     }
 
-    public void setFill(ActionEvent event) {
-        CheckBox source = (CheckBox) event.getSource();
-        fill = source.isSelected();
-        fillColor.setDisable(!fill);
-        setFill();
+    public void onFillChange() {
+        fillColor.setDisable(!fill.isSelected());
+        setNodeFill();
     }
 }

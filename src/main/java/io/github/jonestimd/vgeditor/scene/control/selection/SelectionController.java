@@ -31,6 +31,8 @@ import io.github.jonestimd.vgeditor.collection.LruCache;
 import io.github.jonestimd.vgeditor.scene.Nodes;
 import io.github.jonestimd.vgeditor.scene.shape.path.PathSegment;
 import io.github.jonestimd.vgeditor.scene.shape.path.PathVisitor;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -40,6 +42,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
@@ -57,6 +60,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
     private final LruCache<Path, PathVisitor> pathVisitorCache = new LruCache<>(PATH_CACHE_SIZE);
 
     private Node highlighted;
+    private final Property<Node> selected = new SimpleObjectProperty<>(this, "selected");
     private PathSegment<?> pathHighlight;
     private int polylineHighlight = -1;
 
@@ -72,9 +76,20 @@ public class SelectionController implements EventHandler<MouseEvent> {
         return highlighted;
     }
 
+    public Node getSelected() {
+        return selected.getValue();
+    }
+
+    public Property<Node> selectedProperty() {
+        return selected;
+    }
+
     @Override
     public void handle(MouseEvent event) {
         if (event.getEventType() == MouseEvent.MOUSE_MOVED) onMouseMoved(event.getScreenX(), event.getScreenY());
+        else if (event.getEventType() == MouseEvent.MOUSE_CLICKED && event.getButton() == MouseButton.PRIMARY) {
+            selected.setValue(highlighted);
+        }
     }
 
     private void onMouseMoved(double screenX, double screenY) {
@@ -86,6 +101,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
 
     private void showMarker(Node node, double screenX, double screenY) {
         highlighted = node;
+        highlighted.setEffect(highlightEffect);
         if (node instanceof Path) {
             Path path = (Path) node;
             PathSegment<?> segment = pathVisitorCache.get(path, PathVisitor::new)
@@ -116,8 +132,12 @@ public class SelectionController implements EventHandler<MouseEvent> {
     }
 
     private void hideMarker() {
-        highlighted = null;
-        marker.setVisible(false);
+        if (highlighted != null) {
+            highlighted.setEffect(null);
+            highlighted = null;
+            selected.setValue(null);
+            marker.setVisible(false);
+        }
     }
 
     private List<Node> findNodes(Parent root, Predicate<Node> filter) {

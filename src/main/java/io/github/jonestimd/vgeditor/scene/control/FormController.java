@@ -21,14 +21,13 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.OptionalDouble;
 
-import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyEvent;
@@ -39,18 +38,19 @@ public class FormController {
     private Pane root;
 
     private final Map<String, TextInputControl> fields = new HashMap<>();
-    private final ObservableMap<String, Double> values = FXCollections.observableHashMap();
+    private final Map<String, Double> values = new HashMap<>();
+    private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
     public void initialize() {
         root.getChildren().filtered(TextInputControl.class::isInstance).forEach(node -> fields.put(node.getId(), (TextInputControl) node));
     }
 
-    public void addListener(MapChangeListener<? super String, ? super Double> listener) {
-        values.addListener(listener);
+    public void addListener(PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(listener);
     }
 
-    public void removeListener(MapChangeListener<? super String, ? super Double> listener) {
-        values.removeListener(listener);
+    public void removeListener(PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(listener);
     }
 
     public TextInputControl getField(String fieldId) {
@@ -83,10 +83,12 @@ public class FormController {
 
     public void onKeyEvent(KeyEvent event) {
         TextInputControl source = (TextInputControl) event.getSource();
+        Double oldValue = values.get(source.getId());
         OptionalDouble optionalValue = TextFields.parseDouble(source);
         if (optionalValue.isPresent()) {
             values.put(source.getId(), optionalValue.getAsDouble());
         }
         else values.remove(source.getId());
+        changeSupport.firePropertyChange(source.getId(), oldValue, values.get(source.getId()));
     }
 }

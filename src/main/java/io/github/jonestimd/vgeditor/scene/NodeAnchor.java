@@ -96,4 +96,20 @@ public enum NodeAnchor {
         double height = Math.abs(start.getY()-end.getY());
         return new Dimension2D(width * (dx == 0 ? 2 : 1), height * (dy == 0 ? 2 : 1));
     }
+
+    public static NodeAnchor valueOf(Node node, double width, double height) {
+        double angle = Math.toRadians(node.getRotate());
+        double halfWidth = width/2, halfHeight = height/2;
+        double layoutX = node.getLayoutX(), layoutY = node.getLayoutY();
+        double alignLeftX = alignLeftX(halfWidth, angle);
+        double alignTopX = alignTopX(halfHeight, angle);
+        double alignLeftY = alignLeftY(halfWidth, angle);
+        double alignTopY = alignTopY(halfHeight, angle);
+        for (NodeAnchor anchor : values()) {
+            if (layoutX == -anchor.dx*alignLeftX-anchor.dy*alignTopX-halfWidth && layoutY == -anchor.dx*alignLeftY-anchor.dy*alignTopY-halfHeight) {
+                return anchor;
+            }
+        }
+        throw new IllegalArgumentException();
+    }
 }

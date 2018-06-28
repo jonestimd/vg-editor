@@ -57,22 +57,22 @@
     </GridPane>
     <Label text="%anchor"/>
     <GridPane fx:id="anchorParent" styleClass="control-group" alignment="CENTER" hgap="3" vgap="3">
-        <RadioButton toggleGroup="$anchor" id="TOP_LEFT" selected="true" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <RadioButton toggleGroup="$anchor" id="TOP_CENTER" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-        <RadioButton toggleGroup="$anchor" id="TOP_RIGHT" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-        <RadioButton toggleGroup="$anchor" id="LEFT" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        <RadioButton toggleGroup="$anchor" id="CENTER" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-        <RadioButton toggleGroup="$anchor" id="RIGHT" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-        <RadioButton toggleGroup="$anchor" id="BOTTOM_LEFT" onAction="#selectAnchor" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <RadioButton toggleGroup="$anchor" id="BOTTOM_CENTER" onAction="#selectAnchor" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-        <RadioButton toggleGroup="$anchor" id="BOTTOM_RIGHT" onAction="#selectAnchor" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+        <RadioButton toggleGroup="$anchor" id="TOP_LEFT" selected="true" onAction="#onAnchorChange" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <RadioButton toggleGroup="$anchor" id="TOP_CENTER" onAction="#onAnchorChange" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <RadioButton toggleGroup="$anchor" id="TOP_RIGHT" onAction="#onAnchorChange" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+        <RadioButton toggleGroup="$anchor" id="LEFT" onAction="#onAnchorChange" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <RadioButton toggleGroup="$anchor" id="CENTER" onAction="#onAnchorChange" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <RadioButton toggleGroup="$anchor" id="RIGHT" onAction="#onAnchorChange" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        <RadioButton toggleGroup="$anchor" id="BOTTOM_LEFT" onAction="#onAnchorChange" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <RadioButton toggleGroup="$anchor" id="BOTTOM_CENTER" onAction="#onAnchorChange" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <RadioButton toggleGroup="$anchor" id="BOTTOM_RIGHT" onAction="#onAnchorChange" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
     </GridPane>
     <fx:include source="FillPane.fxml" fx:id="fillPane"/>
     <fx:include source="StrokePane.fxml" fx:id="strokePane"/>
     <ButtonBar>
         <buttons>
-            <Button text="%shape.new" fx:id="newButton" onAction="#newNode" disable="true"/>
-            <Button text="%shape.delete" onAction="#deleteNode"/>
+            <Button text="%shape.new" fx:id="newButton" onAction="#onNewNode" disable="true"/>
+            <Button text="%shape.delete" onAction="#onDeleteNode"/>
         </buttons>
     </ButtonBar>
 </VBox>

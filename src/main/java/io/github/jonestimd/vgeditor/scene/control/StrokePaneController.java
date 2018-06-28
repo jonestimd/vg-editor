@@ -21,23 +21,26 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
-import javafx.event.ActionEvent;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 
 public class StrokePaneController {
     private static final double DEFAULT_STROKE_WIDTH = 1;
+    private NumberFormat numberFormat = new DecimalFormat("#0.#");
+    @FXML
+    private CheckBox stroke;
     @FXML
     private ColorPicker strokeColor;
     @FXML
     private TextField strokeWidthInput;
 
-    private boolean stroke = true;
     private double strokeWidth = DEFAULT_STROKE_WIDTH;
     private Shape node;
 
@@ -45,14 +48,31 @@ public class StrokePaneController {
         strokeColor.setValue(Color.BLACK);
     }
 
-    public void setNode(Shape node) {
+    public void editNode(Shape node) {
         this.node = node;
-        setStroke();
+        if (node.getStroke() != null) {
+            setEnabled(true);
+            strokeColor.setValue((Color) node.getStroke());
+            strokeWidth = node.getStrokeWidth();
+            strokeWidthInput.setText(numberFormat.format(node.getStrokeWidth()));
+        }
+        else setEnabled(false);
     }
 
-    private void setStroke() {
+    private void setEnabled(boolean enabled) {
+        stroke.setSelected(enabled);
+        strokeColor.setDisable(!enabled);
+        strokeWidthInput.setDisable(!enabled);
+    }
+
+    public void newNode(Shape node) {
+        this.node = node;
+        setNodeStroke();
+    }
+
+    private void setNodeStroke() {
         if (node != null) {
-            if (stroke) {
+            if (stroke.isSelected()) {
                 node.setStroke(strokeColor.getValue());
                 node.setStrokeWidth(strokeWidth);
             }
@@ -60,20 +80,18 @@ public class StrokePaneController {
         }
     }
 
-    public void setStrokeColor() {
+    public void onStrokeColorChange() {
         if (node != null) node.setStroke(strokeColor.getValue());
     }
 
-    public void setStrokeWidth(KeyEvent event) {
-        strokeWidth = TextFields.parseDouble(event, DEFAULT_STROKE_WIDTH);
+    public void onStrokeWidthChange() {
+        strokeWidth = TextFields.parseDouble(strokeWidthInput).orElse(DEFAULT_STROKE_WIDTH);
         if (node != null) node.setStrokeWidth(strokeWidth);
     }
 
-    public void setStroke(ActionEvent event) {
-        CheckBox source = (CheckBox) event.getSource();
-        stroke = source.isSelected();
-        strokeColor.setDisable(!stroke);
-        strokeWidthInput.setDisable(!stroke);
-        setStroke();
+    public void onStrokeChange() {
+        strokeColor.setDisable(!stroke.isSelected());
+        strokeWidthInput.setDisable(!stroke.isSelected());
+        setNodeStroke();
     }
 }
