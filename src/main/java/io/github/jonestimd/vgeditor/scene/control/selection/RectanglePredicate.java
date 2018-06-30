@@ -61,8 +61,8 @@ public class RectanglePredicate implements Predicate<Rectangle> {
     }
 
     private static double selectEdge(double value, double size) {
-        if (value > size*0.75) return size;
-        if (value > size*0.25) return size/2;
-        return 0;
+        if (value <= SelectionController.HIGHLIGHT_OFFSET) return 0;
+        if (value >= size-SelectionController.HIGHLIGHT_OFFSET) return size;
+        return size/2;
     }
 }

@@ -25,7 +25,9 @@ import java.util.Map;
 import java.util.function.DoubleConsumer;
 
 import com.google.common.collect.ImmutableMap;
+import io.github.jonestimd.vgeditor.scene.control.selection.RectanglePredicate;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyEvent;
@@ -73,6 +75,11 @@ public class RectangleController extends ShapeController<Rectangle> {
         @Override
         public void setHeight(Rectangle node, double height) {
             node.setHeight(height);
+        }
+
+        @Override
+        public boolean isStartDrag(Rectangle node, Point2D screenPoint) {
+            return new RectanglePredicate(screenPoint.getX(), screenPoint.getY()).test(node);
         }
     };
 

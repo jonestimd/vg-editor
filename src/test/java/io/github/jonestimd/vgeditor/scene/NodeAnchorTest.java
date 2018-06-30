@@ -22,11 +22,13 @@
 package io.github.jonestimd.vgeditor.scene;
 
 import io.github.jonestimd.vgeditor.JavaFxThreadingRule;
+import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.data.Offset.offset;
 
@@ -53,10 +55,10 @@ public class NodeAnchorTest {
 
     @Test
     public void translateTopCenter() throws Exception {
-        testTranslate(NodeAnchor.TOP_CENTER, 0, -WIDTH/2, 0);
-        testTranslate(NodeAnchor.TOP_CENTER, 90, -WIDTH/2-HEIGHT/2, -HEIGHT/2);
-        testTranslate(NodeAnchor.TOP_CENTER, -90, -WIDTH/2+HEIGHT/2, -HEIGHT/2);
-        testTranslate(NodeAnchor.TOP_CENTER, 180, -WIDTH/2, -HEIGHT);
+        testTranslate(NodeAnchor.TOP, 0, -WIDTH/2, 0);
+        testTranslate(NodeAnchor.TOP, 90, -WIDTH/2-HEIGHT/2, -HEIGHT/2);
+        testTranslate(NodeAnchor.TOP, -90, -WIDTH/2+HEIGHT/2, -HEIGHT/2);
+        testTranslate(NodeAnchor.TOP, 180, -WIDTH/2, -HEIGHT);
     }
 
     @Test
@@ -101,10 +103,10 @@ public class NodeAnchorTest {
 
     @Test
     public void translateBottomCenter() throws Exception {
-        testTranslate(NodeAnchor.BOTTOM_CENTER, 0, -WIDTH/2, -HEIGHT);
-        testTranslate(NodeAnchor.BOTTOM_CENTER, 90, -WIDTH/2+HEIGHT/2, -HEIGHT/2);
-        testTranslate(NodeAnchor.BOTTOM_CENTER, -90, -WIDTH/2-HEIGHT/2, -HEIGHT/2);
-        testTranslate(NodeAnchor.BOTTOM_CENTER, 180, -WIDTH/2, 0);
+        testTranslate(NodeAnchor.BOTTOM, 0, -WIDTH/2, -HEIGHT);
+        testTranslate(NodeAnchor.BOTTOM, 90, -WIDTH/2+HEIGHT/2, -HEIGHT/2);
+        testTranslate(NodeAnchor.BOTTOM, -90, -WIDTH/2-HEIGHT/2, -HEIGHT/2);
+        testTranslate(NodeAnchor.BOTTOM, 180, -WIDTH/2, 0);
     }
 
     @Test
@@ -126,80 +128,100 @@ public class NodeAnchorTest {
 
     @Test
     public void valueOfTopLeft() throws Exception {
-        testValueOf(NodeAnchor.TOP_LEFT, 0, 0, 0);
-        testValueOf(NodeAnchor.TOP_LEFT, 90, -WIDTH/2-HEIGHT/2, WIDTH/2-HEIGHT/2);
-        testValueOf(NodeAnchor.TOP_LEFT, -90, -WIDTH/2+HEIGHT/2, -WIDTH/2-HEIGHT/2);
-        testValueOf(NodeAnchor.TOP_LEFT, 180, -WIDTH, -HEIGHT);
+        testValueOf(NodeAnchor.TOP_LEFT, 0);
+        testValueOf(NodeAnchor.TOP_LEFT, 90);
+        testValueOf(NodeAnchor.TOP_LEFT, -90);
+        testValueOf(NodeAnchor.TOP_LEFT, 180);
     }
 
     @Test
     public void valueOfTopCenter() throws Exception {
-        testValueOf(NodeAnchor.TOP_CENTER, 0, -WIDTH/2, 0);
-        testValueOf(NodeAnchor.TOP_CENTER, 90, -WIDTH/2-HEIGHT/2, -HEIGHT/2);
-        testValueOf(NodeAnchor.TOP_CENTER, -90, -WIDTH/2+HEIGHT/2, -HEIGHT/2);
-        testValueOf(NodeAnchor.TOP_CENTER, 180, -WIDTH/2, -HEIGHT);
+        testValueOf(NodeAnchor.TOP, 0);
+        testValueOf(NodeAnchor.TOP, 90);
+        testValueOf(NodeAnchor.TOP, -90);
+        testValueOf(NodeAnchor.TOP, 180);
     }
 
     @Test
     public void valueOfTopRight() throws Exception {
-        testValueOf(NodeAnchor.TOP_RIGHT, 0, -WIDTH, 0);
-        testValueOf(NodeAnchor.TOP_RIGHT, 90, -WIDTH/2-HEIGHT/2, -HEIGHT/2-WIDTH/2);
-        testValueOf(NodeAnchor.TOP_RIGHT, -90, -WIDTH/2+HEIGHT/2, WIDTH/2-HEIGHT/2);
-        testValueOf(NodeAnchor.TOP_RIGHT, 180, 0, -HEIGHT);
+        testValueOf(NodeAnchor.TOP_RIGHT, 0);
+        testValueOf(NodeAnchor.TOP_RIGHT, 90);
+        testValueOf(NodeAnchor.TOP_RIGHT, -90);
+        testValueOf(NodeAnchor.TOP_RIGHT, 180);
     }
 
     @Test
     public void valueOfLeft() throws Exception {
-        testValueOf(NodeAnchor.LEFT, 0, 0, -HEIGHT/2);
-        testValueOf(NodeAnchor.LEFT, 90, -WIDTH/2, WIDTH/2-HEIGHT/2);
-        testValueOf(NodeAnchor.LEFT, -90, -WIDTH/2, -HEIGHT-WIDTH/2+HEIGHT/2);
-        testValueOf(NodeAnchor.LEFT, 180, -WIDTH, -HEIGHT/2);
+        testValueOf(NodeAnchor.LEFT, 0);
+        testValueOf(NodeAnchor.LEFT, 90);
+        testValueOf(NodeAnchor.LEFT, -90);
+        testValueOf(NodeAnchor.LEFT, 180);
     }
 
     @Test
     public void valueOfCenter() throws Exception {
-        testValueOf(NodeAnchor.CENTER, 0, -WIDTH/2, -HEIGHT/2);
-        testValueOf(NodeAnchor.CENTER, 90, -WIDTH/2, -HEIGHT/2);
-        testValueOf(NodeAnchor.CENTER, -90, -WIDTH/2, -HEIGHT/2);
-        testValueOf(NodeAnchor.CENTER, 180, -WIDTH/2, -HEIGHT/2);
+        testValueOf(NodeAnchor.CENTER, 0);
+        testValueOf(NodeAnchor.CENTER, 90);
+        testValueOf(NodeAnchor.CENTER, -90);
+        testValueOf(NodeAnchor.CENTER, 180);
     }
 
     @Test
     public void valueOfRight() throws Exception {
-        testValueOf(NodeAnchor.RIGHT, 0, -WIDTH, -HEIGHT/2);
-        testValueOf(NodeAnchor.RIGHT, 90, -WIDTH/2, -HEIGHT/2-WIDTH/2);
-        testValueOf(NodeAnchor.RIGHT, -90, -WIDTH/2, -HEIGHT/2+WIDTH/2);
-        testValueOf(NodeAnchor.RIGHT, 180, 0, -HEIGHT/2);
+        testValueOf(NodeAnchor.RIGHT, 0);
+        testValueOf(NodeAnchor.RIGHT, 90);
+        testValueOf(NodeAnchor.RIGHT, -90);
+        testValueOf(NodeAnchor.RIGHT, 180);
     }
 
     @Test
     public void valueOfBottomLeft() throws Exception {
-        testValueOf(NodeAnchor.BOTTOM_LEFT, 0, 0, -HEIGHT);
-        testValueOf(NodeAnchor.BOTTOM_LEFT, 90, -WIDTH/2+HEIGHT/2, WIDTH/2-HEIGHT/2);
-        testValueOf(NodeAnchor.BOTTOM_LEFT, -90, -WIDTH/2-HEIGHT/2, -WIDTH/2-HEIGHT/2);
-        testValueOf(NodeAnchor.BOTTOM_LEFT, 180, -WIDTH, 0);
+        testValueOf(NodeAnchor.BOTTOM_LEFT, 0);
+        testValueOf(NodeAnchor.BOTTOM_LEFT, 90);
+        testValueOf(NodeAnchor.BOTTOM_LEFT, -90);
+        testValueOf(NodeAnchor.BOTTOM_LEFT, 180);
     }
 
     @Test
     public void valueOfBottomCenter() throws Exception {
-        testValueOf(NodeAnchor.BOTTOM_CENTER, 0, -WIDTH/2, -HEIGHT);
-        testValueOf(NodeAnchor.BOTTOM_CENTER, 90, -WIDTH/2+HEIGHT/2, -HEIGHT/2);
-        testValueOf(NodeAnchor.BOTTOM_CENTER, -90, -WIDTH/2-HEIGHT/2, -HEIGHT/2);
-        testValueOf(NodeAnchor.BOTTOM_CENTER, 180, -WIDTH/2, 0);
+        testValueOf(NodeAnchor.BOTTOM, 0);
+        testValueOf(NodeAnchor.BOTTOM, 90);
+        testValueOf(NodeAnchor.BOTTOM, -90);
+        testValueOf(NodeAnchor.BOTTOM, 180);
     }
 
     @Test
     public void valueOfBottomRight() throws Exception {
-        testValueOf(NodeAnchor.BOTTOM_RIGHT, 0, -WIDTH, -HEIGHT);
-        testValueOf(NodeAnchor.BOTTOM_RIGHT, 90, -WIDTH/2+HEIGHT/2, -HEIGHT/2-WIDTH/2);
-        testValueOf(NodeAnchor.BOTTOM_RIGHT, -90, -WIDTH/2-HEIGHT/2, -HEIGHT/2+WIDTH/2);
-        testValueOf(NodeAnchor.BOTTOM_RIGHT, 180, 0, 0);
+        testValueOf(NodeAnchor.BOTTOM_RIGHT, 0);
+        testValueOf(NodeAnchor.BOTTOM_RIGHT, 90);
+        testValueOf(NodeAnchor.BOTTOM_RIGHT, -90);
+        testValueOf(NodeAnchor.BOTTOM_RIGHT, 180);
     }
 
-    private void testValueOf(NodeAnchor anchor, double angle, double expectedX, double expectedY) {
+    private void testValueOf(NodeAnchor anchor, double angle) {
         rectangle.setRotate(angle);
         anchor.translate(rectangle, WIDTH, HEIGHT);
 
         assertThat(NodeAnchor.valueOf(rectangle, rectangle.getWidth(), rectangle.getHeight())).isEqualTo(anchor);
+    }
+
+    @Test
+    public void forResize() throws Exception {
+        testForResize(-HIGHLIGHT_OFFSET, HIGHLIGHT_OFFSET, -HIGHLIGHT_OFFSET, HIGHLIGHT_OFFSET, NodeAnchor.TOP_LEFT);
+        testForResize(HIGHLIGHT_OFFSET+1, WIDTH-HIGHLIGHT_OFFSET-1, -HIGHLIGHT_OFFSET, HIGHLIGHT_OFFSET, NodeAnchor.TOP);
+        testForResize(WIDTH-HIGHLIGHT_OFFSET, WIDTH+HIGHLIGHT_OFFSET, -HIGHLIGHT_OFFSET, HIGHLIGHT_OFFSET, NodeAnchor.TOP_RIGHT);
+        testForResize(-HIGHLIGHT_OFFSET, HIGHLIGHT_OFFSET, HIGHLIGHT_OFFSET+1, HEIGHT-HIGHLIGHT_OFFSET-1, NodeAnchor.LEFT);
+        testForResize(HIGHLIGHT_OFFSET+1, WIDTH-HIGHLIGHT_OFFSET-1, HIGHLIGHT_OFFSET+1, HEIGHT-HIGHLIGHT_OFFSET-1, null);
+        testForResize(WIDTH-HIGHLIGHT_OFFSET, WIDTH+HIGHLIGHT_OFFSET, HIGHLIGHT_OFFSET+1, HEIGHT-HIGHLIGHT_OFFSET-1, NodeAnchor.RIGHT);
+        testForResize(-HIGHLIGHT_OFFSET, HIGHLIGHT_OFFSET, HEIGHT-HIGHLIGHT_OFFSET, HEIGHT+HIGHLIGHT_OFFSET, NodeAnchor.BOTTOM_LEFT);
+        testForResize(HIGHLIGHT_OFFSET+1, WIDTH-HIGHLIGHT_OFFSET-1, HEIGHT-HIGHLIGHT_OFFSET, HEIGHT+HIGHLIGHT_OFFSET, NodeAnchor.BOTTOM);
+        testForResize(WIDTH-HIGHLIGHT_OFFSET, WIDTH+HIGHLIGHT_OFFSET, HEIGHT-HIGHLIGHT_OFFSET, HEIGHT+HIGHLIGHT_OFFSET, NodeAnchor.BOTTOM_RIGHT);
+    }
+
+    private void testForResize(double left, double right, double top, double bottom, NodeAnchor anchor) {
+        assertThat(NodeAnchor.forResize(new Point2D(left, top), 0, 0, WIDTH, HEIGHT)).isEqualTo(anchor);
+        assertThat(NodeAnchor.forResize(new Point2D(right, top), 0, 0, WIDTH, HEIGHT)).isEqualTo(anchor);
+        assertThat(NodeAnchor.forResize(new Point2D(right, bottom), 0, 0, WIDTH, HEIGHT)).isEqualTo(anchor);
+        assertThat(NodeAnchor.forResize(new Point2D(left, bottom), 0, 0, WIDTH, HEIGHT)).isEqualTo(anchor);
     }
 }

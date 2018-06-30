@@ -21,6 +21,7 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene;
 
+import io.github.jonestimd.vgeditor.scene.control.selection.SelectionController;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -29,13 +30,13 @@ import static java.lang.Math.*;
 
 public enum NodeAnchor {
     TOP_LEFT(-1, -1),
-    TOP_CENTER(0, -1),
+    TOP(0, -1),
     TOP_RIGHT(1, -1),
     LEFT(-1, 0),
     CENTER(0, 0),
     RIGHT(1, 0),
     BOTTOM_LEFT(-1, 1),
-    BOTTOM_CENTER(0, 1),
+    BOTTOM(0, 1),
     BOTTOM_RIGHT(1, 1);
 
     private static double alignLeftX(double halfWidth, double angle) {
@@ -55,8 +56,8 @@ public enum NodeAnchor {
     }
 
     // normalized anchor offset from center
-    private final int dy;
-    private final int dx;
+    public final int dy;
+    public final int dx;
 
     NodeAnchor(int dx, int dy) {
         this.dx = dx;
@@ -69,7 +70,7 @@ public enum NodeAnchor {
     public NodeAnchor adjust(Point2D start, Point2D end) {
         if (this == CENTER) return this;
         boolean above = end.getY() < start.getY();
-        if (dx == 0) return above ? BOTTOM_CENTER : TOP_CENTER;
+        if (dx == 0) return above ? BOTTOM : TOP;
         boolean left = end.getX() < start.getX();
         if (dy == 0) return left ? RIGHT : LEFT;
         if (left) return above ? BOTTOM_RIGHT : TOP_RIGHT;
@@ -111,5 +112,20 @@ public enum NodeAnchor {
             }
         }
         throw new IllegalArgumentException();
+    }
+
+    public static NodeAnchor forResize(Point2D cursor, double x, double y, double width, double height) {
+        boolean top = Math.abs(y-cursor.getY()) <= SelectionController.HIGHLIGHT_OFFSET;
+        boolean bottom = Math.abs(y+height-cursor.getY()) <= SelectionController.HIGHLIGHT_OFFSET;
+        if (Math.abs(x-cursor.getX()) <= SelectionController.HIGHLIGHT_OFFSET) {
+            if (top) return TOP_LEFT;
+            return bottom ? BOTTOM_LEFT : LEFT;
+        }
+        if (Math.abs(x+width-cursor.getX()) <= SelectionController.HIGHLIGHT_OFFSET) {
+            if (top) return TOP_RIGHT;
+            return bottom ? BOTTOM_RIGHT : RIGHT;
+        }
+        if (top) return TOP;
+        return bottom ? BOTTOM : null;
     }
 }

@@ -25,7 +25,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.function.DoubleConsumer;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import com.google.common.collect.ImmutableList;
@@ -65,22 +65,25 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
     @FXML
     private Button newButton;
 
-    private final MouseInputHandler mouseInputHandler = new MouseInputHandler(this::startDrag, this::continueDrag);
-    private final Supplier<T> nodeFactory;
-    private final ShapeAdapter<T> adapter;
-    private final Map<String, DoubleConsumer> fieldHandlers = ImmutableMap.of(
-            ID_ANCHOR_X, this::setNodeX,
-            ID_ANCHOR_Y, this::setNodeY,
-            ID_WIDTH, this::setNodeWidth,
-            ID_HEIGHT, this::setNodeHeight,
-            ID_ROTATION, this::setRotation);
-
     private Group diagram;
     private T node;
+
+    private BiConsumer<Point2D, Point2D> drag;
+
+    private final MouseInputHandler mouseInputHandler = new MouseInputHandler(this::startDrag, this::continueDrag, this::endDrag);
+    private final Supplier<T> nodeFactory;
+    private final ShapeAdapter<T> adapter;
+    private final Map<String, Runnable> fieldHandlers;
 
     protected ShapeController(Supplier<T> nodeFactory, ShapeAdapter<T> adapter) {
         this.nodeFactory = nodeFactory;
         this.adapter = adapter;
+        fieldHandlers = ImmutableMap.of(
+                ID_ANCHOR_X, () -> adapter.setX(node, getFieldValue(ID_ANCHOR_X)),
+                ID_ANCHOR_Y, () -> adapter.setY(node, getFieldValue(ID_ANCHOR_Y)),
+                ID_WIDTH, this::setNodeWidth,
+                ID_HEIGHT, this::setNodeHeight,
+                ID_ROTATION, this::setRotation);
     }
 
     public void initialize() {
@@ -88,7 +91,7 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
             if (isValid()) {
                 if (node == null) createNode();
                 String fieldId = change.getPropertyName();
-                fieldHandlers.get(fieldId).accept(getFieldValue(fieldId));
+                fieldHandlers.get(fieldId).run();
             }
             else if (node != null) {
                 diagram.getChildren().remove(node);
@@ -164,69 +167,77 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
         }
     }
 
-    private void setNodeX(double x) {
-        adapter.setX(node, x);
-    }
-
-    private void setNodeY(double y) {
-        adapter.setY(node, y);
-    }
-
-    private void setNodeWidth(double width) {
+    private void setNodeWidth() {
+        Double width = getFieldValue(ID_WIDTH);
         adapter.setWidth(node, width);
         this.nodeAnchor.translate(node, width, getFieldValue(ID_HEIGHT));
     }
 
-    private void setNodeHeight(double height) {
+    private void setNodeHeight() {
+        Double height = getFieldValue(ID_HEIGHT);
         adapter.setHeight(node, height);
         this.nodeAnchor.translate(node, getFieldValue(ID_WIDTH), height);
     }
 
-    private void setRotation(double rotation) {
-        node.setRotate(rotation);
+    private void setRotation() {
+        node.setRotate(getFieldValue(ID_ROTATION));
         this.nodeAnchor.translate(node, getFieldValue(ID_WIDTH), getFieldValue(ID_HEIGHT));
     }
 
+    private void setNodeLocation() {
+        adapter.setX(node, getFieldValue(ID_ANCHOR_X));
+        adapter.setY(node, getFieldValue(ID_ANCHOR_Y));
+    }
+
     private void setNodeSize() {
-        setNodeWidth(getFieldValue(ID_WIDTH));
-        setNodeHeight(getFieldValue(ID_HEIGHT));
+        setNodeWidth();
+        setNodeHeight();
         nodeAnchor.translate(node, adapter.getWidth(node), adapter.getHeight(node));
     }
 
-    private void startDrag(Point2D point) {
-        onNewNode();
-        setLocationInputs(point.getX(), point.getY());
-        if (isValid()) {
-            setNodeX(point.getX());
-            setNodeY(point.getY());
-            nodeAnchor.translate(node, adapter.getWidth(node), adapter.getHeight(node));
-        }
+    protected NodeAnchor getResizeAnchor(T node, Point2D screenPoint) {
+        return NodeAnchor.forResize(node.screenToLocal(screenPoint), adapter.getX(node), adapter.getY(node), adapter.getWidth(node), adapter.getHeight(node));
     }
 
-    private void setLocationInputs(double x, double y) {
+    protected boolean startDrag(Point2D screenPoint, boolean isShortcutDown) {
+        if (node != null && adapter.isStartDrag(node, screenPoint)) {
+            if (isShortcutDown) {
+                NodeAnchor resizeAnchor = getResizeAnchor(node, screenPoint);
+                if (resizeAnchor != null) drag = new ResizeDrag(resizeAnchor);
+            }
+            else drag = new MoveDrag();
+        }
+        else if (!isShortcutDown) {
+            onNewNode();
+            Point2D point = diagram.screenToLocal(screenPoint);
+            setLocationInputs(point.getX(), point.getY());
+            if (isValid()) {
+                adapter.setX(node, point.getX());
+                adapter.setY(node, point.getY());
+                nodeAnchor.translate(node, adapter.getWidth(node), adapter.getHeight(node));
+            }
+            drag = new NewNodeDrag();
+        }
+        return drag != null;
+    }
+
+    protected void setLocationInputs(double x, double y) {
         basicShapeController.setValue(ID_ANCHOR_X, x);
         basicShapeController.setValue(ID_ANCHOR_Y, y);
     }
 
-    private void continueDrag(Point2D start, Point2D end) {
-        selectAnchor(nodeAnchor.adjust(start, end));
-        setSizeInputs(nodeAnchor.getSize(start, end));
-        if (isValid()) {
-            if (node == null) createNode();
-            else setNodeSize();
-        }
-        else if (node != null) {
-            diagram.getChildren().remove(node);
-            clearNode();
-        }
-        newButton.setDisable(!isValid());
+    protected void continueDrag(Point2D screenStart, Point2D screenEnd) {
+        drag.accept(screenStart, screenEnd);
+    }
+
+    protected void endDrag() {
+        drag = null;
     }
 
     protected void createNode() {
         node = nodeFactory.get();
-        setNodeX(getFieldValue(ID_ANCHOR_X));
-        setNodeY(getFieldValue(ID_ANCHOR_Y));
-        node.setRotate(getFieldValue(ID_ROTATION));
+        setNodeLocation();
+        setRotation();
         setNodeSize();
         fillPaneController.newNode(node);
         strokePaneController.newNode(node);
@@ -241,26 +252,73 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
         }
     }
 
-    private void setSizeInputs(Dimension2D size) {
+    protected void setSizeInputs(Dimension2D size) {
         setSizeInputs(size.getWidth(), size.getHeight());
     }
 
-    private void setSizeInputs(double width, double height) {
+    protected void setSizeInputs(double width, double height) {
         basicShapeController.setValue(ID_WIDTH, width);
         basicShapeController.setValue(ID_HEIGHT, height);
     }
 
-    protected interface ShapeAdapter<T> {
-        double getX(T node);
-        double getY(T node);
+    private class NewNodeDrag implements BiConsumer<Point2D, Point2D> {
+        public void accept(Point2D screenStart, Point2D screenEnd) {
+            Point2D start = diagram.screenToLocal(screenStart);
+            Point2D end = diagram.screenToLocal(screenEnd);
+            selectAnchor(nodeAnchor.adjust(start, end));
+            setSizeInputs(nodeAnchor.getSize(start, end));
+            if (isValid()) {
+                if (node == null) createNode();
+                else setNodeSize();
+            }
+            else if (node != null) {
+                diagram.getChildren().remove(node);
+                clearNode();
+            }
+            newButton.setDisable(!isValid());
+        }
+    }
 
-        void setX(T node, double x);
-        void setY(T node, double y);
+    private class MoveDrag implements BiConsumer<Point2D, Point2D> {
+        private final double startX, startY;
 
-        double getWidth(T node);
-        double getHeight(T node);
+        public MoveDrag() {
+            this.startX = adapter.getX(node);
+            this.startY = adapter.getY(node);
+        }
 
-        void setWidth(T node, double width);
-        void setHeight(T node, double height);
+        public void accept(Point2D start, Point2D end) { // TODO compensate for axis adjustment at top and left screen border
+            double x = startX+end.getX()-start.getX();
+            double y = startY+end.getY()-start.getY();
+            setLocationInputs(x, y);
+            setNodeLocation();
+        }
+    }
+
+    private class ResizeDrag implements BiConsumer<Point2D, Point2D> {
+        private final double startX, startY;
+        private final double startWidth, startHeight;
+        private final int xFactor, yFactor;
+        private final int widthFactor, heightFactor;
+
+        public ResizeDrag(NodeAnchor resizeAnchor) {
+            this.startX = adapter.getX(node);
+            this.startY = adapter.getY(node);
+            this.startWidth = adapter.getWidth(node);
+            this.startHeight = adapter.getHeight(node);
+            xFactor = resizeAnchor.dx == -nodeAnchor.dx ? 0 : resizeAnchor.dx*nodeAnchor.dx;
+            yFactor = resizeAnchor.dy == -nodeAnchor.dy ? 0 : resizeAnchor.dy*nodeAnchor.dy;
+            widthFactor = resizeAnchor.dx*(nodeAnchor.dx == 0 ? 2 : 1);
+            heightFactor = resizeAnchor.dy*(nodeAnchor.dy == 0 ? 2 : 1);
+        }
+
+        public void accept(Point2D start, Point2D end) {
+            double dx = end.getX()-start.getX();
+            double dy = end.getY()-start.getY();
+            setLocationInputs(startX+dx*xFactor, startY+dy*yFactor);
+            setNodeLocation();
+            setSizeInputs(startWidth+dx*widthFactor, startHeight+dy*heightFactor);
+            setNodeSize();
+        }
     }
 }

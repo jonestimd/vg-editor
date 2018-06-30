@@ -22,7 +22,6 @@
 package io.github.jonestimd.vgeditor.scene.control;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Parent;
@@ -33,29 +32,36 @@ public class MouseInputHandler {
     private boolean mouseDragging;
     private Point2D startPoint;
 
-    private final Consumer<Point2D> startDrag;
+    private final StartDragPredicate startDrag;
     private final BiConsumer<Point2D, Point2D> continueDrag;
+    private final Runnable endDrag;
 
-    public MouseInputHandler(Consumer<Point2D> startDrag, BiConsumer<Point2D, Point2D> continueDrag) {
+    public MouseInputHandler(StartDragPredicate startDrag, BiConsumer<Point2D, Point2D> continueDrag, Runnable endDrag) {
         this.startDrag = startDrag;
         this.continueDrag = continueDrag;
+        this.endDrag = endDrag;
     }
 
     public void handle(Parent diagram, MouseEvent event) {
         if (event.getEventType() == MouseEvent.MOUSE_PRESSED && event.getButton() == MouseButton.PRIMARY) {
-            startPoint = diagram.screenToLocal(event.getScreenX(), event.getScreenY());
+            startPoint = new Point2D(event.getScreenX(), event.getScreenY());
         }
         else if (event.getEventType() == MouseEvent.DRAG_DETECTED && event.getButton() == MouseButton.PRIMARY) {
-            this.mouseDragging = true;
-            diagram.startFullDrag();
-            startDrag.accept(startPoint);
+            if (startDrag.test(startPoint, event.isShortcutDown())) {
+                this.mouseDragging = true;
+                diagram.startFullDrag();
+            }
         }
-        else if (event.getEventType() == MouseEvent.MOUSE_RELEASED && mouseDragging) {
-            this.mouseDragging = false;
+        else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
+            if (mouseDragging) {
+                endDrag.run();
+                mouseDragging = false;
+            }
         }
-        else if (mouseDragging) {
-            Point2D point = diagram.screenToLocal(event.getScreenX(), event.getScreenY());
-            continueDrag.accept(startPoint, point);
-        }
+        else if (mouseDragging) continueDrag.accept(startPoint, new Point2D(event.getScreenX(), event.getScreenY()));
+    }
+
+    public interface StartDragPredicate {
+        boolean test(Point2D point, boolean isShortcutDown);
     }
 }

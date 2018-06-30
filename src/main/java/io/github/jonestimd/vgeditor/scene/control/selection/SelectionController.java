@@ -40,11 +40,10 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Effect;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
@@ -64,7 +63,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
     private PathSegment<?> pathHighlight;
     private int polylineHighlight = -1;
 
-    private final Effect highlightEffect = new DropShadow(0, Color.GRAY);
+    private final Effect highlightEffect = new ColorAdjust(-.25, 0.2, 0.5, 0);
     private final Shape marker;
 
     public SelectionController(Group diagram, Shape marker) {
@@ -76,10 +75,6 @@ public class SelectionController implements EventHandler<MouseEvent> {
         return highlighted;
     }
 
-    public Node getSelected() {
-        return selected.getValue();
-    }
-
     public Property<Node> selectedProperty() {
         return selected;
     }
@@ -87,7 +82,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
     @Override
     public void handle(MouseEvent event) {
         if (event.getEventType() == MouseEvent.MOUSE_MOVED) onMouseMoved(event.getScreenX(), event.getScreenY());
-        else if (event.getEventType() == MouseEvent.MOUSE_CLICKED && event.getButton() == MouseButton.PRIMARY) {
+        else if (event.getEventType() == MouseEvent.MOUSE_PRESSED && event.getButton() == MouseButton.PRIMARY) {
             selected.setValue(highlighted);
         }
     }
