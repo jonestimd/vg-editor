@@ -293,10 +293,11 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
         }
     }
 
-    private class ResizeDragHandler implements BiConsumer<Point2D, Point2D> { // TODO handle crossing anchor
+    private class ResizeDragHandler implements BiConsumer<Point2D, Point2D> {
         private final double startX, startY;
         private final double startWidth, startHeight;
         private final ResizeDragCalculator resizeDragCalculator;
+        private int swapX = 1, swapY = 1;
 
         public ResizeDragHandler(NodeAnchor resizeAnchor) {
             resizeDragCalculator = new ResizeDragCalculator(resizeAnchor, nodeAnchor, node.getRotate());
@@ -311,7 +312,17 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
             Offset2D adjustment = resizeDragCalculator.apply(start, end);
             setLocationInputs(startX+adjustment.dx, startY+adjustment.dy);
             setNodeLocation();
-            setSizeInputs(startWidth+adjustment.dWidth, startHeight+adjustment.dHeight);
+            double width = swapX*(startWidth+adjustment.dWidth);
+            double height = swapY*(startHeight+adjustment.dHeight);
+            if (width < 0) {
+                selectAnchor(nodeAnchor.swapX());
+                swapX = -swapX;
+            }
+            if (height < 0) {
+                selectAnchor(nodeAnchor.swapY());
+                swapY = -swapY;
+            }
+            setSizeInputs(Math.abs(width), Math.abs(height));
             setNodeSize();
         }
     }

@@ -224,4 +224,30 @@ public class NodeAnchorTest {
         assertThat(NodeAnchor.forResize(new Point2D(right, bottom), 0, 0, WIDTH, HEIGHT)).isEqualTo(anchor);
         assertThat(NodeAnchor.forResize(new Point2D(left, bottom), 0, 0, WIDTH, HEIGHT)).isEqualTo(anchor);
     }
+
+    @Test
+    public void swapX() throws Exception {
+        assertThat(NodeAnchor.TOP_LEFT.swapX()).isEqualTo(NodeAnchor.TOP_RIGHT);
+        assertThat(NodeAnchor.TOP.swapX()).isEqualTo(NodeAnchor.TOP);
+        assertThat(NodeAnchor.TOP_RIGHT.swapX()).isEqualTo(NodeAnchor.TOP_LEFT);
+        assertThat(NodeAnchor.LEFT.swapX()).isEqualTo(NodeAnchor.RIGHT);
+        assertThat(NodeAnchor.CENTER.swapX()).isEqualTo(NodeAnchor.CENTER);
+        assertThat(NodeAnchor.RIGHT.swapX()).isEqualTo(NodeAnchor.LEFT);
+        assertThat(NodeAnchor.BOTTOM_LEFT.swapX()).isEqualTo(NodeAnchor.BOTTOM_RIGHT);
+        assertThat(NodeAnchor.BOTTOM.swapX()).isEqualTo(NodeAnchor.BOTTOM);
+        assertThat(NodeAnchor.BOTTOM_RIGHT.swapX()).isEqualTo(NodeAnchor.BOTTOM_LEFT);
+    }
+
+    @Test
+    public void swapY() throws Exception {
+        assertThat(NodeAnchor.TOP_LEFT.swapY()).isEqualTo(NodeAnchor.BOTTOM_LEFT);
+        assertThat(NodeAnchor.TOP.swapY()).isEqualTo(NodeAnchor.BOTTOM);
+        assertThat(NodeAnchor.TOP_RIGHT.swapY()).isEqualTo(NodeAnchor.BOTTOM_RIGHT);
+        assertThat(NodeAnchor.LEFT.swapY()).isEqualTo(NodeAnchor.LEFT);
+        assertThat(NodeAnchor.CENTER.swapY()).isEqualTo(NodeAnchor.CENTER);
+        assertThat(NodeAnchor.RIGHT.swapY()).isEqualTo(NodeAnchor.RIGHT);
+        assertThat(NodeAnchor.BOTTOM_LEFT.swapY()).isEqualTo(NodeAnchor.TOP_LEFT);
+        assertThat(NodeAnchor.BOTTOM.swapY()).isEqualTo(NodeAnchor.TOP);
+        assertThat(NodeAnchor.BOTTOM_RIGHT.swapY()).isEqualTo(NodeAnchor.TOP_RIGHT);
+    }
 }

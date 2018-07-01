@@ -77,6 +77,18 @@ public enum NodeAnchor {
         return above ? BOTTOM_LEFT : TOP_LEFT;
     }
 
+    public NodeAnchor swapX() {
+        if (dx == 0) return this;
+        if (dx == 1) return values()[ordinal()-2];
+        return values()[ordinal()+2];
+    }
+
+    public NodeAnchor swapY() {
+        if (dy == 0) return this;
+        if (dy == 1) return values()[ordinal()-6];
+        return values()[ordinal()+6];
+    }
+
     /**
      * Set the node's translation based on the anchor and its rotation.
      * @param node the node to translate
