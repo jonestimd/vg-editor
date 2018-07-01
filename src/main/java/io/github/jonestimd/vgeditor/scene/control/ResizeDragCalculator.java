@@ -24,15 +24,15 @@ package io.github.jonestimd.vgeditor.scene.control;
 import java.util.function.BiFunction;
 
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
-import io.github.jonestimd.vgeditor.scene.control.ResizeDrag.Offset2D;
+import io.github.jonestimd.vgeditor.scene.control.ResizeDragCalculator.Offset2D;
 import javafx.geometry.Point2D;
 
-public class ResizeDrag implements BiFunction<Point2D, Point2D, Offset2D> {
+public class ResizeDragCalculator implements BiFunction<Point2D, Point2D, Offset2D> {
     private final double xxFactor, xyFactor, yxFactor, yyFactor;
     private final int widthFactor, heightFactor;
     private final double cos, sin;
 
-    public ResizeDrag(NodeAnchor resizeAnchor, NodeAnchor nodeAnchor, double rotation) {
+    public ResizeDragCalculator(NodeAnchor resizeAnchor, NodeAnchor nodeAnchor, double rotation) {
         double angle = Math.toRadians(rotation);
         cos = Math.cos(angle);
         sin = Math.sin(angle);

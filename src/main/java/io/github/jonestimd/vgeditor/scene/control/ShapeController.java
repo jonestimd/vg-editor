@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
-import io.github.jonestimd.vgeditor.scene.control.ResizeDrag.Offset2D;
+import io.github.jonestimd.vgeditor.scene.control.ResizeDragCalculator.Offset2D;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Dimension2D;
@@ -263,6 +263,7 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
     }
 
     private class NewNodeDrag implements BiConsumer<Point2D, Point2D> {
+        @Override
         public void accept(Point2D screenStart, Point2D screenEnd) {
             Point2D start = diagram.screenToLocal(screenStart);
             Point2D end = diagram.screenToLocal(screenEnd);
@@ -288,6 +289,7 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
             this.startY = adapter.getY(node);
         }
 
+        @Override
         public void accept(Point2D start, Point2D end) { // TODO compensate for axis adjustment at top and left screen border
             setLocationInputs(startX+end.getX()-start.getX(), startY+end.getY()-start.getY());
             setNodeLocation();
@@ -297,18 +299,19 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
     private class ResizeDragHandler implements BiConsumer<Point2D, Point2D> { // TODO handle crossing anchor
         private final double startX, startY;
         private final double startWidth, startHeight;
-        private final ResizeDrag resizeDrag;
+        private final ResizeDragCalculator resizeDragCalculator;
 
         public ResizeDragHandler(NodeAnchor resizeAnchor) {
-            resizeDrag = new ResizeDrag(resizeAnchor, nodeAnchor, node.getRotate());
+            resizeDragCalculator = new ResizeDragCalculator(resizeAnchor, nodeAnchor, node.getRotate());
             this.startX = adapter.getX(node);
             this.startY = adapter.getY(node);
             this.startWidth = adapter.getWidth(node);
             this.startHeight = adapter.getHeight(node);
         }
 
+        @Override
         public void accept(Point2D start, Point2D end) {
-            Offset2D adjustment = resizeDrag.apply(start, end);
+            Offset2D adjustment = resizeDragCalculator.apply(start, end);
             setLocationInputs(startX+adjustment.dx, startY+adjustment.dy);
             setNodeLocation();
             setSizeInputs(startWidth+adjustment.dWidth, startHeight+adjustment.dHeight);

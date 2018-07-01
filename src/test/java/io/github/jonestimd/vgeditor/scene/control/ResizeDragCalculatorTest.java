@@ -22,14 +22,14 @@
 package io.github.jonestimd.vgeditor.scene.control;
 
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
-import io.github.jonestimd.vgeditor.scene.control.ResizeDrag.Offset2D;
+import io.github.jonestimd.vgeditor.scene.control.ResizeDragCalculator.Offset2D;
 import javafx.geometry.Point2D;
 import org.assertj.core.data.Offset;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class ResizeDragTest {
+public class ResizeDragCalculatorTest {
     private static final Offset<Double> DOUBLE_OFFSET = Offset.offset(0.0000001);
     private static final int WIDTH = 10;
     private static final int HEIGHT = 20;
@@ -37,7 +37,7 @@ public class ResizeDragTest {
     private static final Point2D POINT2 = new Point2D(WIDTH, HEIGHT);
 
     @Test
-    public void resize_TopLeft_0() throws Exception {
+    public void topLeft_0() throws Exception {
         final double angle = 0;
         testResize(NodeAnchor.TOP_LEFT, NodeAnchor.TOP_LEFT, angle, WIDTH, HEIGHT, -WIDTH, -HEIGHT);
         testResize(NodeAnchor.TOP_LEFT, NodeAnchor.TOP, angle, 0, HEIGHT, 0, -HEIGHT);
@@ -50,7 +50,7 @@ public class ResizeDragTest {
     }
 
     @Test
-    public void resize_TopLeft_30() throws Exception {
+    public void topLeft_30() throws Exception {
         final double angle = 30;
         final double cos = Math.cos(Math.toRadians(angle));
         final double sin = Math.sin(Math.toRadians(angle));
@@ -66,7 +66,7 @@ public class ResizeDragTest {
     }
 
     @Test
-    public void resize_TopRight_30() throws Exception {
+    public void topRight_30() throws Exception {
         final double angle = 30;
         final double cos = Math.cos(Math.toRadians(angle));
         final double sin = Math.sin(Math.toRadians(angle));
@@ -82,7 +82,7 @@ public class ResizeDragTest {
     }
 
     @Test
-    public void resize_BottomRight_30() throws Exception {
+    public void bottomRight_30() throws Exception {
         final double angle = 30;
         final double cos = Math.cos(Math.toRadians(angle));
         final double sin = Math.sin(Math.toRadians(angle));
@@ -98,7 +98,7 @@ public class ResizeDragTest {
     }
 
     @Test
-    public void resize_TopLeft_180() throws Exception {
+    public void topLeft_180() throws Exception {
         final double angle = 180;
         testResize(NodeAnchor.TOP_LEFT, NodeAnchor.TOP_LEFT, angle, WIDTH, HEIGHT, WIDTH, HEIGHT);
         testResize(NodeAnchor.TOP_LEFT, NodeAnchor.TOP, angle, 0, HEIGHT, 0, HEIGHT);
@@ -112,7 +112,7 @@ public class ResizeDragTest {
 
     @Test
     @SuppressWarnings("SuspiciousNameCombination")
-    public void resize_TopLeft_90() throws Exception {
+    public void topLeft_90() throws Exception {
         final double angle = 90;
         testResize(NodeAnchor.TOP_LEFT, NodeAnchor.TOP_LEFT, angle, WIDTH, HEIGHT, -HEIGHT, WIDTH);
         testResize(NodeAnchor.TOP_LEFT, NodeAnchor.TOP, angle, WIDTH, 0, 0, WIDTH);
@@ -126,7 +126,7 @@ public class ResizeDragTest {
 
     @Test
     @SuppressWarnings("SuspiciousNameCombination")
-    public void resize_TopLeft_minus90() throws Exception {
+    public void topLeft_minus90() throws Exception {
         final double angle = -90;
         testResize(NodeAnchor.TOP_LEFT, NodeAnchor.TOP_LEFT, angle, WIDTH, HEIGHT, HEIGHT, -WIDTH);
         testResize(NodeAnchor.TOP_LEFT, NodeAnchor.TOP, angle, WIDTH, 0, 0, -WIDTH);
@@ -139,7 +139,7 @@ public class ResizeDragTest {
     }
 
     @Test
-    public void resize_Center_0() throws Exception {
+    public void center_0() throws Exception {
         final double angle = 0;
         testResize(NodeAnchor.CENTER, NodeAnchor.TOP_LEFT, angle, 0, 0, -WIDTH*2, -HEIGHT*2);
         testResize(NodeAnchor.CENTER, NodeAnchor.TOP, angle, 0, 0, 0, -HEIGHT*2);
@@ -153,7 +153,7 @@ public class ResizeDragTest {
 
     @Test
     @SuppressWarnings("SuspiciousNameCombination")
-    public void resize_Center_90() throws Exception {
+    public void center_90() throws Exception {
         final double angle = 90;
         testResize(NodeAnchor.CENTER, NodeAnchor.TOP_LEFT, angle, 0, 0, -HEIGHT*2, WIDTH*2);
         testResize(NodeAnchor.CENTER, NodeAnchor.TOP, angle, 0, 0, 0, WIDTH*2);
@@ -166,9 +166,9 @@ public class ResizeDragTest {
     }
 
     public void testResize(NodeAnchor nodeAnchor, NodeAnchor resizeAnchor, double rotation, double dx, double dy, double dWidth, double dHeight) {
-        ResizeDrag resizeDrag = new ResizeDrag(resizeAnchor, nodeAnchor, rotation);
+        ResizeDragCalculator resizeDragCalculator = new ResizeDragCalculator(resizeAnchor, nodeAnchor, rotation);
 
-        Offset2D adjustment = resizeDrag.apply(POINT1, POINT2);
+        Offset2D adjustment = resizeDragCalculator.apply(POINT1, POINT2);
 
         assertThat(adjustment.dx).as("delta x").isEqualTo(dx, DOUBLE_OFFSET);
         assertThat(adjustment.dy).as("delta y").isEqualTo(dy, DOUBLE_OFFSET);
