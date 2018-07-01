@@ -21,17 +21,13 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
-import io.github.jonestimd.vgeditor.JavaFxThreadingRule;
+import io.github.jonestimd.vgeditor.JavafxTest;
 import javafx.scene.control.TextField;
-import org.junit.Rule;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class TextFieldsTest {
-    @Rule
-    public JavaFxThreadingRule rule = new JavaFxThreadingRule();
-
+public class TextFieldsTest extends JavafxTest {
     @Test
     public void parseDoubleReturnsNoneForNoDigits() throws Exception {
         assertThat(TextFields.parseDouble(new TextField("-")).isPresent()).isFalse();

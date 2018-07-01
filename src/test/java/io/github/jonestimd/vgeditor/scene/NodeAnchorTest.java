@@ -21,11 +21,9 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene;
 
-import io.github.jonestimd.vgeditor.JavaFxThreadingRule;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
@@ -36,8 +34,6 @@ public class NodeAnchorTest {
     public static final int WIDTH = 100;
     public static final int HEIGHT = 80;
 
-    @Rule
-    public JavaFxThreadingRule rule = new JavaFxThreadingRule();
     private Rectangle rectangle;
 
     @Before
