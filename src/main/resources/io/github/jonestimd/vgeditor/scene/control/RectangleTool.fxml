@@ -58,13 +58,13 @@
     <Label text="%anchor"/>
     <GridPane fx:id="anchorParent" styleClass="control-group" alignment="CENTER" hgap="3" vgap="3">
         <RadioButton toggleGroup="$anchor" id="TOP_LEFT" selected="true" onAction="#onAnchorChange" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <RadioButton toggleGroup="$anchor" id="TOP_CENTER" onAction="#onAnchorChange" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <RadioButton toggleGroup="$anchor" id="TOP" onAction="#onAnchorChange" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
         <RadioButton toggleGroup="$anchor" id="TOP_RIGHT" onAction="#onAnchorChange" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
         <RadioButton toggleGroup="$anchor" id="LEFT" onAction="#onAnchorChange" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
         <RadioButton toggleGroup="$anchor" id="CENTER" onAction="#onAnchorChange" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
         <RadioButton toggleGroup="$anchor" id="RIGHT" onAction="#onAnchorChange" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
         <RadioButton toggleGroup="$anchor" id="BOTTOM_LEFT" onAction="#onAnchorChange" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <RadioButton toggleGroup="$anchor" id="BOTTOM_CENTER" onAction="#onAnchorChange" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <RadioButton toggleGroup="$anchor" id="BOTTOM" onAction="#onAnchorChange" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
         <RadioButton toggleGroup="$anchor" id="BOTTOM_RIGHT" onAction="#onAnchorChange" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
     </GridPane>
     <fx:include source="FillPane.fxml" fx:id="fillPane"/>
