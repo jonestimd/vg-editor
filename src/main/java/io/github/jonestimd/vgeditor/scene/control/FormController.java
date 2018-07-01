@@ -68,7 +68,7 @@ public class FormController {
         }
         else {
             values.put(fieldId, value);
-            fields.get(fieldId).setText(value.toString());
+            fields.get(fieldId).setText(Preferences.numberFormat().format(value));
         }
     }
 

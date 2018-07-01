@@ -104,8 +104,8 @@ public class RectangleController extends ShapeController<Rectangle> {
     @Override
     public void setNode(Rectangle node) {
         super.setNode(node);
-        arcWidth.setText(numberFormat.format(node.getArcWidth()/2));
-        arcHeight.setText(numberFormat.format(node.getArcHeight()/2));
+        arcWidth.setText(Preferences.numberFormat().format(node.getArcWidth()/2));
+        arcHeight.setText(Preferences.numberFormat().format(node.getArcHeight()/2));
     }
 
     private void setNodeArcWidth(double width) {

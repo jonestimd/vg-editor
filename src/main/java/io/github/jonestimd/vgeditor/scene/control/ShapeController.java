@@ -21,8 +21,6 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -52,7 +50,6 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
     private static final String ID_ROTATION = "rotation";
     private static final List<String> REQUIRED_FIELDS = ImmutableList.of(ID_ANCHOR_X, ID_ANCHOR_Y, ID_WIDTH, ID_HEIGHT);
     private static final Map<String, Double> DEFAULT_VALUES = ImmutableMap.of(ID_ROTATION, 0d);
-    protected NumberFormat numberFormat = new DecimalFormat("#0.#");
 
     private NodeAnchor nodeAnchor = NodeAnchor.TOP_LEFT;
     @FXML
