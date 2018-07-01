@@ -31,6 +31,7 @@ import java.util.function.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
+import io.github.jonestimd.vgeditor.scene.control.ResizeDrag.Offset2D;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Dimension2D;
@@ -203,7 +204,7 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
         if (node != null && adapter.isStartDrag(node, screenPoint)) {
             if (isShortcutDown) {
                 NodeAnchor resizeAnchor = getResizeAnchor(node, screenPoint);
-                if (resizeAnchor != null) drag = new ResizeDrag(resizeAnchor);
+                if (resizeAnchor != null) drag = new ResizeDragHandler(resizeAnchor);
             }
             else drag = new MoveDrag();
         }
@@ -288,36 +289,29 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
         }
 
         public void accept(Point2D start, Point2D end) { // TODO compensate for axis adjustment at top and left screen border
-            double x = startX+end.getX()-start.getX();
-            double y = startY+end.getY()-start.getY();
-            setLocationInputs(x, y);
+            setLocationInputs(startX+end.getX()-start.getX(), startY+end.getY()-start.getY());
             setNodeLocation();
         }
     }
 
-    private class ResizeDrag implements BiConsumer<Point2D, Point2D> {
+    private class ResizeDragHandler implements BiConsumer<Point2D, Point2D> { // TODO handle crossing anchor
         private final double startX, startY;
         private final double startWidth, startHeight;
-        private final int xFactor, yFactor;
-        private final int widthFactor, heightFactor;
+        private final ResizeDrag resizeDrag;
 
-        public ResizeDrag(NodeAnchor resizeAnchor) {
+        public ResizeDragHandler(NodeAnchor resizeAnchor) {
+            resizeDrag = new ResizeDrag(resizeAnchor, nodeAnchor, node.getRotate());
             this.startX = adapter.getX(node);
             this.startY = adapter.getY(node);
             this.startWidth = adapter.getWidth(node);
             this.startHeight = adapter.getHeight(node);
-            xFactor = resizeAnchor.dx == -nodeAnchor.dx ? 0 : resizeAnchor.dx*nodeAnchor.dx;
-            yFactor = resizeAnchor.dy == -nodeAnchor.dy ? 0 : resizeAnchor.dy*nodeAnchor.dy;
-            widthFactor = resizeAnchor.dx*(nodeAnchor.dx == 0 ? 2 : 1);
-            heightFactor = resizeAnchor.dy*(nodeAnchor.dy == 0 ? 2 : 1);
         }
 
         public void accept(Point2D start, Point2D end) {
-            double dx = end.getX()-start.getX();
-            double dy = end.getY()-start.getY();
-            setLocationInputs(startX+dx*xFactor, startY+dy*yFactor);
+            Offset2D adjustment = resizeDrag.apply(start, end);
+            setLocationInputs(startX+adjustment.dx, startY+adjustment.dy);
             setNodeLocation();
-            setSizeInputs(startWidth+dx*widthFactor, startHeight+dy*heightFactor);
+            setSizeInputs(startWidth+adjustment.dWidth, startHeight+adjustment.dHeight);
             setNodeSize();
         }
     }
