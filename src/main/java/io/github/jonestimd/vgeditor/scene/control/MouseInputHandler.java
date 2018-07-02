@@ -47,6 +47,9 @@ public class MouseInputHandler {
             startPoint = new Point2D(event.getScreenX(), event.getScreenY());
         }
         else if (event.getEventType() == MouseEvent.DRAG_DETECTED && event.getButton() == MouseButton.PRIMARY) {
+            if (startPoint == null) { // java 9 or 10
+                startPoint = new Point2D(event.getScreenX(), event.getScreenY());
+            }
             if (startDrag.test(startPoint, event.isShortcutDown())) {
                 this.mouseDragging = true;
                 diagram.startFullDrag();
