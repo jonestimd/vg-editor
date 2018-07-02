@@ -21,6 +21,7 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control.selection;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
@@ -33,6 +34,17 @@ public class PolylinePredicate extends LineSegmentPredicate implements Predicate
     }
 
     public boolean test(Polyline polyline) {
+        return findSegment(polyline).isPresent();
+    }
+
+    public Point2D getMarkerPosition(Polyline polyline) {
+        return findSegment(polyline).map(i -> {
+            ObservableList<Double> points = polyline.getPoints();
+            return new Point2D((points.get(i-2)+points.get(i))/2, (points.get(i-1)+points.get(i+1))/2);
+        }).orElseThrow(() -> new IllegalArgumentException("Cursor not in range"));
+    }
+
+    private Optional<Integer> findSegment(Polyline polyline) {
         Point2D cursor = polyline.screenToLocal(screenX, screenY);
         ObservableList<Double> points = polyline.getPoints();
         if (points.size() > 2) {
@@ -41,9 +53,11 @@ public class PolylinePredicate extends LineSegmentPredicate implements Predicate
             for (int i = 2; i < points.size(); i += 2) {
                 double x2 = points.get(i);
                 double y2 = points.get(i+1);
-                if (isInHighlightRange(cursor, x1, y1, x2, y2)) return true;
+                if (isInHighlightRange(cursor, x1, y1, x2, y2)) return Optional.of(i);
+                x1 = x2;
+                y1 = y2;
             }
         }
-        return false;
+        return Optional.empty();
     }
 }

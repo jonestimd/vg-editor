@@ -31,7 +31,6 @@ import io.github.jonestimd.vgeditor.scene.shape.path.PathSegment;
 import io.github.jonestimd.vgeditor.scene.shape.path.PathVisitor;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -107,9 +106,8 @@ public class SelectionController implements EventHandler<MouseEvent> {
             setMarker(node, midpoint.getX(), midpoint.getY());
         }
         else if (node instanceof Polyline) {
-            Polyline line = (Polyline) node;
-            Point2D cursor = line.screenToLocal(screenX, screenY);
-            ObservableList<Double> points = line.getPoints();
+            Point2D cursor = new PolylinePredicate(screenX, screenY).getMarkerPosition((Polyline) node);
+            setMarker(node, cursor.getX(), cursor.getY());
         }
         else if (node instanceof Rectangle) {
             Point2D location = RectanglePredicate.getMarkerLocation(screenX, screenY, (Rectangle) node);
