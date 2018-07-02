@@ -21,8 +21,11 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Stack;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -45,6 +48,22 @@ public class Nodes {
 
     public static <T extends Node> void visit(Parent root, Class<T> type, Consumer<T> visitor) {
         visit(root, type::isInstance, (node) -> visitor.accept(type.cast(node)));
+    }
+
+    public static List<Node> findNodes(Parent root, Predicate<Node> filter) {
+        List<Node> matches = new ArrayList<>();
+        Stack<Parent> stack = new Stack<>();
+        stack.add(root);
+        while (!stack.isEmpty()) {
+            Parent parent = stack.pop();
+            for (Node node : parent.getChildrenUnmodifiable()) {
+                if (node instanceof Parent) {
+                    if (filter.test(node)) stack.push((Parent) node);
+                }
+                else if (filter.test(node)) matches.add(node);
+            }
+        }
+        return matches;
     }
 
     public static <T extends Node> T findById(Parent root, String id, Class<T> type) {

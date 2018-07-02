@@ -23,6 +23,7 @@ package io.github.jonestimd.vgeditor.scene.control.selection;
 
 import javafx.geometry.Point2D;
 
+import static io.github.jonestimd.vgeditor.scene.Geometry.*;
 import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
 
 public abstract class LineSegmentPredicate {
@@ -38,18 +39,10 @@ public abstract class LineSegmentPredicate {
      * @return true if the line segment defined by the 2 points is within the highlight range of the {@code cursor}.
      */
     protected boolean isInHighlightRange(Point2D cursor, double x1, double y1, double x2, double y2) {
-        double squareLen = squareDist(x1, y1, x2, y2);
-        if (squareLen == 0) return squareDist(cursor.getX(), cursor.getY(), x1, y1) < SQUARE_HIGHLIGHT_OFFSET;
+        double squareLen = distanceSquared(x1, y1, x2, y2);
+        if (squareLen == 0) return distanceSquared(cursor.getX(), cursor.getY(), x1, y1) < SQUARE_HIGHLIGHT_OFFSET;
         double projection = ((cursor.getX()-x1)*(x2-x1)+(cursor.getY()-y1)*(y2-y1))/squareLen;
-        double squareDist = squareDist(cursor.getX(), cursor.getY(), x1+projection*(x2-x1), y1+projection*(y2-y1));
+        double squareDist = distanceSquared(cursor.getX(), cursor.getY(), x1+projection*(x2-x1), y1+projection*(y2-y1));
         return projection >= 0 && projection <= 1 && squareDist < SQUARE_HIGHLIGHT_OFFSET;
-    }
-
-    private static double squareDist(double x1, double y1, double x2, double y2) {
-        return square(x1-x2)+square(y1-y2);
-    }
-
-    private static double square(double v) {
-        return v*v;
     }
 }

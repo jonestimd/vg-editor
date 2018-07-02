@@ -19,22 +19,20 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.scene.control.selection;
+package io.github.jonestimd.vgeditor.scene;
 
-import java.util.function.Predicate;
-
-import io.github.jonestimd.vgeditor.scene.shape.path.PathSegment;
 import javafx.geometry.Point2D;
 
-public class HighlightPathPredicate implements Predicate<PathSegment<?>> {
-    private final Point2D cursor;
-
-    public HighlightPathPredicate(Point2D cursor) {
-        this.cursor = cursor;
+public class Geometry {
+    public static double distanceSquared(Point2D p1, Point2D p2) {
+        return distanceSquared(p1.getX(), p1.getY(), p2.getX(), p2.getY());
     }
 
-    @Override
-    public boolean test(PathSegment<?> pathSegment) {
-        return pathSegment.getDistanceSquared(cursor) <= SelectionController.HIGHLIGHT_OFFSET_SQUARED;
+    public static double distanceSquared(double x1, double y1, double x2, double y2) {
+        return square(x1-x2)+square(y1-y2);
+    }
+
+    private static double square(double value) {
+        return value*value;
     }
 }
