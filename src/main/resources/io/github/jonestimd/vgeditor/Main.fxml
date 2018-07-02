@@ -54,7 +54,7 @@
         </MenuBar>
     </top>
     <center>
-        <ScrollPane fx:id="scrollPane">
+        <ScrollPane fx:id="scrollPane" styleClass="diagram">
             <Group>
                 <Group fx:id="axes">
                     <Line fx:id="xAxis" styleClass="axis"/>
