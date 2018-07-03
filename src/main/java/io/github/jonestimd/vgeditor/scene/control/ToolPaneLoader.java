@@ -56,7 +56,7 @@ public class ToolPaneLoader {
         scene.getAccelerators().putAll(diagram.getScene().getAccelerators());
         scene.getStylesheets().add(getClass().getResource("/io/github/jonestimd/vgeditor/styles.css").toExternalForm());
         stage.setScene(scene);
-        diagram.getScene().addEventHandler(MouseEvent.ANY, event -> {
+        diagram.getScene().addEventFilter(MouseEvent.ANY, event -> {
             if (controllerPane != null && controllerPane.getValue().getScene().getWindow().isShowing()) {
                 controllerPane.getKey().getMouseHandler().handle(diagram, event);
             }

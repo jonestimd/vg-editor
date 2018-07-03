@@ -69,7 +69,7 @@ public class MainController {
             @Override
             public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
                 diagram.sceneProperty().removeListener(this);
-                diagram.getScene().addEventHandler(MouseEvent.ANY, selectionController);
+                diagram.getScene().addEventFilter(MouseEvent.ANY, selectionController);
                 toolPaneLoader = new ToolPaneLoader(diagram);
                 diagram.getScene().getWindow().addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, MainController.this::onClose);
             }
