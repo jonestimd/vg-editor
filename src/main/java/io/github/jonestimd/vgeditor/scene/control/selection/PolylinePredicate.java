@@ -24,23 +24,41 @@ package io.github.jonestimd.vgeditor.scene.control.selection;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import io.github.jonestimd.vgeditor.scene.Geometry;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Polyline;
 
+import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
+
+/**
+ * Predicate to check if a point is within the highlight range of segment of a {@link Polyline}.
+ */
 public class PolylinePredicate extends LineSegmentPredicate implements Predicate<Polyline> {
     public PolylinePredicate(double screenX, double screenY) {
         super(screenX, screenY);
     }
 
+    /**
+     * @return if the point is within range of any segment of the {@link Polyline}
+     */
     public boolean test(Polyline polyline) {
         return findSegment(polyline).isPresent();
     }
 
+    /**
+     * @return the point to highlight (an endpoint of midpoint of the nearest line segment)
+     * @throws IllegalArgumentException the {@link Polyline} is not within highlight range of the point
+     */
     public Point2D getMarkerPosition(Polyline polyline) {
         return findSegment(polyline).map(i -> {
             ObservableList<Double> points = polyline.getPoints();
-            return new Point2D((points.get(i-2)+points.get(i))/2, (points.get(i-1)+points.get(i+1))/2);
+            Point2D cursor = polyline.screenToLocal(screenX, screenY);
+            Point2D start = new Point2D(points.get(i-2), points.get(i-1));
+            if (Geometry.distanceSquared(start, cursor) <= HIGHLIGHT_OFFSET_SQUARED) return start;
+            Point2D end = new Point2D(points.get(i), points.get(i+1));
+            if (Geometry.distanceSquared(end, cursor) <= HIGHLIGHT_OFFSET_SQUARED) return end;
+            return start.midpoint(end);
         }).orElseThrow(() -> new IllegalArgumentException("Cursor not in range"));
     }
 

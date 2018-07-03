@@ -26,8 +26,10 @@ import javafx.geometry.Point2D;
 import static io.github.jonestimd.vgeditor.scene.Geometry.*;
 import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
 
+/**
+ * Base class for predicates that check if a point is within the highlight range of an line segment.
+ */
 public abstract class LineSegmentPredicate {
-    protected static final double SQUARE_HIGHLIGHT_OFFSET = HIGHLIGHT_OFFSET*HIGHLIGHT_OFFSET;
     protected final double screenX, screenY;
 
     protected LineSegmentPredicate(double screenX, double screenY) {
@@ -36,13 +38,18 @@ public abstract class LineSegmentPredicate {
     }
 
     /**
+     * @param cursor the point to check (in the shape's local coordinate space)
+     * @param x1 the x coordinate of the starting point of the line segment
+     * @param y1 the y coordinate of the starting point of the line segment
+     * @param x2 the x coordinate of the ending point of the line segment
+     * @param y2 the y coordinate of the ending point of the line segment
      * @return true if the line segment defined by the 2 points is within the highlight range of the {@code cursor}.
      */
     protected boolean isInHighlightRange(Point2D cursor, double x1, double y1, double x2, double y2) {
         double squareLen = distanceSquared(x1, y1, x2, y2);
-        if (squareLen == 0) return distanceSquared(cursor.getX(), cursor.getY(), x1, y1) < SQUARE_HIGHLIGHT_OFFSET;
+        if (squareLen == 0) return distanceSquared(cursor.getX(), cursor.getY(), x1, y1) <= HIGHLIGHT_OFFSET_SQUARED;
         double projection = ((cursor.getX()-x1)*(x2-x1)+(cursor.getY()-y1)*(y2-y1))/squareLen;
         double squareDist = distanceSquared(cursor.getX(), cursor.getY(), x1+projection*(x2-x1), y1+projection*(y2-y1));
-        return projection >= 0 && projection <= 1 && squareDist < SQUARE_HIGHLIGHT_OFFSET;
+        return projection >= 0 && projection <= 1 && squareDist <= HIGHLIGHT_OFFSET_SQUARED;
     }
 }
