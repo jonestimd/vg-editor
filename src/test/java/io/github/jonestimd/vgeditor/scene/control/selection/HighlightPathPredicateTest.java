@@ -21,27 +21,33 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control.selection;
 
-import java.util.function.Predicate;
-
 import io.github.jonestimd.vgeditor.scene.shape.path.PathSegment;
 import javafx.geometry.Point2D;
-import javafx.scene.shape.Path;
+import org.junit.Test;
 
-/**
- * Predicate to check if a point is within the highlight range of an element of a {@link Path}.
- */
-public class HighlightPathPredicate implements Predicate<PathSegment<?>> {
-    private final Point2D cursor;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.*;
+import static org.mockito.Mockito.*;
 
-    /**
-     * @param cursor the point to check (in the Path's local coordinate space)
-     */
-    public HighlightPathPredicate(Point2D cursor) {
-        this.cursor = cursor;
+public class HighlightPathPredicateTest {
+    private final PathSegment<?> pathSegment = mock(PathSegment.class);
+    private final Point2D point = new Point2D(4, 5);
+    private final HighlightPathPredicate predicate = new HighlightPathPredicate(point);
+
+    @Test
+    public void returnsTrueForDistanceEqualToHighlightOffset() throws Exception {
+        when(pathSegment.getDistanceSquared(any(Point2D.class))).thenReturn(SelectionController.HIGHLIGHT_OFFSET_SQUARED*1d);
+
+        assertThat(predicate.test(pathSegment)).isTrue();
+
+        verify(pathSegment).getDistanceSquared(point);
     }
 
-    @Override
-    public boolean test(PathSegment<?> pathSegment) {
-        return pathSegment.getDistanceSquared(cursor) <= SelectionController.HIGHLIGHT_OFFSET_SQUARED;
+    @Test
+    public void returnsFalseForDistanceGreaterThanHighlightOffset() throws Exception {
+        when(pathSegment.getDistanceSquared(any(Point2D.class))).thenReturn(SelectionController.HIGHLIGHT_OFFSET_SQUARED+1d);
+
+        assertThat(predicate.test(pathSegment)).isFalse();
+
+        verify(pathSegment).getDistanceSquared(point);
     }
 }
