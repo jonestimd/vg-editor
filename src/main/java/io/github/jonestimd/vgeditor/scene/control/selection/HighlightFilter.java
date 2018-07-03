@@ -33,6 +33,11 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
 
+import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
+
+/**
+ * Checks if a shape is within highlight range of a point on the screen.
+ */
 public class HighlightFilter implements Predicate<Node> {
     private final Function<Path, PathVisitor> pathVisitorFactory;
     private final double screenX;
@@ -45,7 +50,7 @@ public class HighlightFilter implements Predicate<Node> {
         this.pathVisitorFactory = pathVisitorFactory;
         this.screenX = screenX;
         this.screenY = screenY;
-        this.bounds = new BoundingBox(screenX-SelectionController.HIGHLIGHT_OFFSET, screenY-SelectionController.HIGHLIGHT_OFFSET, SelectionController.HIGHLIGHT_SIZE, SelectionController.HIGHLIGHT_SIZE);
+        this.bounds = new BoundingBox(screenX-HIGHLIGHT_OFFSET, screenY-HIGHLIGHT_OFFSET, HIGHLIGHT_SIZE, HIGHLIGHT_SIZE);
         this.rectanglePredicate = new RectanglePredicate(screenX, screenY);
         this.polylinePredicate = new PolylinePredicate(screenX, screenY);
     }
@@ -55,7 +60,7 @@ public class HighlightFilter implements Predicate<Node> {
         if (node instanceof Path) return test((Path) node);
         if (node instanceof Rectangle) return rectanglePredicate.test((Rectangle) node);
         Bounds nodeBounds = node.getBoundsInLocal();
-        if (node instanceof Parent || nodeBounds.getWidth() < SelectionController.HIGHLIGHT_SIZE || nodeBounds.getHeight() < SelectionController.HIGHLIGHT_SIZE) {
+        if (node instanceof Parent || nodeBounds.getWidth() < HIGHLIGHT_SIZE || nodeBounds.getHeight() < HIGHLIGHT_SIZE) {
             return node.screenToLocal(bounds).intersects(nodeBounds);
         }
         return node.contains(node.screenToLocal(screenX, screenY));
@@ -66,9 +71,7 @@ public class HighlightFilter implements Predicate<Node> {
     }
 
     private boolean test(Path path) {
-        if (path.intersects(path.screenToLocal(bounds))) {
-            return pathVisitorFactory.apply(path).some(new HighlightPathPredicate(path.screenToLocal(screenX, screenY)));
-        }
-        return false;
+        return path.intersects(path.screenToLocal(bounds)) &&
+                pathVisitorFactory.apply(path).some(new HighlightPathPredicate(path.screenToLocal(screenX, screenY)));
     }
 }

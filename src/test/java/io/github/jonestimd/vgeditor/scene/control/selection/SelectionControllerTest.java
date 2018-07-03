@@ -21,13 +21,12 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control.selection;
 
-import io.github.jonestimd.vgeditor.JavafxTest;
+import io.github.jonestimd.vgeditor.scene.SceneTest;
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -38,25 +37,18 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import org.junit.Before;
 import org.junit.Test;
 
 import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
 import static org.assertj.core.api.Assertions.*;
 
-public class SelectionControllerTest extends JavafxTest {
-    private Group diagram = new Group();
+public class SelectionControllerTest extends SceneTest {
     private Circle marker = new Circle();
-    private Scene scene = new Scene(diagram);
     private SelectionController controller;
 
-    @Before
-    public void setUp() throws Exception {
-        Stage window = new Stage();
-        window.setX(0);
-        window.setY(0);
-        window.setScene(scene);
+    @Override
+    public void setUpScene() throws Exception {
+        super.setUpScene();
         marker.setVisible(false);
         controller = new SelectionController(diagram, marker);
     }
