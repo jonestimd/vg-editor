@@ -71,7 +71,7 @@ public class HighlightFilterTest extends SceneTest {
         diagram.getChildren().add(polyline);
 
         assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y, null).test(polyline)).isTrue();
-        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET, SCREEN_Y, null).test(polyline)).isFalse();
+        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET+1, SCREEN_Y, null).test(polyline)).isFalse();
     }
 
     @Test
