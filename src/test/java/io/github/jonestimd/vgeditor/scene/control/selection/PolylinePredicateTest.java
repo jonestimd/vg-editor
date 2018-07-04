@@ -22,6 +22,7 @@
 package io.github.jonestimd.vgeditor.scene.control.selection;
 
 import io.github.jonestimd.vgeditor.scene.SceneTest;
+import io.github.jonestimd.vgeditor.scene.control.selection.HighlightBounds.Corner;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Polyline;
 import org.junit.Test;
@@ -34,7 +35,9 @@ public class PolylinePredicateTest extends SceneTest {
     private static final int Y1 = 30;
     private static final int X2 = 40;
     private static final int Y2 = 50;
+    private static final Corner[] CORNERS = {Corner.TopLeft, Corner.TopRight, Corner.BottomRight};
     private final Polyline polyline = new Polyline(X1, Y1, X2, Y1, X2, Y2);
+    private final HighlightBounds bounds = new HighlightBounds(X1, Y1, X2-X1, Y2-Y1);
 
     @Override
     public void setUpScene() throws Exception {
@@ -45,24 +48,33 @@ public class PolylinePredicateTest extends SceneTest {
 
     @Test
     public void testReturnsTrueForPolylineWithinHighlightRange() throws Exception {
-        assertThat(new PolylinePredicate(X1, Y1).test(polyline)).isTrue();
-        assertThat(new PolylinePredicate(X1, Y1-HIGHLIGHT_OFFSET).test(polyline)).isTrue();
-        assertThat(new PolylinePredicate(X1, Y1+HIGHLIGHT_OFFSET).test(polyline)).isTrue();
-        assertThat(new PolylinePredicate(X2, Y1-HIGHLIGHT_OFFSET).test(polyline)).isTrue();
-        assertThat(new PolylinePredicate(X2-HIGHLIGHT_OFFSET, Y2).test(polyline)).isTrue();
-        assertThat(new PolylinePredicate(X2+HIGHLIGHT_OFFSET, Y2).test(polyline)).isTrue();
+        bounds.forEach(bound -> {
+            assertThat(new PolylinePredicate(bound.x, bound.y).test(polyline)).isTrue();
+            if (bound.isTop()) {
+                assertThat(new PolylinePredicate(bound.x, bound.y-bound.getInnerY(0)).test(polyline)).isTrue();
+                assertThat(new PolylinePredicate(bound.x, bound.y+bound.getInnerY(0)).test(polyline)).isTrue();
+            }
+            if (!bound.isLeft()) {
+                assertThat(new PolylinePredicate(bound.x-bound.getInnerX(0), bound.y).test(polyline)).isTrue();
+                assertThat(new PolylinePredicate(bound.x+bound.getInnerX(0), bound.y).test(polyline)).isTrue();
+            }
+        }, CORNERS);
     }
 
     @Test
     public void testReturnsFalseForPolylineOutsideHighlightRange() throws Exception {
+        bounds.forEach(bound -> {
+            assertThat(new PolylinePredicate(bound.x-bound.getInnerX(1), bound.y).test(polyline)).isFalse();
+            assertThat(new PolylinePredicate(bound.x, bound.y-bound.getInnerY(1)).test(polyline)).isFalse();
+            assertThat(new PolylinePredicate(bound.x+bound.getInnerX(1), bound.y+bound.getInnerY(1)).test(polyline)).isFalse();
+            if (bound.isLeft()) {
+                assertThat(new PolylinePredicate(bound.x, bound.y+bound.getInnerY(1)).test(polyline)).isFalse();
+            }
+            else {
+                assertThat(new PolylinePredicate(bound.x-bound.getInnerX(1), bound.y).test(polyline)).isFalse();
+            }
+        }, CORNERS);
         assertThat(new PolylinePredicate(X1-1, Y1).test(polyline)).isFalse();
-        assertThat(new PolylinePredicate(X1, Y1-HIGHLIGHT_OFFSET-1).test(polyline)).isFalse();
-        assertThat(new PolylinePredicate(X1, Y1+HIGHLIGHT_OFFSET+1).test(polyline)).isFalse();
-        assertThat(new PolylinePredicate(X2+HIGHLIGHT_OFFSET+1, Y1).test(polyline)).isFalse();
-        assertThat(new PolylinePredicate(X2, Y1-HIGHLIGHT_OFFSET-1).test(polyline)).isFalse();
-        assertThat(new PolylinePredicate(X2-HIGHLIGHT_OFFSET-1, Y1+HIGHLIGHT_OFFSET+1).test(polyline)).isFalse();
-        assertThat(new PolylinePredicate(X2-HIGHLIGHT_OFFSET-1, Y2).test(polyline)).isFalse();
-        assertThat(new PolylinePredicate(X2+HIGHLIGHT_OFFSET+1, Y2).test(polyline)).isFalse();
         assertThat(new PolylinePredicate(X2, Y2+1).test(polyline)).isFalse();
     }
 

@@ -40,30 +40,38 @@ public class HighlightBounds {
         this.height = height;
     }
 
-    public void forEach(Consumer<TestCase> testCase) {
-        for (int i = 0; i < 4; i++) {
-            testCase.accept(new TestCase(i));
+    public void forEach(Consumer<TestCase> testCase, Corner ... corners) {
+        for (Corner corner : corners.length > 0 ? corners : Corner.values()) {
+            testCase.accept(new TestCase(corner));
         }
     }
 
     public class TestCase {
-        private final int i;
+        private final Corner corner;
         public final int x;
         public final int y;
 
-        public TestCase(int i) {
-            this.i = i;
-            this.x = i == 0 || i == 3 ? minX : minX+width;
-            this.y = i > 1 ? minY+height : minY;
+        private TestCase(Corner corner) {
+            this.corner = corner;
+            this.x = corner.isLeft() ? minX : minX+width;
+            this.y = corner.isTop() ? minY : minY+height;
+        }
+
+        public boolean isLeft() {
+            return corner.isLeft();
+        }
+
+        public boolean isTop() {
+            return corner.isTop();
         }
 
         public double getInnerX(int adjustment) {
-            int direction = i == 0 || i == 3 ? 1 : -1;
+            int direction = corner.isLeft() ? 1 : -1;
             return direction*(HIGHLIGHT_OFFSET+adjustment);
         }
 
         public double getInnerY(int adjustment) {
-            int direction = i > 1 ? -1 : 1;
+            int direction = corner.isTop() ? 1 : -1;
             return direction*(HIGHLIGHT_OFFSET+adjustment);
         }
 
@@ -71,6 +79,21 @@ public class HighlightBounds {
             int mx = topBottom ? minX + width/2 : x;
             int my = topBottom ? y : minY + height/2;
             return new Point2D(mx, my);
+        }
+    }
+
+    public enum Corner {
+        TopLeft,
+        TopRight,
+        BottomRight,
+        BottomLeft;
+
+        public boolean isLeft() {
+            return name().endsWith("Left");
+        }
+
+        public boolean isTop() {
+            return name().startsWith("Top");
         }
     }
 }
