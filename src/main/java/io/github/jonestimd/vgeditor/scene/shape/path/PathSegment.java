@@ -27,9 +27,14 @@ import javafx.scene.shape.ClosePath;
 import javafx.scene.shape.CubicCurveTo;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.shape.QuadCurveTo;
 
+/**
+ * Helper class for elements of a {@link Path}.  Provides methods for getting points on the element and checking its distance to
+ * a point.
+ */
 public abstract class PathSegment<T extends PathElement> {
     protected final Point2D start;
     protected final Point2D end;
@@ -53,9 +58,23 @@ public abstract class PathSegment<T extends PathElement> {
         return end;
     }
 
+    /**
+     * Get the midpoint of the path element.  Used for placing the highlight cursor.
+     */
     public abstract Point2D getMidpoint();
+
+    /**
+     * Get the squared distance from a point to the path element.  Used to check if the path is within the highlighting range of the cursor.
+     */
     public abstract double getDistanceSquared(Point2D point);
 
+
+    /**
+     * Get an instance of {@code PathSegment} for a path element.
+     * @param start the start point of the path element
+     * @param element the path element
+     * @param end the end point of the path element
+     */
     @SuppressWarnings("unchecked")
     public static <T extends PathElement> PathSegment<T> of(Point2D start, T element, Point2D end) {
         if (element instanceof MoveTo) return (PathSegment<T>) new MoveToSegment(start, (MoveTo) element);

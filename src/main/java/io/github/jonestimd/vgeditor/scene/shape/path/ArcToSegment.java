@@ -25,6 +25,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.shape.ArcTo;
 
 /**
+ * Helper class for a {@link ArcTo} path element.
  * @see <a href="https://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes">Conversion from endpoint to center parameterization</a>
  */
 public class ArcToSegment extends PathSegment<ArcTo> {
@@ -97,6 +98,7 @@ public class ArcToSegment extends PathSegment<ArcTo> {
 
     @Override
     public double getDistanceSquared(Point2D point) {
+        if (point.equals(center)) return square(Math.min(element.getRadiusX(), element.getRadiusY()));
         Point2D r = point.subtract(center);
         double angle = Math.atan(r.getY()/r.getX())-phi;
         if (r.getX() < 0) angle += Math.PI;
@@ -110,7 +112,7 @@ public class ArcToSegment extends PathSegment<ArcTo> {
 
     private boolean isBetweenStartAndEnd(double angle) {
         double normalized = normalize(angle);
-        return Math.signum(this.angleStart-normalized) == Math.signum(normalized-this.angleEnd);
+        return normalized == angleStart || normalized == angleEnd || Math.signum(angleStart-normalized) == Math.signum(normalized-angleEnd);
     }
 
     private double normalize(double angle) {
