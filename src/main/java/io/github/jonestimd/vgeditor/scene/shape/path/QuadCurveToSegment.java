@@ -32,7 +32,7 @@ public class QuadCurveToSegment extends BezierPathSegment<QuadCurveTo> {
     }
 
     private static class BezierFunction implements DoubleFunction<Point2D> {
-        private final Point2D start;
+        private final Point2D start, end;
         private final QuadCurveTo curveTo;
         private final double cx, cy;
 
@@ -40,10 +40,12 @@ public class QuadCurveToSegment extends BezierPathSegment<QuadCurveTo> {
             this.start = start;
             this.curveTo = curveTo;
             if (curveTo.isAbsolute()) {
+                end = new Point2D(curveTo.getX(), curveTo.getY());
                 cx = curveTo.getControlX();
                 cy = curveTo.getControlY();
             }
             else {
+                end = start.add(curveTo.getX(), curveTo.getY());
                 cx = curveTo.getControlX() + start.getX();
                 cy = curveTo.getControlY() + start.getY();
             }
@@ -51,8 +53,8 @@ public class QuadCurveToSegment extends BezierPathSegment<QuadCurveTo> {
 
         public Point2D apply(double t) {
             double u = 1-t, u2 = u*u, t2 = t*t;
-            double x = u2*start.getX()+2*u*t*cx+t2*curveTo.getX();
-            double y = u2*start.getY()+2*u*t*cy+t2*curveTo.getY();
+            double x = u2*start.getX()+2*u*t*cx+t2*end.getX();
+            double y = u2*start.getY()+2*u*t*cy+t2*end.getY();
             return new Point2D(x, y);
         }
     }

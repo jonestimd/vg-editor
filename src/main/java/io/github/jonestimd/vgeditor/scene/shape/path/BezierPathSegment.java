@@ -28,7 +28,7 @@ import javafx.scene.shape.PathElement;
 
 public abstract class BezierPathSegment<T extends PathElement> extends PathSegment<T> {
     private static final int SCANS = 25;
-    private static final double ERROR = 1;
+    protected static final double ERROR = 0.001;
     private final DoubleFunction<Point2D> bezierPoint;
     private final Point2D[] points;
     private final Point2D midpoint;
@@ -58,6 +58,7 @@ public abstract class BezierPathSegment<T extends PathElement> extends PathSegme
         double min = Double.POSITIVE_INFINITY;
         for (int i = SCANS; i >= 0; i--) {
             double d2 = squaredDistance(cursor, points[i]);
+            if (d2 == 0) return points[i];
             if (d2 < min) {
                 min = d2;
                 mIndex = i;
@@ -77,9 +78,5 @@ public abstract class BezierPathSegment<T extends PathElement> extends PathSegme
             else m = k;
         }
         return k;
-    }
-
-    private Point2D interpolate(Point2D p1, Point2D p2, double t) {
-        return new Point2D(p1.getX()+t*(p2.getX()-p1.getX()), p1.getY()+t*(p2.getY()-p1.getY()));
     }
 }
