@@ -21,9 +21,17 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor;
 
+import java.lang.reflect.Field;
+
 import org.junit.Rule;
 
 public abstract class JavafxTest {
     @Rule
     public JavaFxThreadingRule rule = new JavaFxThreadingRule();
+
+    protected void setControllerValue(Object controller, String fieldName, Object value) throws Exception {
+        Field field = controller.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(controller, value);
+    }
 }

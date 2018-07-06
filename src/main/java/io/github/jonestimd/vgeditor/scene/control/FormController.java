@@ -33,6 +33,9 @@ import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 
+/**
+ * Controller for a {@code FXML} form containing only numeric inputs.
+ */
 public class FormController {
     @FXML
     private Pane root;
