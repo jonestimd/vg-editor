@@ -34,4 +34,10 @@ public abstract class JavafxTest {
         field.setAccessible(true);
         field.set(controller, value);
     }
+
+    protected <T> T getControllerValue(Object controller, String fieldName, Class<T> valueClass) throws Exception {
+        Field field = controller.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return valueClass.cast(field.get(controller));
+    }
 }
