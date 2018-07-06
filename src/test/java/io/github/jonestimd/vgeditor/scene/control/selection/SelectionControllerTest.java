@@ -248,6 +248,18 @@ public class SelectionControllerTest extends SceneTest {
         assertThat(controller.selectedProperty().getValue()).isNull();
     }
 
+    @Test
+    public void ignoresMouseDrag() throws Exception {
+        final int x = 20, y = 30;
+        Rectangle rectangle = new Rectangle(x, y, 40, 50);
+        diagram.getChildren().add(rectangle);
+        controller.handle(getEvent(MouseEvent.MOUSE_MOVED, x, y, null));
+
+        controller.handle(getEvent(MouseEvent.MOUSE_DRAGGED, x, y, MouseButton.PRIMARY));
+
+        assertThat(controller.selectedProperty().getValue()).isNull();
+    }
+
     private MouseEvent getEvent(EventType<MouseEvent> eventType, double x, double y, MouseButton button) {
         return new MouseEvent(null, diagram, eventType, x, y, x, y, button, 0, false, false, false, false, false, false, false, false, false, false, null);
     }

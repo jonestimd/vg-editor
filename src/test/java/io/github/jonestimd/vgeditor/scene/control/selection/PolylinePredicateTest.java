@@ -84,6 +84,16 @@ public class PolylinePredicateTest extends SceneTest {
     }
 
     @Test
+    public void testHandlesZeroLengthLine() throws Exception {
+        Polyline polyline = new Polyline(X1, Y1, X1, Y1);
+        diagram.getChildren().add(polyline);
+
+        assertThat(new PolylinePredicate(X1, Y1).test(polyline)).isTrue();
+        assertThat(new PolylinePredicate(X1+HIGHLIGHT_OFFSET+1, Y1).test(polyline)).isFalse();
+        assertThat(new PolylinePredicate(X1, Y1+HIGHLIGHT_OFFSET+1).test(polyline)).isFalse();
+    }
+
+    @Test
     public void getMarkerPositionReturnsEndpointWithinHighlightRange() throws Exception {
         assertThat(new PolylinePredicate(X1, Y1).getMarkerPosition(polyline)).isEqualTo(new Point2D(X1, Y1));
         assertThat(new PolylinePredicate(X1+HIGHLIGHT_OFFSET, Y1).getMarkerPosition(polyline)).isEqualTo(new Point2D(X1, Y1));
