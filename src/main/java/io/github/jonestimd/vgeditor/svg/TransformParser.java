@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import io.github.jonestimd.vgeditor.model.NodeModel;
 import javafx.scene.Node;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
@@ -45,6 +46,14 @@ public class TransformParser {
         if (transform != null) {
             Collection<Transform> transforms = parse(transform);
             node.getTransforms().addAll(transforms);
+        }
+    }
+
+    public static void setTransform(NodeModel model, Attributes attributes) {
+        String transform = attributes.getValue("transform");
+        if (transform != null) {
+            Collection<Transform> transforms = parse(transform);
+            model.getTransforms().addAll(transforms);
         }
     }
 

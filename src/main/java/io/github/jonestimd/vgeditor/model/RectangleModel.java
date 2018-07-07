@@ -21,6 +21,8 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.model;
 
+import java.util.List;
+
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import io.github.jonestimd.vgeditor.scene.control.selection.RectanglePredicate;
 import javafx.geometry.Point2D;
@@ -29,10 +31,11 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Transform;
 
 public class RectangleModel implements ShapeModel {
     private final transient Rectangle rectangle;
-    private NodeAnchor anchor;
+    private NodeAnchor anchor = NodeAnchor.TOP_LEFT;
 
     public RectangleModel(Group group) {
         rectangle = new Rectangle();
@@ -106,6 +109,11 @@ public class RectangleModel implements ShapeModel {
     public void setRotate(double angle) {
         rectangle.setRotate(angle);
         anchor.translate(rectangle, rectangle.getWidth(), rectangle.getHeight());
+    }
+
+    @Override
+    public List<Transform> getTransforms() {
+        return rectangle.getTransforms();
     }
 
     public double getArcWidth() {

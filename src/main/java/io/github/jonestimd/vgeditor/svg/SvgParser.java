@@ -23,9 +23,6 @@ package io.github.jonestimd.vgeditor.svg;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -33,6 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
 import com.google.common.collect.ImmutableMap;
+import io.github.jonestimd.vgeditor.model.GroupDefaults;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.text.Text;
@@ -51,16 +49,15 @@ public class SvgParser {
         this.nodeConsumer = nodeConsumer;
     }
 
-    public Collection<Node> parse(File file) throws IOException, ParserConfigurationException, SAXException {
-        SvgSaxHandler handler = new SvgSaxHandler();
+    public void parse(File file, Group diagram) throws IOException, ParserConfigurationException, SAXException {
+        SvgSaxHandler handler = new SvgSaxHandler(diagram);
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.newSAXParser().parse(file, handler);
-        return handler.nodes;
     }
 
     private class SvgSaxHandler extends DefaultHandler {
-        private Group group = null;
+        private Group group;
         private Text text = null;
 
         private Map<String, Consumer<Attributes>> tagHandlers = ImmutableMap.<String, Consumer<Attributes>>builder()
@@ -69,15 +66,18 @@ public class SvgParser {
                 .put("line", attributes -> addNode(new ShapeFactory(attributes, group).getLine()))
                 .put("circle", attributes -> addNode(new ShapeFactory(attributes, group).getCircle()))
                 .put("ellipse", attributes -> addNode(new ShapeFactory(attributes, group).getEllipse()))
-                .put("rect", attributes -> addNode(new ShapeFactory(attributes, group).getRect()))
+                .put("rect", attributes -> new ShapeFactory(attributes, group).getRect())
                 .put("path", attributes -> addNode(new ShapeFactory(attributes, group).getPath()))
                 .put("polygon", attributes -> addNode(new ShapeFactory(attributes, group).getPolygon()))
                 .put("polyline", attributes -> addNode(new ShapeFactory(attributes, group).getPolyline()))
                 .put("image", attributes -> new ShapeFactory(attributes, group).getImage().ifPresent(this::addNode))
                 .build();
 
-        private List<Node> nodes = new ArrayList<>();
         private boolean inDefs = false;
+
+        public SvgSaxHandler(Group diagram) {
+            this.group = diagram;
+        }
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
@@ -118,15 +118,13 @@ public class SvgParser {
             Group group = new Group();
             TransformParser.setTransform(group, attributes);
             group.setUserData(new GroupDefaults(group, attributes));
-            if (this.group != null) this.group.getChildren().add(group);
-            else nodes.add(group);
+            this.group.getChildren().add(group);
             this.group = group;
             nodeConsumer.accept(group);
         }
 
         private void addNode(Node node) {
-            if (group == null) nodes.add(node);
-            else group.getChildren().add(node);
+            group.getChildren().add(node);
             nodeConsumer.accept(node);
         }
     }

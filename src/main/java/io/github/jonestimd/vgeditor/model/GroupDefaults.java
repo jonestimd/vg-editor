@@ -19,12 +19,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.svg;
+package io.github.jonestimd.vgeditor.model;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import io.github.jonestimd.vgeditor.svg.AttributeParser;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.paint.Paint;
@@ -68,8 +69,18 @@ public class GroupDefaults {
         if (stroke != null) shape.setStroke(stroke);
     }
 
+    public void setStroke(ShapeModel model) {
+        Paint stroke = getValue(groupDefaults -> groupDefaults.stroke);
+        if (stroke != null) model.setStroke(stroke);
+    }
+
     public void setFill(Shape shape) {
         Paint fill = getValue(groupDefaults -> groupDefaults.fill);
         if (fill != null) shape.setFill(fill);
+    }
+
+    public void setFill(ShapeModel model) {
+        Paint fill = getValue(groupDefaults -> groupDefaults.fill);
+        if (fill != null) model.setFill(fill);
     }
 }

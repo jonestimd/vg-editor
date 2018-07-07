@@ -95,7 +95,7 @@ public class MainController {
         System.out.println("new file");
     }
 
-    public void openFile(ActionEvent event) {
+    public void openFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select file");
         fileChooser.getExtensionFilters().addAll(
@@ -105,7 +105,7 @@ public class MainController {
         if (file != null) {
             try {
                 diagram.getChildren().clear();
-                diagram.getChildren().addAll(new SvgParser().parse(file));
+                new SvgParser().parse(file, diagram);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

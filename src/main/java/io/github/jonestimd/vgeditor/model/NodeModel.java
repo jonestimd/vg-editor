@@ -21,29 +21,24 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.model;
 
-import javafx.scene.paint.Paint;
+import java.util.List;
 
-public interface ShapeModel extends NodeModel {
+import io.github.jonestimd.vgeditor.scene.NodeAnchor;
+import javafx.geometry.Point2D;
+import javafx.scene.transform.Transform;
+
+public interface NodeModel {
     void remove();
 
-    double getX();
-    void setX(double x);
+    double getRotate();
+    void setRotate(double angle);
 
-    double getY();
-    void setY(double y);
+    NodeAnchor getAnchor();
+    void setAnchor(NodeAnchor anchor);
 
-    double getWidth();
-    void setWidth(double width);
+    List<Transform> getTransforms();
 
-    double getHeight();
-    void setHeight(double height);
+    NodeAnchor getResizeAnchor(Point2D screenPoint);
 
-    Paint getFill();
-    void setFill(Paint paint);
-
-    Paint getStroke();
-    void setStroke(Paint paint);
-
-    double getStrokeWidth();
-    void setStrokeWidth(double strokeWidth);
+    boolean isStartDrag(Point2D screenPoint);
 }

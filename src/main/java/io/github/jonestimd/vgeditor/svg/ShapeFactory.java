@@ -25,6 +25,9 @@ import java.io.ByteArrayInputStream;
 import java.util.Base64;
 import java.util.Optional;
 
+import io.github.jonestimd.vgeditor.model.GroupDefaults;
+import io.github.jonestimd.vgeditor.model.RectangleModel;
+import io.github.jonestimd.vgeditor.model.ShapeModel;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -80,7 +83,12 @@ public class ShapeFactory {
     }
 
     public Rectangle getRect() {
-        return setStyle(new Rectangle(getDouble("x"), getDouble("y"), getDouble("width"), getDouble("height")));
+        RectangleModel model = new RectangleModel(group);
+        model.setX(getDouble("x"));
+        model.setY(getDouble("y"));
+        model.setWidth(getDouble("width"));
+        model.setHeight(getDouble("height"));
+        return setStyle(model).getNode();
     }
 
     public Path getPath() {
@@ -153,5 +161,19 @@ public class ShapeFactory {
         AttributeParser.setPaint(attributes, "stroke", shape::setStroke);
         TransformParser.setTransform(shape, attributes);
         return shape;
+    }
+
+    private <T extends ShapeModel> T setStyle(T model) {
+        if (this.group != null) {
+            GroupDefaults userData = (GroupDefaults) this.group.getUserData();
+            if (userData != null) {
+                userData.setStroke(model);
+                userData.setFill(model);
+            }
+        }
+        AttributeParser.setPaint(attributes, "fill", model::setFill);
+        AttributeParser.setPaint(attributes, "stroke", model::setStroke);
+        TransformParser.setTransform(model, attributes);
+        return model;
     }
 }
