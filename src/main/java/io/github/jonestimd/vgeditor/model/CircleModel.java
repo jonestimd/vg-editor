@@ -21,24 +21,61 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.model;
 
-import java.util.List;
-
 import javafx.geometry.Point2D;
-import javafx.scene.transform.Transform;
+import javafx.scene.Group;
+import javafx.scene.shape.Circle;
 
-/**
- * The interface for a model that contains a {@link javafx.scene.Node}.
- */
-public interface NodeModel {
-    /**
-     * Remove the associated {@link javafx.scene.Node} from the scene.
-     */
-    void remove();
+public class CircleModel extends AnchoredShapeModel<Circle> {
+    public CircleModel(Group group) {
+        super(group, new Circle());
+    }
 
-    double getRotate();
-    void setRotate(double angle);
+    public CircleModel(Group group, double cx, double cy, double radius) {
+        super(group, new Circle(cx, cy, radius));
+    }
 
-    List<Transform> getTransforms();
+    @Override
+    public double getX() {
+        return shape.getCenterX();
+    }
 
-    boolean isInSelectionRange(Point2D screenPoint);
+    @Override
+    public void setX(double x) {
+        shape.setCenterX(x);
+    }
+
+    @Override
+    public double getY() {
+        return shape.getCenterY();
+    }
+
+    @Override
+    public void setY(double y) {
+        shape.setCenterY(y);
+    }
+
+    @Override
+    public double getWidth() {
+        return shape.getRadius();
+    }
+
+    @Override
+    public void setWidth(double width) {
+        shape.setRadius(width);
+    }
+
+    @Override
+    public double getHeight() {
+        return shape.getRadius();
+    }
+
+    @Override
+    public void setHeight(double height) {
+        shape.setRadius(height);
+    }
+
+    @Override
+    public boolean isInSelectionRange(Point2D screenPoint) {
+        return shape.contains(shape.screenToLocal(screenPoint));
+    }
 }

@@ -21,165 +21,82 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.model;
 
-import java.util.List;
-
-import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import io.github.jonestimd.vgeditor.scene.control.selection.RectanglePredicate;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Transform;
 
-public class RectangleModel implements ShapeModel {
-    private final transient Rectangle rectangle;
-    private NodeAnchor anchor = NodeAnchor.TOP_LEFT;
-
+public class RectangleModel extends AnchoredShapeModel<Rectangle> {
     public RectangleModel(Group group) {
-        rectangle = new Rectangle();
-        rectangle.setUserData(this);
-        group.getChildren().add(rectangle);
+        super(group, new Rectangle());
     }
 
-    public Rectangle getNode() {
-        return rectangle;
-    }
-
-    @Override
-    public void remove() {
-        Parent parent = rectangle.getParent();
-        if (parent instanceof Pane) ((Pane) parent).getChildren().remove(rectangle);
-        else if (parent instanceof Group) ((Group) parent).getChildren().remove(rectangle);
-        else throw new IllegalStateException("Unexpected parent type: "+parent.getClass().getName());
+    public RectangleModel(Group group, double x, double y, double width, double height) {
+        super(group, new Rectangle(x, y, width, height));
     }
 
     @Override
     public double getX() {
-        return rectangle.getX();
+        return shape.getX();
     }
 
     @Override
     public void setX(double x) {
-        rectangle.setX(x);
-        anchor.translate(rectangle, rectangle.getWidth(), rectangle.getHeight());
+        shape.setX(x);
+        getAnchor().translate(shape, shape.getWidth(), shape.getHeight());
     }
 
     @Override
     public double getY() {
-        return rectangle.getY();
+        return shape.getY();
     }
 
     @Override
     public void setY(double y) {
-        rectangle.setY(y);
-        anchor.translate(rectangle, rectangle.getWidth(), rectangle.getHeight());
+        shape.setY(y);
+        getAnchor().translate(shape, shape.getWidth(), shape.getHeight());
     }
 
     @Override
     public double getWidth() {
-        return rectangle.getWidth();
+        return shape.getWidth();
     }
 
     @Override
     public void setWidth(double width) {
-        rectangle.setWidth(width);
-        anchor.translate(rectangle, width, rectangle.getHeight());
+        shape.setWidth(width);
+        getAnchor().translate(shape, width, shape.getHeight());
 
     }
 
     @Override
     public double getHeight() {
-        return rectangle.getHeight();
+        return shape.getHeight();
     }
 
     @Override
     public void setHeight(double height) {
-        rectangle.setHeight(height);
-        anchor.translate(rectangle, rectangle.getWidth(), height);
-    }
-
-    @Override
-    public double getRotate() {
-        return rectangle.getRotate();
-    }
-
-    @Override
-    public void setRotate(double angle) {
-        rectangle.setRotate(angle);
-        anchor.translate(rectangle, rectangle.getWidth(), rectangle.getHeight());
-    }
-
-    @Override
-    public List<Transform> getTransforms() {
-        return rectangle.getTransforms();
+        shape.setHeight(height);
+        getAnchor().translate(shape, shape.getWidth(), height);
     }
 
     public double getArcWidth() {
-        return rectangle.getArcWidth()/2;
+        return shape.getArcWidth()/2;
     }
 
     public void setArcWidth(double value) {
-        rectangle.setArcWidth(value*2);
+        shape.setArcWidth(value*2);
     }
 
     public double getArcHeight() {
-        return rectangle.getArcHeight()/2;
+        return shape.getArcHeight()/2;
     }
 
     public void setArcHeight(double value) {
-        rectangle.setArcHeight(value*2);
+        shape.setArcHeight(value*2);
     }
 
-    @Override
-    public NodeAnchor getAnchor() {
-        return anchor;
-    }
-
-    @Override
-    public void setAnchor(NodeAnchor anchor) {
-        this.anchor = anchor;
-        anchor.translate(rectangle, rectangle.getWidth(), rectangle.getHeight());
-    }
-
-    @Override
-    public Paint getFill() {
-        return rectangle.getFill();
-    }
-
-    @Override
-    public void setFill(Paint paint) {
-        rectangle.setFill(paint);
-    }
-
-    @Override
-    public Paint getStroke() {
-        return rectangle.getStroke();
-    }
-
-    @Override
-    public void setStroke(Paint paint) {
-        rectangle.setStroke(paint);
-    }
-
-    @Override
-    public double getStrokeWidth() {
-        return rectangle.getStrokeWidth();
-    }
-
-    @Override
-    public void setStrokeWidth(double strokeWidth) {
-        rectangle.setStrokeWidth(strokeWidth);
-    }
-
-    @Override
-    public NodeAnchor getResizeAnchor(Point2D screenPoint) {
-        return NodeAnchor.forResize(rectangle.screenToLocal(screenPoint), rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
-    }
-
-    @Override
-    public boolean isStartDrag(Point2D screenPoint) {
-        return new RectanglePredicate(screenPoint.getX(), screenPoint.getY()).test(rectangle);
+    public boolean isInSelectionRange(Point2D screenPoint) { // TODO incorporate RectanglePredicate
+        return new RectanglePredicate(screenPoint.getX(), screenPoint.getY()).test(shape);
     }
 }

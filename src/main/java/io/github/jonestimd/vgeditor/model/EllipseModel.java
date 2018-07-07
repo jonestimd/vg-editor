@@ -21,24 +21,61 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.model;
 
-import java.util.List;
-
 import javafx.geometry.Point2D;
-import javafx.scene.transform.Transform;
+import javafx.scene.Group;
+import javafx.scene.shape.Ellipse;
 
-/**
- * The interface for a model that contains a {@link javafx.scene.Node}.
- */
-public interface NodeModel {
-    /**
-     * Remove the associated {@link javafx.scene.Node} from the scene.
-     */
-    void remove();
+public class EllipseModel extends AnchoredShapeModel<Ellipse> {
+    public EllipseModel(Group group) {
+        super(group, new Ellipse());
+    }
 
-    double getRotate();
-    void setRotate(double angle);
+    public EllipseModel(Group group, double cx, double cy, double rx, double ry) {
+        super(group, new Ellipse(cx, cy, rx, ry));
+    }
 
-    List<Transform> getTransforms();
+    @Override
+    public double getX() {
+        return shape.getCenterX();
+    }
 
-    boolean isInSelectionRange(Point2D screenPoint);
+    @Override
+    public void setX(double x) {
+        shape.setCenterX(x);
+    }
+
+    @Override
+    public double getY() {
+        return shape.getCenterY();
+    }
+
+    @Override
+    public void setY(double y) {
+        shape.setCenterY(y);
+    }
+
+    @Override
+    public double getWidth() {
+        return shape.getRadiusX();
+    }
+
+    @Override
+    public void setWidth(double width) {
+        shape.setRadiusX(width);
+    }
+
+    @Override
+    public double getHeight() {
+        return shape.getRadiusY();
+    }
+
+    @Override
+    public void setHeight(double height) {
+        shape.setRadiusY(height);
+    }
+
+    @Override
+    public boolean isInSelectionRange(Point2D screenPoint) {
+        return shape.contains(shape.screenToLocal(screenPoint));
+    }
 }

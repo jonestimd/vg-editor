@@ -25,7 +25,14 @@ import java.io.ByteArrayInputStream;
 import java.util.Base64;
 import java.util.Optional;
 
+import io.github.jonestimd.vgeditor.model.CircleModel;
+import io.github.jonestimd.vgeditor.model.EllipseModel;
 import io.github.jonestimd.vgeditor.model.GroupDefaults;
+import io.github.jonestimd.vgeditor.model.ImageModel;
+import io.github.jonestimd.vgeditor.model.LineModel;
+import io.github.jonestimd.vgeditor.model.PathModel;
+import io.github.jonestimd.vgeditor.model.PolygonModel;
+import io.github.jonestimd.vgeditor.model.PolylineModel;
 import io.github.jonestimd.vgeditor.model.RectangleModel;
 import io.github.jonestimd.vgeditor.model.ShapeModel;
 import javafx.scene.Group;
@@ -71,36 +78,31 @@ public class ShapeFactory {
     }
 
     public Line getLine() {
-        return setStyle(new Line(getDouble("x1"), getDouble("y1"), getDouble("x2"), getDouble("y2")));
+        return setStyle(new LineModel(group, getDouble("x1"), getDouble("y1"), getDouble("x2"), getDouble("y2"))).getShape();
     }
 
     public Circle getCircle() {
-        return setStyle(new Circle(getDouble("cx"), getDouble("cy"), getDouble("r")));
+        return setStyle(new CircleModel(group, getDouble("cx"), getDouble("cy"), getDouble("r"))).getShape();
     }
 
     public Ellipse getEllipse() {
-        return setStyle(new Ellipse(getDouble("cx"), getDouble("cy"), getDouble("rx"), getDouble("ry")));
+        return setStyle(new EllipseModel(group, getDouble("cx"), getDouble("cy"), getDouble("rx"), getDouble("ry"))).getShape();
     }
 
     public Rectangle getRect() {
-        RectangleModel model = new RectangleModel(group);
-        model.setX(getDouble("x"));
-        model.setY(getDouble("y"));
-        model.setWidth(getDouble("width"));
-        model.setHeight(getDouble("height"));
-        return setStyle(model).getNode();
+        return setStyle(new RectangleModel(group, getDouble("x"), getDouble("y"), getDouble("width"), getDouble("height"))).getShape();
     }
 
     public Path getPath() {
-        return setStyle(new PathParser().parse(attributes.getValue("d")));
+        return setStyle(new PathModel(group, new PathParser().parse(attributes.getValue("d")))).getShape();
     }
 
     public Polygon getPolygon() {
-        return setStyle(new Polygon(getPoints()));
+        return setStyle(new PolygonModel(group, getPoints())).getShape();
     }
 
     public Polyline getPolyline() {
-        return setStyle(new Polyline(getPoints()));
+        return setStyle(new PolylineModel(group, getPoints())).getShape();
     }
 
     private double[] getPoints() {
@@ -121,11 +123,11 @@ public class ShapeFactory {
                 image = new Image(new ByteArrayInputStream(data));
             }
             else image = new Image(href);
-            ImageView imageView = new ImageView(image);
-            imageView.setX(getDouble("x"));
-            imageView.setY(getDouble("y"));
-            TransformParser.setTransform(imageView, attributes);
-            return Optional.of(imageView);
+            ImageModel model = new ImageModel(group, image);
+            model.setX(getDouble("x"));
+            model.setY(getDouble("y"));
+            TransformParser.setTransform(model, attributes);
+            return Optional.of(model.getImageView());
         }
         return Optional.empty();
     }

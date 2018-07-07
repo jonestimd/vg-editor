@@ -21,7 +21,7 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
-import io.github.jonestimd.vgeditor.model.ShapeModel;
+import io.github.jonestimd.vgeditor.model.AnchoredShapeModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
@@ -34,13 +34,13 @@ public class FillPaneController {
     @FXML
     private ColorPicker fillColor;
 
-    private ShapeModel model;
+    private AnchoredShapeModel model;
 
     public void initialize() {
         fillColor.setValue(Color.BLACK);
     }
 
-    public void editNode(ShapeModel model) {
+    public void editNode(AnchoredShapeModel model) {
         this.model = model;
         Paint nodeFill = model.getFill();
         if (nodeFill != null) {
@@ -54,7 +54,7 @@ public class FillPaneController {
         }
     }
 
-    public void newNode(ShapeModel model) {
+    public void newNode(AnchoredShapeModel model) {
         this.model = model;
         setNodeFill();
     }

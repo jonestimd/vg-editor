@@ -21,24 +21,53 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.model;
 
-import java.util.List;
-
 import javafx.geometry.Point2D;
-import javafx.scene.transform.Transform;
+import javafx.scene.Group;
+import javafx.scene.shape.Line;
 
-/**
- * The interface for a model that contains a {@link javafx.scene.Node}.
- */
-public interface NodeModel {
-    /**
-     * Remove the associated {@link javafx.scene.Node} from the scene.
-     */
-    void remove();
+public class LineModel extends ShapeModel<Line> {
+    public LineModel(Group group) {
+        super(group, new Line());
+    }
 
-    double getRotate();
-    void setRotate(double angle);
+    public LineModel(Group group, double x1, double y1, double x2, double y2) {
+        super(group, new Line(x1, y1, x2, y2));
+    }
 
-    List<Transform> getTransforms();
+    public double getStartX() {
+        return shape.getStartX();
+    }
 
-    boolean isInSelectionRange(Point2D screenPoint);
+    public void setStartX(double value) {
+        shape.setStartX(value);
+    }
+
+    public double getStartY() {
+        return shape.getStartY();
+    }
+
+    public void setStartY(double value) {
+        shape.setStartY(value);
+    }
+
+    public double getEndX() {
+        return shape.getEndX();
+    }
+
+    public void setEndX(double value) {
+        shape.setEndX(value);
+    }
+
+    public double getEndY() {
+        return shape.getEndY();
+    }
+
+    public void setEndY(double value) {
+        shape.setEndY(value);
+    }
+
+    @Override
+    public boolean isInSelectionRange(Point2D screenPoint) {
+        return false;
+    }
 }

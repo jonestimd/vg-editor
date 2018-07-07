@@ -21,24 +21,24 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.model;
 
-import java.util.List;
-
+import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import javafx.geometry.Point2D;
-import javafx.scene.transform.Transform;
 
-/**
- * The interface for a model that contains a {@link javafx.scene.Node}.
- */
-public interface NodeModel {
-    /**
-     * Remove the associated {@link javafx.scene.Node} from the scene.
-     */
-    void remove();
+public interface AnchoredModel {
+    NodeAnchor getAnchor();
+    void setAnchor(NodeAnchor anchor);
 
-    double getRotate();
-    void setRotate(double angle);
+    NodeAnchor getResizeAnchor(Point2D screenPoint);
 
-    List<Transform> getTransforms();
+    double getX();
+    void setX(double x);
 
-    boolean isInSelectionRange(Point2D screenPoint);
+    double getY();
+    void setY(double y);
+
+    double getWidth();
+    void setWidth(double width);
+
+    double getHeight();
+    void setHeight(double height);
 }

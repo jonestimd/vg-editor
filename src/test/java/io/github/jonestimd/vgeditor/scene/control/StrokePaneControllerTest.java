@@ -24,7 +24,7 @@ package io.github.jonestimd.vgeditor.scene.control;
 import java.util.ResourceBundle;
 
 import io.github.jonestimd.vgeditor.JavafxTest;
-import io.github.jonestimd.vgeditor.model.ShapeModel;
+import io.github.jonestimd.vgeditor.model.AnchoredShapeModel;
 import io.github.jonestimd.vgeditor.scene.Nodes;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
@@ -43,7 +43,7 @@ public class StrokePaneControllerTest extends JavafxTest {
     private CheckBox stroke;
     private ColorPicker strokeColor;
     private TextField strokeWidth;
-    private ShapeModel model = mock(ShapeModel.class);
+    private AnchoredShapeModel model = mock(AnchoredShapeModel.class);
 
     @Before
     public void loadForm() throws Exception {
@@ -73,7 +73,7 @@ public class StrokePaneControllerTest extends JavafxTest {
         controller.editNode(model);
 
         assertThat(stroke.isSelected()).isFalse();
-        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
+        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
     }
 
     @Test
@@ -86,14 +86,14 @@ public class StrokePaneControllerTest extends JavafxTest {
         assertThat(stroke.isSelected()).isTrue();
         assertThat(strokeColor.getValue()).isEqualTo(Color.ALICEBLUE);
         assertThat(strokeWidth.getText()).isEqualTo("3");
-        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
+        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
     }
 
     @Test
     public void newNodeClearsControllerNode() throws Exception {
         controller.newNode(null);
 
-        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(null);
+        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(null);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class StrokePaneControllerTest extends JavafxTest {
 
         verify(model).setStroke(Color.ALICEBLUE);
         verify(model).setStrokeWidth(2d);
-        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
+        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
     }
 
     @Test
@@ -117,7 +117,7 @@ public class StrokePaneControllerTest extends JavafxTest {
         controller.newNode(model);
 
         verify(model).setStroke(null);
-        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
+        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
     }
 
     @Test

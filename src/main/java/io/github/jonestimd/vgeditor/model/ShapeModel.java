@@ -21,29 +21,72 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.model;
 
+import java.util.List;
+
+import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Shape;
+import javafx.scene.transform.Transform;
 
-public interface ShapeModel extends NodeModel {
-    void remove();
+public abstract class ShapeModel<T extends Shape> implements NodeModel {
+    protected final transient T shape;
 
-    double getX();
-    void setX(double x);
+    protected ShapeModel(Group group, T shape) {
+        this.shape = shape;
+        group.getChildren().add(shape);
+        shape.setUserData(this);
+    }
 
-    double getY();
-    void setY(double y);
+    public T getShape() {
+        return shape;
+    }
 
-    double getWidth();
-    void setWidth(double width);
+    @Override
+    public void remove() {
+        Parent parent = shape.getParent();
+        if (parent instanceof Pane) ((Pane) parent).getChildren().remove(shape);
+        else if (parent instanceof Group) ((Group) parent).getChildren().remove(shape);
+        else throw new IllegalStateException("Unexpected parent type: "+parent.getClass().getName());
+    }
 
-    double getHeight();
-    void setHeight(double height);
+    @Override
+    public double getRotate() {
+        return shape.getRotate();
+    }
 
-    Paint getFill();
-    void setFill(Paint paint);
+    @Override
+    public void setRotate(double angle) {
+        shape.setRotate(angle);
+    }
 
-    Paint getStroke();
-    void setStroke(Paint paint);
+    @Override
+    public List<Transform> getTransforms() {
+        return shape.getTransforms();
+    }
 
-    double getStrokeWidth();
-    void setStrokeWidth(double strokeWidth);
+    public Paint getFill() {
+        return shape.getFill();
+    }
+
+    public void setFill(Paint paint) {
+        shape.setFill(paint);
+    }
+
+    public Paint getStroke() {
+        return shape.getStroke();
+    }
+
+    public void setStroke(Paint paint) {
+        shape.setStroke(paint);
+    }
+
+    public double getStrokeWidth() {
+        return shape.getStrokeWidth();
+    }
+
+    public void setStrokeWidth(double strokeWidth) {
+        shape.setStrokeWidth(strokeWidth);
+    }
 }

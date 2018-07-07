@@ -21,24 +21,21 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.model;
 
-import java.util.List;
-
 import javafx.geometry.Point2D;
-import javafx.scene.transform.Transform;
+import javafx.scene.Group;
+import javafx.scene.shape.Path;
 
-/**
- * The interface for a model that contains a {@link javafx.scene.Node}.
- */
-public interface NodeModel {
-    /**
-     * Remove the associated {@link javafx.scene.Node} from the scene.
-     */
-    void remove();
+public class PathModel extends ShapeModel<Path> {
+    public PathModel(Group group) {
+        super(group, new Path());
+    }
 
-    double getRotate();
-    void setRotate(double angle);
+    public PathModel(Group group, Path shape) {
+        super(group, shape);
+    }
 
-    List<Transform> getTransforms();
-
-    boolean isInSelectionRange(Point2D screenPoint);
+    @Override
+    public boolean isInSelectionRange(Point2D screenPoint) {
+        return false;
+    }
 }

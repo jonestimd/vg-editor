@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import io.github.jonestimd.vgeditor.model.ShapeModel;
+import io.github.jonestimd.vgeditor.model.AnchoredShapeModel;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
@@ -64,7 +64,7 @@ public class ToolPaneLoader {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends ShapeModel> NodeController<T> show(String fileName) {
+    public <T extends AnchoredShapeModel> NodeController<T> show(String fileName) {
         if (fileControllers.isEmpty()) locateWindow();
         if (!fileName.equals(this.fileName)) {
             this.fileName = fileName;

@@ -21,24 +21,18 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.model;
 
-import java.util.List;
-
+import io.github.jonestimd.vgeditor.scene.control.selection.PolylinePredicate;
 import javafx.geometry.Point2D;
-import javafx.scene.transform.Transform;
+import javafx.scene.Group;
+import javafx.scene.shape.Polyline;
 
-/**
- * The interface for a model that contains a {@link javafx.scene.Node}.
- */
-public interface NodeModel {
-    /**
-     * Remove the associated {@link javafx.scene.Node} from the scene.
-     */
-    void remove();
+public class PolylineModel extends ShapeModel<Polyline> {
+    public PolylineModel(Group group, double... points) {
+        super(group, new Polyline(points));
+    }
 
-    double getRotate();
-    void setRotate(double angle);
-
-    List<Transform> getTransforms();
-
-    boolean isInSelectionRange(Point2D screenPoint);
+    @Override
+    public boolean isInSelectionRange(Point2D screenPoint) {
+        return new PolylinePredicate(screenPoint.getX(), screenPoint.getY()).test(shape);
+    }
 }

@@ -29,7 +29,7 @@ import java.util.function.ObjDoubleConsumer;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import io.github.jonestimd.vgeditor.model.ShapeModel;
+import io.github.jonestimd.vgeditor.model.AnchoredShapeModel;
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import io.github.jonestimd.vgeditor.scene.control.ResizeDragCalculator.Offset2D;
 import javafx.event.ActionEvent;
@@ -41,7 +41,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.GridPane;
 
-public class ShapeController<T extends ShapeModel> implements NodeController<T> {
+public class ShapeController<T extends AnchoredShapeModel> implements NodeController<T> {
     private static final String ID_ANCHOR_X = "anchorX";
     private static final String ID_ANCHOR_Y = "anchorY";
     private static final String ID_WIDTH = "width";
@@ -70,11 +70,11 @@ public class ShapeController<T extends ShapeModel> implements NodeController<T> 
     private final MouseInputHandler mouseInputHandler = new MouseInputHandler(this::startDrag, this::continueDrag, this::endDrag);
     private final Function<Group, T> modelFactory;
     private final Map<String, ObjDoubleConsumer<T>> fieldHandlers = ImmutableMap.of(
-            ID_ANCHOR_X, ShapeModel::setX,
-            ID_ANCHOR_Y, ShapeModel::setY,
-            ID_WIDTH, ShapeModel::setWidth,
-            ID_HEIGHT, ShapeModel::setHeight,
-            ID_ROTATION, ShapeModel::setRotate);
+            ID_ANCHOR_X, AnchoredShapeModel::setX,
+            ID_ANCHOR_Y, AnchoredShapeModel::setY,
+            ID_WIDTH, AnchoredShapeModel::setWidth,
+            ID_HEIGHT, AnchoredShapeModel::setHeight,
+            ID_ROTATION, AnchoredShapeModel::setRotate);
 
     protected ShapeController(Function<Group, T> modelFactory) {
         this.modelFactory = modelFactory;
@@ -170,7 +170,7 @@ public class ShapeController<T extends ShapeModel> implements NodeController<T> 
     }
 
     protected boolean startDrag(Point2D screenPoint, boolean isShortcutDown) {
-        if (model != null && model.isStartDrag(screenPoint)) {
+        if (model != null && model.isInSelectionRange(screenPoint)) {
             if (isShortcutDown) {
                 NodeAnchor resizeAnchor = model.getResizeAnchor(screenPoint);
                 if (resizeAnchor != null) drag = new ResizeDragHandler(resizeAnchor);

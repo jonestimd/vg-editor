@@ -24,7 +24,7 @@ package io.github.jonestimd.vgeditor.scene.control;
 import java.util.ResourceBundle;
 
 import io.github.jonestimd.vgeditor.JavafxTest;
-import io.github.jonestimd.vgeditor.model.ShapeModel;
+import io.github.jonestimd.vgeditor.model.AnchoredShapeModel;
 import io.github.jonestimd.vgeditor.scene.Nodes;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
@@ -41,7 +41,7 @@ public class FillPaneControllerTest extends JavafxTest {
     private FillPaneController controller;
     private CheckBox fill;
     private ColorPicker fillColor;
-    private ShapeModel model = mock(ShapeModel.class);
+    private AnchoredShapeModel model = mock(AnchoredShapeModel.class);
 
     @Before
     public void loadForm() throws Exception {
@@ -69,7 +69,7 @@ public class FillPaneControllerTest extends JavafxTest {
         controller.editNode(model);
 
         assertThat(fill.isSelected()).isFalse();
-        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
+        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
     }
 
     @Test
@@ -80,14 +80,14 @@ public class FillPaneControllerTest extends JavafxTest {
 
         assertThat(fill.isSelected()).isTrue();
         assertThat(fillColor.getValue()).isEqualTo(Color.ALICEBLUE);
-        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
+        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
     }
 
     @Test
     public void newNodeClearsControllerNode() throws Exception {
         controller.newNode(null);
 
-        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(null);
+        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(null);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class FillPaneControllerTest extends JavafxTest {
         controller.newNode(model);
 
         verify(model).setFill(Color.ALICEBLUE);
-        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
+        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class FillPaneControllerTest extends JavafxTest {
         controller.newNode(model);
 
         verify(model).setFill(null);
-        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
+        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
     }
 
     @Test

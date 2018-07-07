@@ -63,14 +63,14 @@ public class SvgParser {
         private Map<String, Consumer<Attributes>> tagHandlers = ImmutableMap.<String, Consumer<Attributes>>builder()
                 .put("svg", this::addGroup)
                 .put("g", this::addGroup)
-                .put("line", attributes -> addNode(new ShapeFactory(attributes, group).getLine()))
-                .put("circle", attributes -> addNode(new ShapeFactory(attributes, group).getCircle()))
-                .put("ellipse", attributes -> addNode(new ShapeFactory(attributes, group).getEllipse()))
+                .put("line", attributes -> new ShapeFactory(attributes, group).getLine())
+                .put("circle", attributes -> new ShapeFactory(attributes, group).getCircle())
+                .put("ellipse", attributes -> new ShapeFactory(attributes, group).getEllipse())
                 .put("rect", attributes -> new ShapeFactory(attributes, group).getRect())
-                .put("path", attributes -> addNode(new ShapeFactory(attributes, group).getPath()))
-                .put("polygon", attributes -> addNode(new ShapeFactory(attributes, group).getPolygon()))
-                .put("polyline", attributes -> addNode(new ShapeFactory(attributes, group).getPolyline()))
-                .put("image", attributes -> new ShapeFactory(attributes, group).getImage().ifPresent(this::addNode))
+                .put("path", attributes -> new ShapeFactory(attributes, group).getPath())
+                .put("polygon", attributes -> new ShapeFactory(attributes, group).getPolygon())
+                .put("polyline", attributes -> new ShapeFactory(attributes, group).getPolyline())
+                .put("image", attributes -> new ShapeFactory(attributes, group).getImage())
                 .build();
 
         private boolean inDefs = false;
