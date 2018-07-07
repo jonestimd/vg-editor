@@ -22,6 +22,7 @@
 package io.github.jonestimd.vgeditor.scene.control.selection;
 
 import io.github.jonestimd.vgeditor.scene.SceneTest;
+import io.github.jonestimd.vgeditor.scene.model.RectangleModel;
 import io.github.jonestimd.vgeditor.scene.shape.path.PathVisitor;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -106,13 +107,12 @@ public class HighlightFilterTest extends SceneTest {
 
     @Test
     public void checksRectangle() throws Exception {
-        Rectangle rectangle = new Rectangle(SCREEN_X-10, SCREEN_Y, 20, 20);
+        RectangleModel rectangle = new RectangleModel(diagram, SCREEN_X-10, SCREEN_Y, 20, 20);
         rectangle.setStroke(Color.BLACK);
         rectangle.setStrokeWidth(1);
-        diagram.getChildren().add(rectangle);
 
-        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y, null).test(rectangle)).isTrue();
-        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y-HIGHLIGHT_OFFSET, null).test(rectangle)).isFalse();
+        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y, null).test(rectangle.getShape())).isTrue();
+        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y-HIGHLIGHT_OFFSET, null).test(rectangle.getShape())).isFalse();
     }
 
     @Test
