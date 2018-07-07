@@ -29,15 +29,15 @@ public abstract class JavafxTest {
     @Rule
     public JavaFxThreadingRule rule = new JavaFxThreadingRule();
 
-    protected void setControllerValue(Object controller, String fieldName, Object value) throws Exception {
-        Field field = controller.getClass().getDeclaredField(fieldName);
+    protected void setValue(Object target, String fieldName, Object value) throws Exception {
+        Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
-        field.set(controller, value);
+        field.set(target, value);
     }
 
-    protected <T> T getControllerValue(Object controller, String fieldName, Class<T> valueClass) throws Exception {
-        Field field = controller.getClass().getDeclaredField(fieldName);
+    protected <T> T getValue(Object target, String fieldName, Class<T> valueClass) throws Exception {
+        Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
-        return valueClass.cast(field.get(controller));
+        return valueClass.cast(field.get(target));
     }
 }

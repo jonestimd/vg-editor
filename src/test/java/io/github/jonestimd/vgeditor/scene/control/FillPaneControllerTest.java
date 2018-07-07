@@ -69,7 +69,7 @@ public class FillPaneControllerTest extends JavafxTest {
         controller.editNode(model);
 
         assertThat(fill.isSelected()).isFalse();
-        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
+        assertThat(getValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
     }
 
     @Test
@@ -80,14 +80,14 @@ public class FillPaneControllerTest extends JavafxTest {
 
         assertThat(fill.isSelected()).isTrue();
         assertThat(fillColor.getValue()).isEqualTo(Color.ALICEBLUE);
-        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
+        assertThat(getValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
     }
 
     @Test
     public void newNodeClearsControllerNode() throws Exception {
         controller.newNode(null);
 
-        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(null);
+        assertThat(getValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(null);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class FillPaneControllerTest extends JavafxTest {
         controller.newNode(model);
 
         verify(model).setFill(Color.ALICEBLUE);
-        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
+        assertThat(getValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class FillPaneControllerTest extends JavafxTest {
         controller.newNode(model);
 
         verify(model).setFill(null);
-        assertThat(getControllerValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
+        assertThat(getValue(controller, "model", AnchoredShapeModel.class)).isEqualTo(model);
     }
 
     @Test

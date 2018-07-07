@@ -47,7 +47,7 @@ public class FormControllerTest extends JavafxTest {
     public void loadForm() throws Exception {
         field = new TextField();
         field.setId(FIELD_ID);
-        setControllerValue(controller, "root", root);
+        setValue(controller, "root", root);
         when(root.getChildren()).thenReturn(FXCollections.observableArrayList(new Label("Field 1"), field));
         controller.initialize();
     }

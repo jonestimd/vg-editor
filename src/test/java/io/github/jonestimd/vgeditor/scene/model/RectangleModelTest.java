@@ -19,12 +19,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.scene.control.selection;
+package io.github.jonestimd.vgeditor.scene.model;
 
 import io.github.jonestimd.vgeditor.scene.SceneTest;
+import io.github.jonestimd.vgeditor.scene.control.selection.HighlightBounds;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -32,30 +34,31 @@ import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionCont
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class RectanglePredicateTest extends SceneTest {
+public class RectangleModelTest extends SceneTest {
     private static final int X = 20;
     private static final int Y = 30;
     private static final int WIDTH = 40;
     private static final int HEIGHT = 50;
-    private final Rectangle rectangle = new Rectangle(X, Y, WIDTH, HEIGHT);
     private final HighlightBounds bounds = new HighlightBounds(X, Y, WIDTH, HEIGHT);
+    private RectangleModel model;
 
     @Override
     public void setUpScene() throws Exception {
         super.setUpScene();
-        rectangle.setStroke(Color.BLACK);
-        rectangle.setStrokeWidth(1);
-        rectangle.setFill(null);
-        diagram.getChildren().add(rectangle);
+        model = new RectangleModel(diagram, X, Y, WIDTH, HEIGHT);
+        model.setStroke(Color.BLACK);
+        model.setStrokeWidth(1);
+        model.setFill(null);
     }
 
     @Test
-    public void testUsesContainsForFilledRectangle() throws Exception {
+    public void isInSelectionRange_UsesContainsForFilledRectangle() throws Exception {
         final int screenX = 1, screenY = 2;
         Rectangle rectangle = spy(new Rectangle(10, 20, Color.BLACK));
-        diagram.getChildren().add(rectangle);
+        model.remove();
+        model = new RectangleModel(diagram, rectangle);
 
-        assertThat(new RectanglePredicate(screenX, screenY).test(rectangle)).isTrue();
+        Assertions.assertThat(model.isInSelectionRange(screenX, screenY)).isTrue();
 
         ArgumentCaptor<Point2D> cursorCaptor = ArgumentCaptor.forClass(Point2D.class);
         verify(rectangle).screenToLocal(screenX, screenY);
@@ -65,49 +68,49 @@ public class RectanglePredicateTest extends SceneTest {
     }
 
     @Test
-    public void testReturnsTrueWhenWithinRangeOfUnfilledRectangle() throws Exception {
+    public void isInSelectionRange_ReturnsTrueWhenWithinRangeOfUnfilledRectangle() throws Exception {
         bounds.forEach(bound -> {
-            assertThat(new RectanglePredicate(bound.x+bound.getInnerX(1), bound.y+bound.getInnerY(-1)).test(rectangle)).isTrue();
-            assertThat(new RectanglePredicate(bound.x+bound.getInnerX(-1), bound.y+bound.getInnerY(1)).test(rectangle)).isTrue();
-            assertThat(new RectanglePredicate(bound.x-bound.getInnerX(-1), bound.y-bound.getInnerY(-1)).test(rectangle)).isTrue();
+            assertThat(model.isInSelectionRange(bound.x+bound.getInnerX(1), bound.y+bound.getInnerY(-1))).isTrue();
+            assertThat(model.isInSelectionRange(bound.x+bound.getInnerX(-1), bound.y+bound.getInnerY(1))).isTrue();
+            assertThat(model.isInSelectionRange(bound.x-bound.getInnerX(-1), bound.y-bound.getInnerY(-1))).isTrue();
         });
     }
 
     @Test
-    public void testReturnsFalseWhenInsideUnfilledRectangle() throws Exception {
+    public void isInSelectionRange_ReturnsFalseWhenInsideUnfilledRectangle() throws Exception {
         bounds.forEach(bound -> {
-            assertThat(new RectanglePredicate(bound.x+bound.getInnerX(1), bound.y+bound.getInnerY(1)).test(rectangle)).isFalse();
+            assertThat(model.isInSelectionRange(bound.x+bound.getInnerX(1), bound.y+bound.getInnerY(1))).isFalse();
         });
     }
 
     @Test
-    public void testReturnsFalseWhenOutsideRangeOfUnfilledRectangle() throws Exception {
+    public void isInSelectionRange_ReturnsFalseWhenOutsideRangeOfUnfilledRectangle() throws Exception {
         bounds.forEach(bound -> {
-            assertThat(new RectanglePredicate(bound.x+bound.getInnerX(0), bound.y-bound.getInnerY(1)).test(rectangle)).isFalse();
-            assertThat(new RectanglePredicate(bound.x-bound.getInnerX(1), bound.y+bound.getInnerY(0)).test(rectangle)).isFalse();
+            assertThat(model.isInSelectionRange(bound.x+bound.getInnerX(0), bound.y-bound.getInnerY(1))).isFalse();
+            assertThat(model.isInSelectionRange(bound.x-bound.getInnerX(1), bound.y+bound.getInnerY(0))).isFalse();
         });
     }
 
     @Test
-    public void getMarkerLocationReturnsCorner() throws Exception {
+    public void getMarkerLocation_ReturnsCorner() throws Exception {
         bounds.forEach(bound -> {
             Point2D corner = new Point2D(bound.x, bound.y);
-            assertThat(RectanglePredicate.getMarkerLocation(bound.x+bound.getInnerX(0), bound.y, rectangle)).isEqualTo(corner);
-            assertThat(RectanglePredicate.getMarkerLocation(bound.x, bound.y+bound.getInnerY(0), rectangle)).isEqualTo(corner);
+            assertThat(model.getMarkerLocation(bound.x+bound.getInnerX(0), bound.y)).isEqualTo(corner);
+            assertThat(model.getMarkerLocation(bound.x, bound.y+bound.getInnerY(0))).isEqualTo(corner);
         });
     }
 
     @Test
-    public void getMarkerLocationReturnsMidpointOfSide() throws Exception {
+    public void getMarkerLocation_ReturnsMidpointOfSide() throws Exception {
         bounds.forEach(bound -> {
-            assertThat(RectanglePredicate.getMarkerLocation(bound.x+bound.getInnerX(1), bound.y, rectangle)).isEqualTo(bound.getMidpoint(true));
-            assertThat(RectanglePredicate.getMarkerLocation(bound.x, bound.y+bound.getInnerY(1), rectangle)).isEqualTo(bound.getMidpoint(false));
+            assertThat(model.getMarkerLocation(bound.x+bound.getInnerX(1), bound.y)).isEqualTo(bound.getMidpoint(true));
+            assertThat(model.getMarkerLocation(bound.x, bound.y+bound.getInnerY(1))).isEqualTo(bound.getMidpoint(false));
         });
     }
 
     @Test
-    public void getMarkerLocationReturnsCenterOfRectangle() throws Exception {
-        Point2D point = RectanglePredicate.getMarkerLocation(X+HIGHLIGHT_OFFSET+2, Y+HIGHLIGHT_OFFSET+2, rectangle);
+    public void getMarkerLocation_ReturnsCenterOfRectangle() throws Exception {
+        Point2D point = model.getMarkerLocation(X+HIGHLIGHT_OFFSET+2, Y+HIGHLIGHT_OFFSET+2);
 
         assertThat(point.getX()).isEqualTo(X+WIDTH/2);
         assertThat(point.getY()).isEqualTo(Y+HEIGHT/2);

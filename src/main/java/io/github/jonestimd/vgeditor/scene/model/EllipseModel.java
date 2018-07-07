@@ -75,7 +75,12 @@ public class EllipseModel extends AnchoredShapeModel<Ellipse> {
     }
 
     @Override
-    public boolean isInSelectionRange(Point2D screenPoint) {
-        return shape.contains(shape.screenToLocal(screenPoint));
+    public boolean isInSelectionRange(double screenX, double screenY) {
+        return shape.contains(shape.screenToLocal(screenX, screenY));
+    }
+
+    @Override
+    public Point2D getMarkerLocation(double screenX, double screenY) {
+        throw new UnsupportedOperationException();
     }
 }

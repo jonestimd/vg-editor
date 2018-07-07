@@ -27,6 +27,7 @@ import io.github.jonestimd.vgeditor.collection.IterableUtils;
 import io.github.jonestimd.vgeditor.collection.LruCache;
 import io.github.jonestimd.vgeditor.scene.Geometry;
 import io.github.jonestimd.vgeditor.scene.Nodes;
+import io.github.jonestimd.vgeditor.scene.model.NodeModel;
 import io.github.jonestimd.vgeditor.scene.shape.path.PathSegment;
 import io.github.jonestimd.vgeditor.scene.shape.path.PathVisitor;
 import javafx.beans.property.Property;
@@ -111,7 +112,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
             setMarker(node, cursor.getX(), cursor.getY());
         }
         else if (node instanceof Rectangle) {
-            Point2D location = RectanglePredicate.getMarkerLocation(screenX, screenY, (Rectangle) node);
+            Point2D location = ((NodeModel) node.getUserData()).getMarkerLocation(screenX, screenY);
             setMarker(node, location.getX(), location.getY());
         }
         else {

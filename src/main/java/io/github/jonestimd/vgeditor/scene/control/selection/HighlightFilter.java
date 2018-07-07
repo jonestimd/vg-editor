@@ -24,6 +24,7 @@ package io.github.jonestimd.vgeditor.scene.control.selection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import io.github.jonestimd.vgeditor.scene.model.NodeModel;
 import io.github.jonestimd.vgeditor.scene.shape.path.PathVisitor;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -43,7 +44,6 @@ public class HighlightFilter implements Predicate<Node> {
     private final double screenX;
     private final double screenY;
     private final Bounds bounds;
-    private final RectanglePredicate rectanglePredicate;
     private final PolylinePredicate polylinePredicate;
 
     public HighlightFilter(double screenX, double screenY, Function<Path, PathVisitor> pathVisitorFactory) {
@@ -51,14 +51,13 @@ public class HighlightFilter implements Predicate<Node> {
         this.screenX = screenX;
         this.screenY = screenY;
         this.bounds = new BoundingBox(screenX-HIGHLIGHT_OFFSET, screenY-HIGHLIGHT_OFFSET, HIGHLIGHT_SIZE, HIGHLIGHT_SIZE);
-        this.rectanglePredicate = new RectanglePredicate(screenX, screenY);
         this.polylinePredicate = new PolylinePredicate(screenX, screenY);
     }
 
     public boolean test(Node node) {
         if (node instanceof Polyline) return test((Polyline) node);
         if (node instanceof Path) return test((Path) node);
-        if (node instanceof Rectangle) return rectanglePredicate.test((Rectangle) node);
+        if (node instanceof Rectangle) return ((NodeModel) node.getUserData()).isInSelectionRange(screenX, screenY);
         Bounds nodeBounds = node.getBoundsInLocal();
         if (node instanceof Parent || nodeBounds.getWidth() < HIGHLIGHT_SIZE || nodeBounds.getHeight() < HIGHLIGHT_SIZE) {
             return node.screenToLocal(bounds).intersects(nodeBounds);

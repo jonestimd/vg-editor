@@ -207,7 +207,7 @@ public class SelectionControllerTest extends SceneTest {
     }
 
     private void checkHighlight(double x, double y, Node expectedHighlight, double markerX, double markerY) throws Exception {
-        setControllerValue(controller, "highlighted", shape);
+        setValue(controller, "highlighted", shape);
         shape.setEffect(new ColorAdjust(-.25, 0.2, 0.5, 0));
 
         controller.handle(getEvent(MouseEvent.MOUSE_MOVED, x, y, null));

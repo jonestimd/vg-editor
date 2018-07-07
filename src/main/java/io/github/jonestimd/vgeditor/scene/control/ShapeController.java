@@ -170,7 +170,7 @@ public class ShapeController<T extends AnchoredShapeModel> implements NodeContro
     }
 
     protected boolean startDrag(Point2D screenPoint, boolean isShortcutDown) {
-        if (model != null && model.isInSelectionRange(screenPoint)) {
+        if (model != null && model.isInSelectionRange(screenPoint.getX(), screenPoint.getY())) {
             if (isShortcutDown) {
                 NodeAnchor resizeAnchor = model.getResizeAnchor(screenPoint);
                 if (resizeAnchor != null) drag = new ResizeDragHandler(resizeAnchor);

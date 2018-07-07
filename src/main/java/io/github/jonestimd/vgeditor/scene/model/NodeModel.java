@@ -40,5 +40,6 @@ public interface NodeModel {
 
     List<Transform> getTransforms();
 
-    boolean isInSelectionRange(Point2D screenPoint);
+    boolean isInSelectionRange(double screenX, double screenY);
+    Point2D getMarkerLocation(double screenX, double screenY);
 }

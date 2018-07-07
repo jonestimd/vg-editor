@@ -21,18 +21,24 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.model;
 
-import io.github.jonestimd.vgeditor.scene.control.selection.RectanglePredicate;
+import io.github.jonestimd.vgeditor.scene.control.selection.SelectionController;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.shape.Rectangle;
 
+import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
+
 public class RectangleModel extends AnchoredShapeModel<Rectangle> {
     public RectangleModel(Group group) {
-        super(group, new Rectangle());
+        this(group, new Rectangle());
     }
 
     public RectangleModel(Group group, double x, double y, double width, double height) {
-        super(group, new Rectangle(x, y, width, height));
+        this(group, new Rectangle(x, y, width, height));
+    }
+
+    protected RectangleModel(Group group, Rectangle rectangle) {
+        super(group, rectangle);
     }
 
     @Override
@@ -96,7 +102,32 @@ public class RectangleModel extends AnchoredShapeModel<Rectangle> {
         shape.setArcHeight(value*2);
     }
 
-    public boolean isInSelectionRange(Point2D screenPoint) { // TODO incorporate RectanglePredicate
-        return new RectanglePredicate(screenPoint.getX(), screenPoint.getY()).test(shape);
+    public boolean isInSelectionRange(double screenX, double screenY) {
+        Point2D localPoint = shape.screenToLocal(screenX, screenY);
+        if (shape.getFill() == null) {
+            return isInBounds(shape.getX(), shape.getWidth(), localPoint.getX()) && isInBounds(shape.getY(), shape.getHeight(), localPoint.getY()) &&
+                    (isNotInside(shape.getX(), shape.getWidth(), localPoint.getX()) || isNotInside(shape.getY(), shape.getHeight(), localPoint.getY()));
+        }
+        return shape.contains(localPoint);
+    }
+
+    private static boolean isInBounds(double min, double size, double value) {
+        return value > min-HIGHLIGHT_OFFSET && value < min+size+HIGHLIGHT_OFFSET;
+    }
+
+    private static boolean isNotInside(double min, double size, double value) {
+        return value < min+HIGHLIGHT_OFFSET || value > min+size-HIGHLIGHT_OFFSET;
+    }
+
+    public Point2D getMarkerLocation(double screenX, double screenY) {
+        double x = shape.getX(), y = shape.getY();
+        Point2D cursor = shape.screenToLocal(screenX, screenY).subtract(x, y);
+        return new Point2D(x+selectEdge(cursor.getX(), shape.getWidth()), y+selectEdge(cursor.getY(), shape.getHeight()));
+    }
+
+    private static double selectEdge(double value, double size) {
+        if (value <= SelectionController.HIGHLIGHT_OFFSET) return 0;
+        if (value >= size-SelectionController.HIGHLIGHT_OFFSET) return size;
+        return size/2;
     }
 }

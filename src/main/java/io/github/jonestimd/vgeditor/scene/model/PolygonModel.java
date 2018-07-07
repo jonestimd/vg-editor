@@ -31,7 +31,12 @@ public class PolygonModel extends ShapeModel<Polygon> {
     }
 
     @Override
-    public boolean isInSelectionRange(Point2D screenPoint) {
+    public boolean isInSelectionRange(double screenX, double screenY) {
         return false;
+    }
+
+    @Override
+    public Point2D getMarkerLocation(double screenX, double screenY) {
+        throw new UnsupportedOperationException();
     }
 }

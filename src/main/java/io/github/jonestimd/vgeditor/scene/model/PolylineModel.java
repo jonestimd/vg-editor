@@ -32,7 +32,12 @@ public class PolylineModel extends ShapeModel<Polyline> {
     }
 
     @Override
-    public boolean isInSelectionRange(Point2D screenPoint) {
-        return new PolylinePredicate(screenPoint.getX(), screenPoint.getY()).test(shape);
+    public boolean isInSelectionRange(double screenX, double screenY) {
+        return new PolylinePredicate(screenX, screenY).test(shape);
+    }
+
+    @Override
+    public Point2D getMarkerLocation(double screenX, double screenY) {
+        throw new UnsupportedOperationException();
     }
 }
