@@ -21,6 +21,7 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.shape.path;
 
+import io.github.jonestimd.vgeditor.scene.control.selection.SelectionController;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.ClosePath;
@@ -68,6 +69,9 @@ public abstract class PathSegment<T extends PathElement> {
      */
     public abstract double getDistanceSquared(Point2D point);
 
+    public boolean isInSelectionRange(Point2D cursor) {
+        return getDistanceSquared(cursor) <= SelectionController.HIGHLIGHT_OFFSET_SQUARED;
+    }
 
     /**
      * Get an instance of {@code PathSegment} for a path element.

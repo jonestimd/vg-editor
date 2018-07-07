@@ -22,24 +22,19 @@
 package io.github.jonestimd.vgeditor.scene.control.selection;
 
 import io.github.jonestimd.vgeditor.scene.SceneTest;
+import io.github.jonestimd.vgeditor.scene.model.PathModel;
 import io.github.jonestimd.vgeditor.scene.model.PolylineModel;
 import io.github.jonestimd.vgeditor.scene.model.RectangleModel;
-import io.github.jonestimd.vgeditor.scene.shape.path.PathVisitor;
-import javafx.geometry.BoundingBox;
-import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class HighlightFilterTest extends SceneTest {
     private static final int SCREEN_X = 5;
@@ -50,38 +45,17 @@ public class HighlightFilterTest extends SceneTest {
         PolylineModel model = new PolylineModel(diagram, SCREEN_X, SCREEN_Y-10, SCREEN_X, SCREEN_Y+20, SCREEN_X+30, SCREEN_Y+20);
         model.setStrokeWidth(1);
 
-        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y, null).test(model.getShape())).isTrue();
-        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET+1, SCREEN_Y, null).test(model.getShape())).isFalse();
-    }
-
-    @Test
-    public void checksPathBounds() throws Exception {
-        Bounds bounds = new BoundingBox(0, 0, 20, 30);
-        Path path = mock(Path.class);
-        when(path.screenToLocal(any(Bounds.class))).thenReturn(bounds);
-        when(path.intersects(any(Bounds.class))).thenReturn(false);
-        HighlightFilter highlightFilter = new HighlightFilter(SCREEN_X, SCREEN_Y, null);
-
-        assertThat(highlightFilter.test(path)).isFalse();
-
-        ArgumentCaptor<Bounds> boundsCaptor = ArgumentCaptor.forClass(Bounds.class);
-        verify(path).screenToLocal(boundsCaptor.capture());
-        verify(path).intersects(same(bounds));
-        verifyNoMoreInteractions(path);
-        assertThat(boundsCaptor.getValue().getMinX()).isEqualTo(SCREEN_X-HIGHLIGHT_OFFSET);
-        assertThat(boundsCaptor.getValue().getMinY()).isEqualTo(SCREEN_Y-HIGHLIGHT_OFFSET);
-        assertThat(boundsCaptor.getValue().getMaxX()).isEqualTo(SCREEN_X+HIGHLIGHT_OFFSET);
-        assertThat(boundsCaptor.getValue().getMaxY()).isEqualTo(SCREEN_Y+HIGHLIGHT_OFFSET);
+        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y).test(model.getShape())).isTrue();
+        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET+1, SCREEN_Y).test(model.getShape())).isFalse();
     }
 
     @Test
     public void checksPathSegments() throws Exception {
-        Path path = new Path(new MoveTo(SCREEN_X, SCREEN_Y-10), new LineTo(SCREEN_X, SCREEN_Y+20), new LineTo(SCREEN_X+30, SCREEN_Y+20));
+        PathModel path = new PathModel(diagram, new MoveTo(SCREEN_X, SCREEN_Y-10), new LineTo(SCREEN_X, SCREEN_Y+20), new LineTo(SCREEN_X+30, SCREEN_Y+20));
         path.setStrokeWidth(1);
-        diagram.getChildren().add(path);
 
-        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y, PathVisitor::new).test(path)).isTrue();
-        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET+1, SCREEN_Y, PathVisitor::new).test(path)).isFalse();
+        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y).test(path.getShape())).isTrue();
+        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET+1, SCREEN_Y).test(path.getShape())).isFalse();
     }
 
     @Test
@@ -90,8 +64,8 @@ public class HighlightFilterTest extends SceneTest {
         rectangle.setStroke(Color.BLACK);
         rectangle.setStrokeWidth(1);
 
-        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y, null).test(rectangle.getShape())).isTrue();
-        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y-HIGHLIGHT_OFFSET, null).test(rectangle.getShape())).isFalse();
+        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y).test(rectangle.getShape())).isTrue();
+        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y-HIGHLIGHT_OFFSET).test(rectangle.getShape())).isFalse();
     }
 
     @Test
@@ -102,8 +76,8 @@ public class HighlightFilterTest extends SceneTest {
         Group group = new Group(rectangle);
         diagram.getChildren().add(group);
 
-        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y, null).test(group)).isTrue();
-        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y-HIGHLIGHT_OFFSET-1, null).test(group)).isFalse();
+        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y).test(group)).isTrue();
+        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y-HIGHLIGHT_OFFSET-1).test(group)).isFalse();
     }
 
     @Test
@@ -113,15 +87,15 @@ public class HighlightFilterTest extends SceneTest {
         Line line = new Line(startX, SCREEN_Y, endX, SCREEN_Y);
         diagram.getChildren().add(line);
 
-        assertThat(new HighlightFilter(startX-HIGHLIGHT_OFFSET, SCREEN_Y-HIGHLIGHT_OFFSET, null).test(line)).isTrue();
-        assertThat(new HighlightFilter(startX-HIGHLIGHT_OFFSET, SCREEN_Y+HIGHLIGHT_OFFSET, null).test(line)).isTrue();
-        assertThat(new HighlightFilter(endX-HIGHLIGHT_OFFSET, SCREEN_Y-HIGHLIGHT_OFFSET, null).test(line)).isTrue();
-        assertThat(new HighlightFilter(endX-HIGHLIGHT_OFFSET, SCREEN_Y+HIGHLIGHT_OFFSET, null).test(line)).isTrue();
+        assertThat(new HighlightFilter(startX-HIGHLIGHT_OFFSET, SCREEN_Y-HIGHLIGHT_OFFSET).test(line)).isTrue();
+        assertThat(new HighlightFilter(startX-HIGHLIGHT_OFFSET, SCREEN_Y+HIGHLIGHT_OFFSET).test(line)).isTrue();
+        assertThat(new HighlightFilter(endX-HIGHLIGHT_OFFSET, SCREEN_Y-HIGHLIGHT_OFFSET).test(line)).isTrue();
+        assertThat(new HighlightFilter(endX-HIGHLIGHT_OFFSET, SCREEN_Y+HIGHLIGHT_OFFSET).test(line)).isTrue();
 
-        assertThat(new HighlightFilter(startX-HIGHLIGHT_OFFSET-1, SCREEN_Y, null).test(line)).isFalse();
-        assertThat(new HighlightFilter(endX+HIGHLIGHT_OFFSET+1, SCREEN_Y, null).test(line)).isFalse();
-        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y-HIGHLIGHT_OFFSET-1, null).test(line)).isFalse();
-        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y+HIGHLIGHT_OFFSET+1, null).test(line)).isFalse();
+        assertThat(new HighlightFilter(startX-HIGHLIGHT_OFFSET-1, SCREEN_Y).test(line)).isFalse();
+        assertThat(new HighlightFilter(endX+HIGHLIGHT_OFFSET+1, SCREEN_Y).test(line)).isFalse();
+        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y-HIGHLIGHT_OFFSET-1).test(line)).isFalse();
+        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y+HIGHLIGHT_OFFSET+1).test(line)).isFalse();
     }
 
     @Test
@@ -132,15 +106,15 @@ public class HighlightFilterTest extends SceneTest {
         line.setStrokeWidth(1);
         diagram.getChildren().add(line);
 
-        assertThat(new HighlightFilter(SCREEN_X-HIGHLIGHT_OFFSET, startY-HIGHLIGHT_OFFSET, null).test(line)).isTrue();
-        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET, startY-HIGHLIGHT_OFFSET, null).test(line)).isTrue();
-        assertThat(new HighlightFilter(SCREEN_X-HIGHLIGHT_OFFSET, endY+HIGHLIGHT_OFFSET, null).test(line)).isTrue();
-        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET, endY+HIGHLIGHT_OFFSET, null).test(line)).isTrue();
+        assertThat(new HighlightFilter(SCREEN_X-HIGHLIGHT_OFFSET, startY-HIGHLIGHT_OFFSET).test(line)).isTrue();
+        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET, startY-HIGHLIGHT_OFFSET).test(line)).isTrue();
+        assertThat(new HighlightFilter(SCREEN_X-HIGHLIGHT_OFFSET, endY+HIGHLIGHT_OFFSET).test(line)).isTrue();
+        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET, endY+HIGHLIGHT_OFFSET).test(line)).isTrue();
 
-        assertThat(new HighlightFilter(SCREEN_X-HIGHLIGHT_OFFSET-1, SCREEN_Y, null).test(line)).isFalse();
-        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET+1, SCREEN_Y, null).test(line)).isFalse();
-        assertThat(new HighlightFilter(SCREEN_X, startY-HIGHLIGHT_OFFSET-1, null).test(line)).isFalse();
-        assertThat(new HighlightFilter(SCREEN_X, endY+HIGHLIGHT_OFFSET+1, null).test(line)).isFalse();
+        assertThat(new HighlightFilter(SCREEN_X-HIGHLIGHT_OFFSET-1, SCREEN_Y).test(line)).isFalse();
+        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET+1, SCREEN_Y).test(line)).isFalse();
+        assertThat(new HighlightFilter(SCREEN_X, startY-HIGHLIGHT_OFFSET-1).test(line)).isFalse();
+        assertThat(new HighlightFilter(SCREEN_X, endY+HIGHLIGHT_OFFSET+1).test(line)).isFalse();
     }
 
     @Test
@@ -153,12 +127,12 @@ public class HighlightFilterTest extends SceneTest {
         line.setStrokeWidth(1);
         diagram.getChildren().add(line);
 
-        assertThat(new HighlightFilter(startX, startY, null).test(line)).isTrue();
-        assertThat(new HighlightFilter(endX, endY, null).test(line)).isTrue();
+        assertThat(new HighlightFilter(startX, startY).test(line)).isTrue();
+        assertThat(new HighlightFilter(endX, endY).test(line)).isTrue();
 
-        assertThat(new HighlightFilter(startX-1, startY, null).test(line)).isFalse();
-        assertThat(new HighlightFilter(startX, startY-1, null).test(line)).isFalse();
-        assertThat(new HighlightFilter(endX+1, endY, null).test(line)).isFalse();
-        assertThat(new HighlightFilter(endX, endY+1, null).test(line)).isFalse();
+        assertThat(new HighlightFilter(startX-1, startY).test(line)).isFalse();
+        assertThat(new HighlightFilter(startX, startY-1).test(line)).isFalse();
+        assertThat(new HighlightFilter(endX+1, endY).test(line)).isFalse();
+        assertThat(new HighlightFilter(endX, endY+1).test(line)).isFalse();
     }
 }

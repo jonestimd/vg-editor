@@ -24,12 +24,8 @@ package io.github.jonestimd.vgeditor.scene.control.selection;
 import java.util.List;
 
 import io.github.jonestimd.vgeditor.collection.IterableUtils;
-import io.github.jonestimd.vgeditor.collection.LruCache;
-import io.github.jonestimd.vgeditor.scene.Geometry;
 import io.github.jonestimd.vgeditor.scene.Nodes;
 import io.github.jonestimd.vgeditor.scene.model.NodeModel;
-import io.github.jonestimd.vgeditor.scene.shape.path.PathSegment;
-import io.github.jonestimd.vgeditor.scene.shape.path.PathVisitor;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
@@ -52,10 +48,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
     public static final int HIGHLIGHT_OFFSET = 5;
     public static final int HIGHLIGHT_SIZE = HIGHLIGHT_OFFSET*2;
     public static final int HIGHLIGHT_OFFSET_SQUARED = HIGHLIGHT_OFFSET*HIGHLIGHT_OFFSET;
-    public static final int PATH_CACHE_SIZE = 30;
     private final Group diagram;
-
-    private final LruCache<Path, PathVisitor> pathVisitorCache = new LruCache<>(PATH_CACHE_SIZE);
 
     private Node highlighted;
     private final Property<Node> selected = new SimpleObjectProperty<>(this, "selected");
@@ -85,7 +78,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
     }
 
     private void onMouseMoved(double screenX, double screenY) {
-        List<Node> nodes = findNodes(diagram, new HighlightFilter(screenX, screenY, path -> pathVisitorCache.get(path, PathVisitor::new)));
+        List<Node> nodes = findNodes(diagram, new HighlightFilter(screenX, screenY));
         List<Node> matches = IterableUtils.minBy(nodes, Nodes::boundingArea); // TODO check path elements
         if (matches.isEmpty()) hideMarker();
         else showMarker(matches.get(0), screenX, screenY);
@@ -96,15 +89,8 @@ public class SelectionController implements EventHandler<MouseEvent> {
         highlighted = node;
         highlighted.setEffect(highlightEffect);
         if (node instanceof Path) {
-            Path path = (Path) node;
-            Point2D cursor = path.screenToLocal(screenX, screenY);
-            PathSegment<?> segment = pathVisitorCache.get(path, PathVisitor::new)
-                    .find(new HighlightPathPredicate(cursor))
-                    .orElseThrow(IllegalStateException::new);
-            Point2D midpoint = segment.getMidpoint();
-            if (Geometry.distanceSquared(cursor, segment.getStart()) <= HIGHLIGHT_OFFSET_SQUARED) midpoint = segment.getStart();
-            else if (Geometry.distanceSquared(cursor, segment.getEnd()) <= HIGHLIGHT_OFFSET_SQUARED) midpoint = segment.getEnd();
-            setMarker(node, midpoint.getX(), midpoint.getY());
+            Point2D cursor = ((NodeModel) node.getUserData()).getMarkerLocation(screenX, screenY);
+            setMarker(node, cursor.getX(), cursor.getY());
         }
         else if (node instanceof Polyline) {
             Point2D cursor = ((NodeModel) node.getUserData()).getMarkerLocation(screenX, screenY);

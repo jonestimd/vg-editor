@@ -21,26 +21,50 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.model;
 
+import java.util.function.Predicate;
+
+import io.github.jonestimd.vgeditor.scene.Geometry;
+import io.github.jonestimd.vgeditor.scene.shape.path.PathSegment;
+import io.github.jonestimd.vgeditor.scene.shape.path.PathVisitor;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
+
+import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
 
 public class PathModel extends ShapeModel<Path> {
-    public PathModel(Group group) {
-        super(group, new Path());
+    private final PathVisitor pathVisitor;
+
+    public PathModel(Group group, PathElement... elements) {
+        this(group, new Path(elements));
     }
 
     public PathModel(Group group, Path shape) {
         super(group, shape);
+        pathVisitor = new PathVisitor(shape);
     }
 
     @Override
     public boolean isInSelectionRange(double screenX, double screenY) {
-        return false;
+        Point2D cursor = shape.screenToLocal(screenX, screenY);
+        Bounds bounds = shape.getBoundsInLocal();
+        return isInBounds(bounds.getMinX(), bounds.getWidth(), cursor.getX()) &&
+                isInBounds(bounds.getMinY(), bounds.getHeight(), cursor.getY()) &&
+                pathVisitor.some(cursorPredicate(cursor));
     }
 
     @Override
     public Point2D getMarkerLocation(double screenX, double screenY) {
-        throw new UnsupportedOperationException();
+        Point2D cursor = shape.screenToLocal(screenX, screenY);
+        PathSegment<?> segment = pathVisitor.find(cursorPredicate(cursor)).orElseThrow(IllegalStateException::new);
+        if (Geometry.distanceSquared(cursor, segment.getStart()) <= HIGHLIGHT_OFFSET_SQUARED) return segment.getStart();
+        if (Geometry.distanceSquared(cursor, segment.getEnd()) <= HIGHLIGHT_OFFSET_SQUARED) return segment.getEnd();
+        return segment.getMidpoint();
+    }
+
+    private Predicate<PathSegment<?>> cursorPredicate(Point2D cursor) {
+        return segment -> segment.isInSelectionRange(cursor);
     }
 }

@@ -22,6 +22,7 @@
 package io.github.jonestimd.vgeditor.scene.control.selection;
 
 import io.github.jonestimd.vgeditor.scene.SceneTest;
+import io.github.jonestimd.vgeditor.scene.model.PathModel;
 import io.github.jonestimd.vgeditor.scene.model.PolylineModel;
 import io.github.jonestimd.vgeditor.scene.model.RectangleModel;
 import javafx.event.EventType;
@@ -36,7 +37,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
 import javafx.scene.text.Text;
 import org.junit.Test;
 
@@ -61,18 +61,17 @@ public class SelectionControllerTest extends SceneTest {
         final int x1 = 30, y1 = 20, x2 = 50, y2 = 40;
         final int mx = (x1+x2)/2, my = (y1+y2)/2;
         final Point2D[] points = {new Point2D(x1, y1), new Point2D(x2, y1), new Point2D(x2, y2)};
-        Path path = new Path(new MoveTo(x1, y1), new LineTo(x2, y1), new LineTo(x2, y2));
-        path.setStrokeWidth(1);
-        diagram.getChildren().add(path);
+        PathModel model = new PathModel(diagram, new MoveTo(x1, y1), new LineTo(x2, y1), new LineTo(x2, y2));
+        model.setStrokeWidth(1);
 
         checkHighlight(x1-HIGHLIGHT_OFFSET-2, y1-HIGHLIGHT_OFFSET-2, null, 0, 0);
 
         for (int i = 0; i < points.length; i++) {
             Point2D point = points[i];
-            checkHighlight(point.getX()-HIGHLIGHT_OFFSET, point.getY(), path, point.getX(), point.getY());
-            checkHighlight(point.getX()+HIGHLIGHT_OFFSET, point.getY(), path, point.getX(), point.getY());
-            checkHighlight(point.getX(), point.getY()-HIGHLIGHT_OFFSET, path, point.getX(), point.getY());
-            checkHighlight(point.getX(), point.getY()+HIGHLIGHT_OFFSET, path, point.getX(), point.getY());
+            checkHighlight(point.getX()-HIGHLIGHT_OFFSET, point.getY(), model.getShape(), point.getX(), point.getY());
+            checkHighlight(point.getX()+HIGHLIGHT_OFFSET, point.getY(), model.getShape(), point.getX(), point.getY());
+            checkHighlight(point.getX(), point.getY()-HIGHLIGHT_OFFSET, model.getShape(), point.getX(), point.getY());
+            checkHighlight(point.getX(), point.getY()+HIGHLIGHT_OFFSET, model.getShape(), point.getX(), point.getY());
 
             if (i != 1) {
                 checkHighlight(point.getX()-HIGHLIGHT_OFFSET-1, point.getY(), null, 0, 0);
@@ -82,15 +81,15 @@ public class SelectionControllerTest extends SceneTest {
             if (i != 0) checkHighlight(point.getX()+HIGHLIGHT_OFFSET+1, point.getY(), null, 0, 0);
         }
 
-        checkHighlight(points[0].getX()+HIGHLIGHT_OFFSET+1, points[1].getY()-HIGHLIGHT_OFFSET, path, mx, y1);
-        checkHighlight(points[0].getX()+HIGHLIGHT_OFFSET+1, points[1].getY()+HIGHLIGHT_OFFSET, path, mx, y1);
-        checkHighlight(points[1].getX()-HIGHLIGHT_OFFSET-1, points[1].getY()-HIGHLIGHT_OFFSET, path, mx, y1);
-        checkHighlight(points[1].getX()-HIGHLIGHT_OFFSET-1, points[1].getY()+HIGHLIGHT_OFFSET, path, mx, y1);
+        checkHighlight(points[0].getX()+HIGHLIGHT_OFFSET+1, points[1].getY()-HIGHLIGHT_OFFSET, model.getShape(), mx, y1);
+        checkHighlight(points[0].getX()+HIGHLIGHT_OFFSET+1, points[1].getY()+HIGHLIGHT_OFFSET, model.getShape(), mx, y1);
+        checkHighlight(points[1].getX()-HIGHLIGHT_OFFSET-1, points[1].getY()-HIGHLIGHT_OFFSET, model.getShape(), mx, y1);
+        checkHighlight(points[1].getX()-HIGHLIGHT_OFFSET-1, points[1].getY()+HIGHLIGHT_OFFSET, model.getShape(), mx, y1);
 
-        checkHighlight(points[1].getX()-HIGHLIGHT_OFFSET, points[1].getY()+HIGHLIGHT_OFFSET+1, path, x2, my);
-        checkHighlight(points[1].getX()+HIGHLIGHT_OFFSET, points[1].getY()+HIGHLIGHT_OFFSET+1, path, x2, my);
-        checkHighlight(points[1].getX()-HIGHLIGHT_OFFSET, points[2].getY()-HIGHLIGHT_OFFSET-1, path, x2, my);
-        checkHighlight(points[1].getX()+HIGHLIGHT_OFFSET, points[2].getY()-HIGHLIGHT_OFFSET-1, path, x2, my);
+        checkHighlight(points[1].getX()-HIGHLIGHT_OFFSET, points[1].getY()+HIGHLIGHT_OFFSET+1, model.getShape(), x2, my);
+        checkHighlight(points[1].getX()+HIGHLIGHT_OFFSET, points[1].getY()+HIGHLIGHT_OFFSET+1, model.getShape(), x2, my);
+        checkHighlight(points[1].getX()-HIGHLIGHT_OFFSET, points[2].getY()-HIGHLIGHT_OFFSET-1, model.getShape(), x2, my);
+        checkHighlight(points[1].getX()+HIGHLIGHT_OFFSET, points[2].getY()-HIGHLIGHT_OFFSET-1, model.getShape(), x2, my);
     }
 
     @Test
