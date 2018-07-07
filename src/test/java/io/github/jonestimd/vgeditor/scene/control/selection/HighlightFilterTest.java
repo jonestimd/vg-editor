@@ -22,6 +22,7 @@
 package io.github.jonestimd.vgeditor.scene.control.selection;
 
 import io.github.jonestimd.vgeditor.scene.SceneTest;
+import io.github.jonestimd.vgeditor.scene.model.PolylineModel;
 import io.github.jonestimd.vgeditor.scene.model.RectangleModel;
 import io.github.jonestimd.vgeditor.scene.shape.path.PathVisitor;
 import javafx.geometry.BoundingBox;
@@ -32,7 +33,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
-import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -46,33 +46,12 @@ public class HighlightFilterTest extends SceneTest {
     private static final int SCREEN_Y = 15;
 
     @Test
-    public void checksPolylineBounds() throws Exception {
-        Bounds bounds = new BoundingBox(0, 0, 20, 30);
-        Polyline polyline = mock(Polyline.class);
-        when(polyline.screenToLocal(any(Bounds.class))).thenReturn(bounds);
-        when(polyline.intersects(any(Bounds.class))).thenReturn(false);
-        HighlightFilter highlightFilter = new HighlightFilter(SCREEN_X, SCREEN_Y, null);
-
-        assertThat(highlightFilter.test(polyline)).isFalse();
-
-        ArgumentCaptor<Bounds> boundsCaptor = ArgumentCaptor.forClass(Bounds.class);
-        verify(polyline).screenToLocal(boundsCaptor.capture());
-        verify(polyline).intersects(same(bounds));
-        verifyNoMoreInteractions(polyline);
-        assertThat(boundsCaptor.getValue().getMinX()).isEqualTo(SCREEN_X-HIGHLIGHT_OFFSET);
-        assertThat(boundsCaptor.getValue().getMinY()).isEqualTo(SCREEN_Y-HIGHLIGHT_OFFSET);
-        assertThat(boundsCaptor.getValue().getMaxX()).isEqualTo(SCREEN_X+HIGHLIGHT_OFFSET);
-        assertThat(boundsCaptor.getValue().getMaxY()).isEqualTo(SCREEN_Y+HIGHLIGHT_OFFSET);
-    }
-
-    @Test
     public void checksPolylineSegments() throws Exception {
-        Polyline polyline = new Polyline(SCREEN_X, SCREEN_Y-10, SCREEN_X, SCREEN_Y+20, SCREEN_X+30, SCREEN_Y+20);
-        polyline.setStrokeWidth(1);
-        diagram.getChildren().add(polyline);
+        PolylineModel model = new PolylineModel(diagram, SCREEN_X, SCREEN_Y-10, SCREEN_X, SCREEN_Y+20, SCREEN_X+30, SCREEN_Y+20);
+        model.setStrokeWidth(1);
 
-        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y, null).test(polyline)).isTrue();
-        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET+1, SCREEN_Y, null).test(polyline)).isFalse();
+        assertThat(new HighlightFilter(SCREEN_X, SCREEN_Y, null).test(model.getShape())).isTrue();
+        assertThat(new HighlightFilter(SCREEN_X+HIGHLIGHT_OFFSET+1, SCREEN_Y, null).test(model.getShape())).isFalse();
     }
 
     @Test

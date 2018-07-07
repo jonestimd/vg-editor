@@ -22,6 +22,7 @@
 package io.github.jonestimd.vgeditor.scene.control.selection;
 
 import io.github.jonestimd.vgeditor.scene.SceneTest;
+import io.github.jonestimd.vgeditor.scene.model.PolylineModel;
 import io.github.jonestimd.vgeditor.scene.model.RectangleModel;
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
@@ -36,7 +37,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
-import javafx.scene.shape.Polyline;
 import javafx.scene.text.Text;
 import org.junit.Test;
 
@@ -97,16 +97,15 @@ public class SelectionControllerTest extends SceneTest {
     public void highlightsPolylineSegments() throws Exception {
         final int x1 = 30, y1 = 20, x2 = 50, y2 = 40;
         final Point2D[] points = {new Point2D(x1, y1), new Point2D(x2, y1), new Point2D(x2, y2)};
-        Polyline polyline = new Polyline(x1, y1, x2, y1, x2, y2);
-        polyline.setStrokeWidth(1);
-        diagram.getChildren().add(polyline);
+        PolylineModel model = new PolylineModel(diagram, x1, y1, x2, y1, x2, y2);
+        model.setStrokeWidth(1);
 
         for (int i = 1; i < points.length; i++) {
             Point2D start = points[i-1];
             Point2D end = points[i];
             double mx = (start.getX()+end.getX())/2;
             double my = (start.getY()+end.getY())/2;
-            checkHighlight(mx, my, polyline, mx, my);
+            checkHighlight(mx, my, model.getShape(), mx, my);
         }
     }
 

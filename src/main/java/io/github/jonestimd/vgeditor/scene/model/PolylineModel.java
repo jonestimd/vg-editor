@@ -35,7 +35,11 @@ import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionCont
 
 public class PolylineModel extends ShapeModel<Polyline> {
     public PolylineModel(Group group, double... points) {
-        super(group, new Polyline(points));
+        this(group, new Polyline(points));
+    }
+
+    protected PolylineModel(Group group, Polyline polyline) {
+        super(group, polyline);
     }
 
     @Override

@@ -28,7 +28,7 @@ import javafx.geometry.Point2D;
 import org.junit.Test;
 
 import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
-import static org.assertj.core.api.Java6Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 public class PolylineModelTest extends SceneTest {
     private static final int X1 = 20;
