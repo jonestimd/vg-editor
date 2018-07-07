@@ -26,8 +26,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.shape.Rectangle;
 
-import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
-
 public class RectangleModel extends AnchoredShapeModel<Rectangle> {
     public RectangleModel(Group group) {
         this(group, new Rectangle());
@@ -109,14 +107,6 @@ public class RectangleModel extends AnchoredShapeModel<Rectangle> {
                     (isNotInside(shape.getX(), shape.getWidth(), localPoint.getX()) || isNotInside(shape.getY(), shape.getHeight(), localPoint.getY()));
         }
         return shape.contains(localPoint);
-    }
-
-    private static boolean isInBounds(double min, double size, double value) {
-        return value > min-HIGHLIGHT_OFFSET && value < min+size+HIGHLIGHT_OFFSET;
-    }
-
-    private static boolean isNotInside(double min, double size, double value) {
-        return value < min+HIGHLIGHT_OFFSET || value > min+size-HIGHLIGHT_OFFSET;
     }
 
     public Point2D getMarkerLocation(double screenX, double screenY) {

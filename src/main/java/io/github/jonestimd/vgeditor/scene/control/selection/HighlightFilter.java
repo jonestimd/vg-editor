@@ -44,18 +44,16 @@ public class HighlightFilter implements Predicate<Node> {
     private final double screenX;
     private final double screenY;
     private final Bounds bounds;
-    private final PolylinePredicate polylinePredicate;
 
     public HighlightFilter(double screenX, double screenY, Function<Path, PathVisitor> pathVisitorFactory) {
         this.pathVisitorFactory = pathVisitorFactory;
         this.screenX = screenX;
         this.screenY = screenY;
         this.bounds = new BoundingBox(screenX-HIGHLIGHT_OFFSET, screenY-HIGHLIGHT_OFFSET, HIGHLIGHT_SIZE, HIGHLIGHT_SIZE);
-        this.polylinePredicate = new PolylinePredicate(screenX, screenY);
     }
 
     public boolean test(Node node) {
-        if (node instanceof Polyline) return test((Polyline) node);
+        if (node instanceof Polyline) return ((NodeModel) node.getUserData()).isInSelectionRange(screenX, screenY);
         if (node instanceof Path) return test((Path) node);
         if (node instanceof Rectangle) return ((NodeModel) node.getUserData()).isInSelectionRange(screenX, screenY);
         Bounds nodeBounds = node.getBoundsInLocal();
@@ -63,10 +61,6 @@ public class HighlightFilter implements Predicate<Node> {
             return node.screenToLocal(bounds).intersects(nodeBounds);
         }
         return node.contains(node.screenToLocal(screenX, screenY));
-    }
-
-    private boolean test(Polyline polyline) {
-        return polyline.intersects(polyline.screenToLocal(bounds)) && polylinePredicate.test(polyline);
     }
 
     private boolean test(Path path) {

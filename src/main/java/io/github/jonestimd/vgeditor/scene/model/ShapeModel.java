@@ -30,6 +30,8 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 import javafx.scene.transform.Transform;
 
+import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
+
 public abstract class ShapeModel<T extends Shape> implements NodeModel {
     protected final transient T shape;
 
@@ -88,5 +90,13 @@ public abstract class ShapeModel<T extends Shape> implements NodeModel {
 
     public void setStrokeWidth(double strokeWidth) {
         shape.setStrokeWidth(strokeWidth);
+    }
+
+    protected static boolean isInBounds(double min, double size, double value) {
+        return value > min-HIGHLIGHT_OFFSET && value < min+size+HIGHLIGHT_OFFSET;
+    }
+
+    protected static boolean isNotInside(double min, double size, double value) {
+        return value < min+HIGHLIGHT_OFFSET || value > min+size-HIGHLIGHT_OFFSET;
     }
 }

@@ -59,7 +59,6 @@ public class SelectionController implements EventHandler<MouseEvent> {
 
     private Node highlighted;
     private final Property<Node> selected = new SimpleObjectProperty<>(this, "selected");
-    private int polylineHighlight = -1;
 
     private final Effect highlightEffect = new ColorAdjust(-.25, 0.2, 0.5, 0);
     private final Shape marker;
@@ -108,12 +107,12 @@ public class SelectionController implements EventHandler<MouseEvent> {
             setMarker(node, midpoint.getX(), midpoint.getY());
         }
         else if (node instanceof Polyline) {
-            Point2D cursor = new PolylinePredicate(screenX, screenY).getMarkerPosition((Polyline) node);
+            Point2D cursor = ((NodeModel) node.getUserData()).getMarkerLocation(screenX, screenY);
             setMarker(node, cursor.getX(), cursor.getY());
         }
         else if (node instanceof Rectangle) {
-            Point2D location = ((NodeModel) node.getUserData()).getMarkerLocation(screenX, screenY);
-            setMarker(node, location.getX(), location.getY());
+            Point2D cursor = ((NodeModel) node.getUserData()).getMarkerLocation(screenX, screenY);
+            setMarker(node, cursor.getX(), cursor.getY());
         }
         else {
             Bounds bounds = node.getBoundsInLocal();
