@@ -19,22 +19,43 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.scene.control;
+package io.github.jonestimd.vgeditor.model;
 
+import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Paint;
 
-public interface ShapeAdapter<T> {
-    double getX(T node);
-    double getY(T node);
+public interface ShapeModel {
+    void remove();
 
-    void setX(T node, double x);
-    void setY(T node, double y);
+    double getX();
+    double getY();
 
-    double getWidth(T node);
-    double getHeight(T node);
+    void setX(double x);
+    void setY(double y);
 
-    void setWidth(T node, double width);
-    void setHeight(T node, double height);
+    double getWidth();
+    double getHeight();
 
-    boolean isStartDrag(T node, Point2D screenPoint);
+    void setWidth(double width);
+    void setHeight(double height);
+
+    double getRotate();
+    void setRotate(double angle);
+
+    NodeAnchor getAnchor();
+    void setAnchor(NodeAnchor anchor);
+
+    Paint getFill();
+    void setFill(Paint paint);
+
+    Paint getStroke();
+    void setStroke(Paint paint);
+
+    double getStrokeWidth();
+    void setStrokeWidth(double strokeWidth);
+
+    NodeAnchor getResizeAnchor(Point2D screenPoint);
+
+    boolean isStartDrag(Point2D screenPoint);
 }

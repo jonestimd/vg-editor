@@ -24,23 +24,24 @@ package io.github.jonestimd.vgeditor.scene.control;
 import java.util.ResourceBundle;
 
 import io.github.jonestimd.vgeditor.JavafxTest;
+import io.github.jonestimd.vgeditor.model.ShapeModel;
 import io.github.jonestimd.vgeditor.scene.Nodes;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class FillPaneControllerTest extends JavafxTest {
     private FillPaneController controller;
     private CheckBox fill;
     private ColorPicker fillColor;
+    private ShapeModel model = mock(ShapeModel.class);
 
     @Before
     public void loadForm() throws Exception {
@@ -63,55 +64,51 @@ public class FillPaneControllerTest extends JavafxTest {
     @Test
     public void editNodeClearsFill() throws Exception {
         fill.setSelected(true);
-        Rectangle rectangle = new Rectangle(20, 30);
-        rectangle.setFill(null);
+        when(model.getFill()).thenReturn(null);
 
-        controller.editNode(rectangle);
+        controller.editNode(model);
 
         assertThat(fill.isSelected()).isFalse();
-        assertThat(getControllerValue(controller, "node", Shape.class)).isEqualTo(rectangle);
+        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
     }
 
     @Test
     public void editNodeUpdatesFillAndColor() throws Exception {
-        Rectangle rectangle = new Rectangle(20, 30);
-        rectangle.setFill(Color.ALICEBLUE);
+        when(model.getFill()).thenReturn(Color.ALICEBLUE);
 
-        controller.editNode(rectangle);
+        controller.editNode(model);
 
         assertThat(fill.isSelected()).isTrue();
         assertThat(fillColor.getValue()).isEqualTo(Color.ALICEBLUE);
-        assertThat(getControllerValue(controller, "node", Shape.class)).isEqualTo(rectangle);
+        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
     }
 
     @Test
     public void newNodeClearsControllerNode() throws Exception {
         controller.newNode(null);
 
-        assertThat(getControllerValue(controller, "node", Shape.class)).isEqualTo(null);
+        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(null);
     }
 
     @Test
     public void newNodeSetsFillOnShape() throws Exception {
         fill.setSelected(true);
         fillColor.setValue(Color.ALICEBLUE);
-        Rectangle rectangle = new Rectangle(20, 30);
 
-        controller.newNode(rectangle);
+        controller.newNode(model);
 
-        assertThat(rectangle.getFill()).isEqualTo(Color.ALICEBLUE);
-        assertThat(getControllerValue(controller, "node", Shape.class)).isEqualTo(rectangle);
+        verify(model).setFill(Color.ALICEBLUE);
+        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
     }
 
     @Test
     public void newNodeClearsFillOnShape() throws Exception {
         fill.setSelected(false);
-        Rectangle rectangle = new Rectangle(20, 30);
 
-        controller.newNode(rectangle);
+        controller.newNode(model);
 
-        assertThat(rectangle.getFill()).isNull();
-        assertThat(getControllerValue(controller, "node", Shape.class)).isEqualTo(rectangle);
+        verify(model).setFill(null);
+        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
     }
 
     @Test
@@ -121,13 +118,12 @@ public class FillPaneControllerTest extends JavafxTest {
 
     @Test
     public void onFillColorChangeUpdatesNode() throws Exception {
-        Rectangle rectangle = new Rectangle(20, 30);
-        controller.editNode(rectangle);
+        controller.editNode(model);
         fillColor.setValue(Color.ALICEBLUE);
 
         controller.onFillColorChange();
 
-        assertThat(rectangle.getFill()).isEqualTo(Color.ALICEBLUE);
+        verify(model).setFill(Color.ALICEBLUE);
     }
 
     @Test
@@ -137,23 +133,22 @@ public class FillPaneControllerTest extends JavafxTest {
 
     @Test
     public void onFillChangeSetsNodeColor() throws Exception {
-        Rectangle rectangle = new Rectangle(20, 30);
-        controller.editNode(rectangle);
+        controller.editNode(model);
+        fill.setSelected(true);
         fillColor.setValue(Color.ALICEBLUE);
 
         controller.onFillChange();
 
-        assertThat(rectangle.getFill()).isEqualTo(Color.ALICEBLUE);
+        verify(model).setFill(Color.ALICEBLUE);
     }
 
     @Test
     public void onFillChangeClearsNodeColor() throws Exception {
-        Rectangle rectangle = new Rectangle(20, 30);
-        controller.editNode(rectangle);
+        controller.editNode(model);
         fill.setSelected(false);
 
         controller.onFillChange();
 
-        assertThat(rectangle.getFill()).isNull();
+        verify(model).setFill(null);
     }
 }

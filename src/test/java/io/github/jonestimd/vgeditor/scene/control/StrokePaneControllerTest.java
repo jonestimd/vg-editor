@@ -24,6 +24,7 @@ package io.github.jonestimd.vgeditor.scene.control;
 import java.util.ResourceBundle;
 
 import io.github.jonestimd.vgeditor.JavafxTest;
+import io.github.jonestimd.vgeditor.model.ShapeModel;
 import io.github.jonestimd.vgeditor.scene.Nodes;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
@@ -31,18 +32,18 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class StrokePaneControllerTest extends JavafxTest {
     private StrokePaneController controller;
     private CheckBox stroke;
     private ColorPicker strokeColor;
     private TextField strokeWidth;
+    private ShapeModel model = mock(ShapeModel.class);
 
     @Before
     public void loadForm() throws Exception {
@@ -67,34 +68,32 @@ public class StrokePaneControllerTest extends JavafxTest {
     @Test
     public void editNodeClearsStroke() throws Exception {
         stroke.setSelected(true);
-        Rectangle rectangle = new Rectangle(20, 30);
-        rectangle.setStroke(null);
+        when(model.getStroke()).thenReturn(null);
 
-        controller.editNode(rectangle);
+        controller.editNode(model);
 
         assertThat(stroke.isSelected()).isFalse();
-        assertThat(getControllerValue(controller, "node", Shape.class)).isEqualTo(rectangle);
+        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
     }
 
     @Test
     public void editNodeUpdatesStrokeAndColor() throws Exception {
-        Rectangle rectangle = new Rectangle(20, 30);
-        rectangle.setStroke(Color.ALICEBLUE);
-        rectangle.setStrokeWidth(3);
+        when(model.getStroke()).thenReturn(Color.ALICEBLUE);
+        when(model.getStrokeWidth()).thenReturn(3d);
 
-        controller.editNode(rectangle);
+        controller.editNode(model);
 
         assertThat(stroke.isSelected()).isTrue();
         assertThat(strokeColor.getValue()).isEqualTo(Color.ALICEBLUE);
         assertThat(strokeWidth.getText()).isEqualTo("3");
-        assertThat(getControllerValue(controller, "node", Shape.class)).isEqualTo(rectangle);
+        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
     }
 
     @Test
     public void newNodeClearsControllerNode() throws Exception {
         controller.newNode(null);
 
-        assertThat(getControllerValue(controller, "node", Shape.class)).isEqualTo(null);
+        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(null);
     }
 
     @Test
@@ -103,24 +102,22 @@ public class StrokePaneControllerTest extends JavafxTest {
         strokeColor.setValue(Color.ALICEBLUE);
         strokeWidth.setText("2");
         controller.onStrokeWidthChange();
-        Rectangle rectangle = new Rectangle(20, 30);
 
-        controller.newNode(rectangle);
+        controller.newNode(model);
 
-        assertThat(rectangle.getStroke()).isEqualTo(Color.ALICEBLUE);
-        assertThat(rectangle.getStrokeWidth()).isEqualTo(2d);
-        assertThat(getControllerValue(controller, "node", Shape.class)).isEqualTo(rectangle);
+        verify(model).setStroke(Color.ALICEBLUE);
+        verify(model).setStrokeWidth(2d);
+        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
     }
 
     @Test
     public void newNodeClearsStrokeOnShape() throws Exception {
         stroke.setSelected(false);
-        Rectangle rectangle = new Rectangle(20, 30);
 
-        controller.newNode(rectangle);
+        controller.newNode(model);
 
-        assertThat(rectangle.getStroke()).isNull();
-        assertThat(getControllerValue(controller, "node", Shape.class)).isEqualTo(rectangle);
+        verify(model).setStroke(null);
+        assertThat(getControllerValue(controller, "model", ShapeModel.class)).isEqualTo(model);
     }
 
     @Test
@@ -130,16 +127,12 @@ public class StrokePaneControllerTest extends JavafxTest {
 
     @Test
     public void onStrokeColorChangeUpdatesNode() throws Exception {
-        Rectangle rectangle = new Rectangle(20, 30);
-        controller.editNode(rectangle);
+        controller.editNode(model);
         strokeColor.setValue(Color.ALICEBLUE);
-        strokeWidth.setText("2");
-        controller.onStrokeWidthChange();
 
         controller.onStrokeColorChange();
 
-        assertThat(rectangle.getStroke()).isEqualTo(Color.ALICEBLUE);
-        assertThat(rectangle.getStrokeWidth()).isEqualTo(2d);
+        verify(model).setStroke(Color.ALICEBLUE);
     }
 
     @Test
@@ -149,8 +142,7 @@ public class StrokePaneControllerTest extends JavafxTest {
 
     @Test
     public void onStrokeChangeSetsStrokeColor() throws Exception {
-        Rectangle rectangle = new Rectangle(20, 30);
-        controller.editNode(rectangle);
+        controller.editNode(model);
         stroke.setSelected(true);
         strokeColor.setValue(Color.ALICEBLUE);
         strokeWidth.setText("2");
@@ -158,18 +150,17 @@ public class StrokePaneControllerTest extends JavafxTest {
 
         controller.onStrokeChange();
 
-        assertThat(rectangle.getStroke()).isEqualTo(Color.ALICEBLUE);
-        assertThat(rectangle.getStrokeWidth()).isEqualTo(2d);
+        verify(model).setStroke(Color.ALICEBLUE);
+        verify(model, times(2)).setStrokeWidth(2d);
     }
 
     @Test
     public void onStrokeChangeClearsStrokeColor() throws Exception {
-        Rectangle rectangle = new Rectangle(20, 30);
-        controller.editNode(rectangle);
+        controller.editNode(model);
         stroke.setSelected(false);
 
         controller.onStrokeChange();
 
-        assertThat(rectangle.getStroke()).isNull();
+        verify(model).setStroke(null);
     }
 }

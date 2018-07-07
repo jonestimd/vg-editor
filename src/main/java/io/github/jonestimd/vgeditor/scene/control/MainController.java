@@ -23,6 +23,7 @@ package io.github.jonestimd.vgeditor.scene.control;
 
 import java.io.File;
 
+import io.github.jonestimd.vgeditor.model.RectangleModel;
 import io.github.jonestimd.vgeditor.scene.control.selection.SelectionController;
 import io.github.jonestimd.vgeditor.svg.SvgParser;
 import javafx.application.Platform;
@@ -37,7 +38,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.WindowEvent;
@@ -63,7 +63,7 @@ public class MainController {
         scrollPane.setPrefSize(600, 500);
         selectionController = new SelectionController(diagram, marker);
         selectionController.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue instanceof Rectangle) editRectangle((Rectangle) newValue);
+            if (newValue != null && newValue.getUserData() instanceof RectangleModel) editRectangle((RectangleModel) newValue.getUserData());
         });
         diagram.sceneProperty().addListener(new ChangeListener<Scene>() {
             @Override
@@ -128,9 +128,9 @@ public class MainController {
         toolPaneLoader.show("RectangleTool.fxml");
     }
 
-    public void editRectangle(Rectangle rectangle) {
-        NodeController<Rectangle> controller = toolPaneLoader.show("RectangleTool.fxml");
-        controller.setNode(rectangle);
+    public void editRectangle(RectangleModel model) {
+        NodeController<RectangleModel> controller = toolPaneLoader.show("RectangleTool.fxml");
+        controller.setModel(model);
     }
 
     private void onClose(WindowEvent event) {

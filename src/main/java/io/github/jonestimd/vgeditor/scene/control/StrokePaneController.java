@@ -24,12 +24,12 @@ package io.github.jonestimd.vgeditor.scene.control;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+import io.github.jonestimd.vgeditor.model.ShapeModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape;
 
 public class StrokePaneController {
     private static final double DEFAULT_STROKE_WIDTH = 1;
@@ -42,19 +42,19 @@ public class StrokePaneController {
     private TextField strokeWidthInput;
 
     private double strokeWidth = DEFAULT_STROKE_WIDTH;
-    private Shape node;
+    private ShapeModel model;
 
     public void initialize() {
         strokeColor.setValue(Color.BLACK);
     }
 
-    public void editNode(Shape node) {
-        this.node = node;
-        if (node.getStroke() != null) {
+    public void editNode(ShapeModel model) {
+        this.model = model;
+        if (model.getStroke() != null) {
             setEnabled(true);
-            strokeColor.setValue((Color) node.getStroke());
-            strokeWidth = node.getStrokeWidth();
-            strokeWidthInput.setText(numberFormat.format(node.getStrokeWidth()));
+            strokeColor.setValue((Color) model.getStroke());
+            strokeWidth = model.getStrokeWidth();
+            strokeWidthInput.setText(numberFormat.format(model.getStrokeWidth()));
         }
         else setEnabled(false);
     }
@@ -65,28 +65,28 @@ public class StrokePaneController {
         strokeWidthInput.setDisable(!enabled);
     }
 
-    public void newNode(Shape node) {
-        this.node = node;
+    public void newNode(ShapeModel model) {
+        this.model = model;
         setNodeStroke();
     }
 
     private void setNodeStroke() {
-        if (node != null) {
+        if (model != null) {
             if (stroke.isSelected()) {
-                node.setStroke(strokeColor.getValue());
-                node.setStrokeWidth(strokeWidth);
+                model.setStroke(strokeColor.getValue());
+                model.setStrokeWidth(strokeWidth);
             }
-            else node.setStroke(null);
+            else model.setStroke(null);
         }
     }
 
     public void onStrokeColorChange() {
-        if (node != null) node.setStroke(strokeColor.getValue());
+        if (model != null) model.setStroke(strokeColor.getValue());
     }
 
     public void onStrokeWidthChange() {
         strokeWidth = TextFields.parseDouble(strokeWidthInput).orElse(DEFAULT_STROKE_WIDTH);
-        if (node != null) node.setStrokeWidth(strokeWidth);
+        if (model != null) model.setStrokeWidth(strokeWidth);
     }
 
     public void onStrokeChange() {

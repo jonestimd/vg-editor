@@ -21,12 +21,12 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
+import io.github.jonestimd.vgeditor.model.ShapeModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Shape;
 
 public class FillPaneController {
     @FXML
@@ -34,15 +34,15 @@ public class FillPaneController {
     @FXML
     private ColorPicker fillColor;
 
-    private Shape node;
+    private ShapeModel model;
 
     public void initialize() {
         fillColor.setValue(Color.BLACK);
     }
 
-    public void editNode(Shape node) {
-        this.node = node;
-        Paint nodeFill = node.getFill();
+    public void editNode(ShapeModel model) {
+        this.model = model;
+        Paint nodeFill = model.getFill();
         if (nodeFill != null) {
             fill.setSelected(true);
             fillColor.setValue((Color) nodeFill);
@@ -54,20 +54,20 @@ public class FillPaneController {
         }
     }
 
-    public void newNode(Shape node) {
-        this.node = node;
+    public void newNode(ShapeModel model) {
+        this.model = model;
         setNodeFill();
     }
 
     private void setNodeFill() {
-        if (node != null) {
-            if (fill.isSelected()) node.setFill(fillColor.getValue());
-            else node.setFill(null);
+        if (model != null) {
+            if (fill.isSelected()) model.setFill(fillColor.getValue());
+            else model.setFill(null);
         }
     }
 
     public void onFillColorChange() {
-        if (node != null) node.setFill(fillColor.getValue());
+        if (model != null) model.setFill(fillColor.getValue());
     }
 
     public void onFillChange() {

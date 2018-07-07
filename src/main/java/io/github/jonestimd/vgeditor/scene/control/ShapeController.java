@@ -24,10 +24,12 @@ package io.github.jonestimd.vgeditor.scene.control;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
+import java.util.function.ObjDoubleConsumer;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import io.github.jonestimd.vgeditor.model.ShapeModel;
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import io.github.jonestimd.vgeditor.scene.control.ResizeDragCalculator.Offset2D;
 import javafx.event.ActionEvent;
@@ -35,14 +37,11 @@ import javafx.fxml.FXML;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Shape;
 
-public class ShapeController<T extends Shape> implements NodeController<T> {
+public class ShapeController<T extends ShapeModel> implements NodeController<T> {
     private static final String ID_ANCHOR_X = "anchorX";
     private static final String ID_ANCHOR_Y = "anchorY";
     private static final String ID_WIDTH = "width";
@@ -64,36 +63,33 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
     private Button newButton;
 
     private Group diagram;
-    private T node;
+    private T model;
 
     private BiConsumer<Point2D, Point2D> drag;
 
     private final MouseInputHandler mouseInputHandler = new MouseInputHandler(this::startDrag, this::continueDrag, this::endDrag);
-    private final Supplier<T> nodeFactory;
-    private final ShapeAdapter<T> adapter;
-    private final Map<String, Runnable> fieldHandlers;
+    private final Function<Group, T> modelFactory;
+    private final Map<String, ObjDoubleConsumer<T>> fieldHandlers = ImmutableMap.of(
+            ID_ANCHOR_X, ShapeModel::setX,
+            ID_ANCHOR_Y, ShapeModel::setY,
+            ID_WIDTH, ShapeModel::setWidth,
+            ID_HEIGHT, ShapeModel::setHeight,
+            ID_ROTATION, ShapeModel::setRotate);
 
-    protected ShapeController(Supplier<T> nodeFactory, ShapeAdapter<T> adapter) {
-        this.nodeFactory = nodeFactory;
-        this.adapter = adapter;
-        fieldHandlers = ImmutableMap.of(
-                ID_ANCHOR_X, () -> adapter.setX(node, getFieldValue(ID_ANCHOR_X)),
-                ID_ANCHOR_Y, () -> adapter.setY(node, getFieldValue(ID_ANCHOR_Y)),
-                ID_WIDTH, this::setNodeWidth,
-                ID_HEIGHT, this::setNodeHeight,
-                ID_ROTATION, this::setRotation);
+    protected ShapeController(Function<Group, T> modelFactory) {
+        this.modelFactory = modelFactory;
     }
 
     public void initialize() {
         basicShapeController.addListener(change -> {
             if (isValid()) {
-                if (node == null) createNode();
+                if (model == null) createNode();
                 String fieldId = change.getPropertyName();
-                fieldHandlers.get(fieldId).run();
+                fieldHandlers.get(fieldId).accept(model, getFieldValue(fieldId));
             }
-            else if (node != null) {
-                diagram.getChildren().remove(node);
-                clearNode();
+            else if (model != null) {
+                model.remove();
+                clearModel();
             }
             newButton.setDisable(!isValid());
         });
@@ -114,30 +110,31 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
     }
 
     @Override
-    public T getNode() {
-        return node;
+    public T getModel() {
+        return model;
     }
 
     @Override
-    public void setNode(T node) {
-        this.node = node;
-        setLocationInputs(adapter.getX(node), adapter.getY(node));
-        setSizeInputs(adapter.getWidth(node), adapter.getHeight(node));
-        basicShapeController.setValue(ID_ROTATION, node.getRotate());
-        selectAnchor(NodeAnchor.valueOf(node, adapter.getWidth(node), adapter.getHeight(node)));
-        fillPaneController.editNode(node);
-        strokePaneController.editNode(node);
+    @SuppressWarnings("unchecked")
+    public void setModel(T model) {
+        this.model = model;
+        setLocationInputs(model.getX(), model.getY());
+        setSizeInputs(model.getWidth(), model.getHeight());
+        basicShapeController.setValue(ID_ROTATION, model.getRotate());
+        selectAnchor(model.getAnchor());
+        fillPaneController.editNode(model);
+        strokePaneController.editNode(model);
         basicShapeController.getField(ID_ANCHOR_X).requestFocus();
     }
 
     public void onNewNode() {
-        clearNode();
+        clearModel();
         basicShapeController.clear();
         basicShapeController.getField(ID_ANCHOR_X).requestFocus();
     }
 
-    private void clearNode() {
-        node = null;
+    private void clearModel() {
+        model = null;
         fillPaneController.newNode(null);
         strokePaneController.newNode(null);
     }
@@ -148,11 +145,8 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
     }
 
     public void onDeleteNode() {
-        if (node != null) {
-            Parent parent = node.getParent();
-            if (parent instanceof Pane) ((Pane) parent).getChildren().remove(node);
-            else if (parent instanceof Group) ((Group) parent).getChildren().remove(node);
-            else throw new IllegalStateException("Unexpected parent type: "+parent.getClass().getName());
+        if (model != null) {
+            model.remove();
         }
         onNewNode();
     }
@@ -161,46 +155,24 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
         NodeAnchor nodeAnchor = NodeAnchor.valueOf(((RadioButton) event.getSource()).getId());
         if (this.nodeAnchor != nodeAnchor) {
             this.nodeAnchor = nodeAnchor;
-            if (node != null) this.nodeAnchor.translate(node, getFieldValue(ID_WIDTH), getFieldValue(ID_HEIGHT));
+            if (model != null) model.setAnchor(nodeAnchor);
         }
     }
 
-    private void setNodeWidth() {
-        Double width = getFieldValue(ID_WIDTH);
-        adapter.setWidth(node, width);
-        this.nodeAnchor.translate(node, width, getFieldValue(ID_HEIGHT));
-    }
-
-    private void setNodeHeight() {
-        Double height = getFieldValue(ID_HEIGHT);
-        adapter.setHeight(node, height);
-        this.nodeAnchor.translate(node, getFieldValue(ID_WIDTH), height);
-    }
-
-    private void setRotation() {
-        node.setRotate(getFieldValue(ID_ROTATION));
-        this.nodeAnchor.translate(node, getFieldValue(ID_WIDTH), getFieldValue(ID_HEIGHT));
-    }
-
     private void setNodeLocation() {
-        adapter.setX(node, getFieldValue(ID_ANCHOR_X));
-        adapter.setY(node, getFieldValue(ID_ANCHOR_Y));
+        model.setX(getFieldValue(ID_ANCHOR_X));
+        model.setY(getFieldValue(ID_ANCHOR_Y));
     }
 
     private void setNodeSize() {
-        setNodeWidth();
-        setNodeHeight();
-        nodeAnchor.translate(node, adapter.getWidth(node), adapter.getHeight(node));
-    }
-
-    protected NodeAnchor getResizeAnchor(T node, Point2D screenPoint) {
-        return NodeAnchor.forResize(node.screenToLocal(screenPoint), adapter.getX(node), adapter.getY(node), adapter.getWidth(node), adapter.getHeight(node));
+        model.setWidth(getFieldValue(ID_WIDTH));
+        model.setHeight(getFieldValue(ID_HEIGHT));
     }
 
     protected boolean startDrag(Point2D screenPoint, boolean isShortcutDown) {
-        if (node != null && adapter.isStartDrag(node, screenPoint)) {
+        if (model != null && model.isStartDrag(screenPoint)) {
             if (isShortcutDown) {
-                NodeAnchor resizeAnchor = getResizeAnchor(node, screenPoint);
+                NodeAnchor resizeAnchor = model.getResizeAnchor(screenPoint);
                 if (resizeAnchor != null) drag = new ResizeDragHandler(resizeAnchor);
             }
             else drag = new MoveDrag();
@@ -210,9 +182,8 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
             Point2D point = diagram.screenToLocal(screenPoint);
             setLocationInputs(point.getX(), point.getY());
             if (isValid()) {
-                adapter.setX(node, point.getX());
-                adapter.setY(node, point.getY());
-                nodeAnchor.translate(node, adapter.getWidth(node), adapter.getHeight(node));
+                model.setX(point.getX());
+                model.setY(point.getY());
             }
             drag = new NewNodeDrag();
         }
@@ -233,13 +204,13 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
     }
 
     protected void createNode() {
-        node = nodeFactory.get();
+        model = modelFactory.apply(diagram);
+        model.setAnchor(nodeAnchor);
         setNodeLocation();
-        setRotation();
+        model.setRotate(getFieldValue(ID_ROTATION));
         setNodeSize();
-        fillPaneController.newNode(node);
-        strokePaneController.newNode(node);
-        diagram.getChildren().add(node);
+        fillPaneController.newNode(model);
+        strokePaneController.newNode(model);
     }
 
     private void selectAnchor(NodeAnchor anchor) {
@@ -247,6 +218,7 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
             this.nodeAnchor = anchor;
             anchorParent.getChildren().stream().filter(node1 -> anchor.name().equals(node1.getId())).findFirst()
                     .ifPresent(button -> ((RadioButton) button).setSelected(true));
+            if (model != null) model.setAnchor(anchor);
         }
     }
 
@@ -267,12 +239,12 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
             selectAnchor(nodeAnchor.adjust(start, end));
             setSizeInputs(nodeAnchor.getSize(start, end));
             if (isValid()) {
-                if (node == null) createNode();
+                if (model == null) createNode();
                 else setNodeSize();
             }
-            else if (node != null) {
-                diagram.getChildren().remove(node);
-                clearNode();
+            else if (model != null) {
+                model.remove();
+                clearModel();
             }
             newButton.setDisable(!isValid());
         }
@@ -282,8 +254,8 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
         private final double startX, startY;
 
         public MoveDrag() {
-            this.startX = adapter.getX(node);
-            this.startY = adapter.getY(node);
+            this.startX = model.getX();
+            this.startY = model.getY();
         }
 
         @Override
@@ -300,11 +272,11 @@ public class ShapeController<T extends Shape> implements NodeController<T> {
         private int swapX = 1, swapY = 1;
 
         public ResizeDragHandler(NodeAnchor resizeAnchor) {
-            resizeDragCalculator = new ResizeDragCalculator(resizeAnchor, nodeAnchor, node.getRotate());
-            this.startX = adapter.getX(node);
-            this.startY = adapter.getY(node);
-            this.startWidth = adapter.getWidth(node);
-            this.startHeight = adapter.getHeight(node);
+            resizeDragCalculator = new ResizeDragCalculator(resizeAnchor, nodeAnchor, model.getRotate());
+            this.startX = model.getX();
+            this.startY = model.getY();
+            this.startWidth = model.getWidth();
+            this.startHeight = model.getHeight();
         }
 
         @Override

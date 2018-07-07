@@ -21,15 +21,15 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
+import io.github.jonestimd.vgeditor.model.ShapeModel;
 import javafx.scene.Group;
-import javafx.scene.Node;
 
-public interface NodeController<T extends Node> {
+public interface NodeController<T extends ShapeModel> {
     void setDiagram(Group diagram);
 
     MouseInputHandler getMouseHandler();
 
-    T getNode();
+    T getModel();
 
-    void setNode(T node);
+    void setModel(T model);
 }

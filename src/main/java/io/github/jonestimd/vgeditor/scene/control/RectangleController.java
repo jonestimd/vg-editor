@@ -25,63 +25,15 @@ import java.util.Map;
 import java.util.function.DoubleConsumer;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.jonestimd.vgeditor.scene.control.selection.RectanglePredicate;
+import io.github.jonestimd.vgeditor.model.RectangleModel;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.shape.Rectangle;
 
-public class RectangleController extends ShapeController<Rectangle> {
+public class RectangleController extends ShapeController<RectangleModel> {
     public static final String ID_ARC_WIDTH = "arcWidth";
     public static final String ID_ARC_HEIGHT = "arcHeight";
-    private static final ShapeAdapter<Rectangle> ADAPTER = new ShapeAdapter<Rectangle>() {
-        @Override
-        public double getX(Rectangle node) {
-            return node.getX();
-        }
-
-        @Override
-        public double getY(Rectangle node) {
-            return node.getY();
-        }
-
-        @Override
-        public void setX(Rectangle node, double x) {
-            node.setX(x);
-        }
-
-        @Override
-        public void setY(Rectangle node, double y) {
-            node.setY(y);
-        }
-
-        @Override
-        public double getWidth(Rectangle node) {
-            return node.getWidth();
-        }
-
-        @Override
-        public double getHeight(Rectangle node) {
-            return node.getHeight();
-        }
-
-        @Override
-        public void setWidth(Rectangle node, double width) {
-            node.setWidth(width);
-        }
-
-        @Override
-        public void setHeight(Rectangle node, double height) {
-            node.setHeight(height);
-        }
-
-        @Override
-        public boolean isStartDrag(Rectangle node, Point2D screenPoint) {
-            return new RectanglePredicate(screenPoint.getX(), screenPoint.getY()).test(node);
-        }
-    };
 
     private final Map<String, DoubleConsumer> fieldHandlers = ImmutableMap.of(
             ID_ARC_WIDTH, this::setNodeArcWidth,
@@ -93,7 +45,7 @@ public class RectangleController extends ShapeController<Rectangle> {
     private TextField arcHeight;
 
     public RectangleController() {
-        super(Rectangle::new, ADAPTER);
+        super(RectangleModel::new);
     }
 
     public void onKeyEvent(KeyEvent event) {
@@ -102,24 +54,24 @@ public class RectangleController extends ShapeController<Rectangle> {
     }
 
     @Override
-    public void setNode(Rectangle node) {
-        super.setNode(node);
-        arcWidth.setText(Preferences.numberFormat().format(node.getArcWidth()/2));
-        arcHeight.setText(Preferences.numberFormat().format(node.getArcHeight()/2));
+    public void setModel(RectangleModel model) {
+        super.setModel(model);
+        arcWidth.setText(Preferences.numberFormat().format(model.getArcWidth()));
+        arcHeight.setText(Preferences.numberFormat().format(model.getArcHeight()));
     }
 
     private void setNodeArcWidth(double width) {
-        if (getNode() != null) getNode().setArcWidth(width*2);
+        if (getModel() != null) getModel().setArcWidth(width);
     }
 
     private void setNodeArcHeight(double height) {
-        if (getNode() != null) getNode().setArcHeight(height*2);
+        if (getModel() != null) getModel().setArcHeight(height);
     }
 
     @Override
     protected void createNode() {
         super.createNode();
-        getNode().setArcWidth(TextFields.parseDouble(arcWidth).orElse(0)*2);
-        getNode().setArcHeight(TextFields.parseDouble(arcHeight).orElse(0)*2);
+        getModel().setArcWidth(TextFields.parseDouble(arcWidth).orElse(0));
+        getModel().setArcHeight(TextFields.parseDouble(arcHeight).orElse(0));
     }
 }
