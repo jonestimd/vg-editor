@@ -19,63 +19,55 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.model;
+package io.github.jonestimd.vgeditor.scene.model;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Line;
 
-public class EllipseModel extends AnchoredShapeModel<Ellipse> {
-    public EllipseModel(Group group) {
-        super(group, new Ellipse());
+public class LineModel extends ShapeModel<Line> {
+    public LineModel(Group group) {
+        super(group, new Line());
     }
 
-    public EllipseModel(Group group, double cx, double cy, double rx, double ry) {
-        super(group, new Ellipse(cx, cy, rx, ry));
+    public LineModel(Group group, double x1, double y1, double x2, double y2) {
+        super(group, new Line(x1, y1, x2, y2));
     }
 
-    @Override
-    public double getX() {
-        return shape.getCenterX();
+    public double getStartX() {
+        return shape.getStartX();
     }
 
-    @Override
-    public void setX(double x) {
-        shape.setCenterX(x);
+    public void setStartX(double value) {
+        shape.setStartX(value);
     }
 
-    @Override
-    public double getY() {
-        return shape.getCenterY();
+    public double getStartY() {
+        return shape.getStartY();
     }
 
-    @Override
-    public void setY(double y) {
-        shape.setCenterY(y);
+    public void setStartY(double value) {
+        shape.setStartY(value);
     }
 
-    @Override
-    public double getWidth() {
-        return shape.getRadiusX();
+    public double getEndX() {
+        return shape.getEndX();
     }
 
-    @Override
-    public void setWidth(double width) {
-        shape.setRadiusX(width);
+    public void setEndX(double value) {
+        shape.setEndX(value);
     }
 
-    @Override
-    public double getHeight() {
-        return shape.getRadiusY();
+    public double getEndY() {
+        return shape.getEndY();
     }
 
-    @Override
-    public void setHeight(double height) {
-        shape.setRadiusY(height);
+    public void setEndY(double value) {
+        shape.setEndY(value);
     }
 
     @Override
     public boolean isInSelectionRange(Point2D screenPoint) {
-        return shape.contains(shape.screenToLocal(screenPoint));
+        return false;
     }
 }

@@ -19,26 +19,20 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.model;
+package io.github.jonestimd.vgeditor.scene.model;
 
-import io.github.jonestimd.vgeditor.scene.NodeAnchor;
+import io.github.jonestimd.vgeditor.scene.control.selection.PolylinePredicate;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
+import javafx.scene.shape.Polyline;
 
-public interface AnchoredModel {
-    NodeAnchor getAnchor();
-    void setAnchor(NodeAnchor anchor);
+public class PolylineModel extends ShapeModel<Polyline> {
+    public PolylineModel(Group group, double... points) {
+        super(group, new Polyline(points));
+    }
 
-    NodeAnchor getResizeAnchor(Point2D screenPoint);
-
-    double getX();
-    void setX(double x);
-
-    double getY();
-    void setY(double y);
-
-    double getWidth();
-    void setWidth(double width);
-
-    double getHeight();
-    void setHeight(double height);
+    @Override
+    public boolean isInSelectionRange(Point2D screenPoint) {
+        return new PolylinePredicate(screenPoint.getX(), screenPoint.getY()).test(shape);
+    }
 }

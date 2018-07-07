@@ -21,7 +21,7 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
-import io.github.jonestimd.vgeditor.model.AnchoredShapeModel;
+import io.github.jonestimd.vgeditor.scene.model.AnchoredShapeModel;
 import javafx.scene.Group;
 
 public interface NodeController<T extends AnchoredShapeModel> {

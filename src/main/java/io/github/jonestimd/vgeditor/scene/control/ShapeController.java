@@ -29,9 +29,9 @@ import java.util.function.ObjDoubleConsumer;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import io.github.jonestimd.vgeditor.model.AnchoredShapeModel;
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import io.github.jonestimd.vgeditor.scene.control.ResizeDragCalculator.Offset2D;
+import io.github.jonestimd.vgeditor.scene.model.AnchoredShapeModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Dimension2D;

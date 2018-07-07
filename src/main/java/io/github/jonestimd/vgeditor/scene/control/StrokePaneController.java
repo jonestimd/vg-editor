@@ -24,7 +24,7 @@ package io.github.jonestimd.vgeditor.scene.control;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import io.github.jonestimd.vgeditor.model.AnchoredShapeModel;
+import io.github.jonestimd.vgeditor.scene.model.AnchoredShapeModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;

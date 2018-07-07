@@ -24,8 +24,8 @@ package io.github.jonestimd.vgeditor.scene.control;
 import java.util.ResourceBundle;
 
 import io.github.jonestimd.vgeditor.JavafxTest;
-import io.github.jonestimd.vgeditor.model.AnchoredShapeModel;
 import io.github.jonestimd.vgeditor.scene.Nodes;
+import io.github.jonestimd.vgeditor.scene.model.AnchoredShapeModel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;

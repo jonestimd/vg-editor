@@ -19,51 +19,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.model;
+package io.github.jonestimd.vgeditor.scene.model;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 
-public class LineModel extends ShapeModel<Line> {
-    public LineModel(Group group) {
-        super(group, new Line());
-    }
-
-    public LineModel(Group group, double x1, double y1, double x2, double y2) {
-        super(group, new Line(x1, y1, x2, y2));
-    }
-
-    public double getStartX() {
-        return shape.getStartX();
-    }
-
-    public void setStartX(double value) {
-        shape.setStartX(value);
-    }
-
-    public double getStartY() {
-        return shape.getStartY();
-    }
-
-    public void setStartY(double value) {
-        shape.setStartY(value);
-    }
-
-    public double getEndX() {
-        return shape.getEndX();
-    }
-
-    public void setEndX(double value) {
-        shape.setEndX(value);
-    }
-
-    public double getEndY() {
-        return shape.getEndY();
-    }
-
-    public void setEndY(double value) {
-        shape.setEndY(value);
+public class PolygonModel extends ShapeModel<Polygon> {
+    public PolygonModel(Group group, double...points) {
+        super(group, new Polygon(points));
     }
 
     @Override

@@ -23,8 +23,8 @@ package io.github.jonestimd.vgeditor.scene.control;
 
 import java.io.File;
 
-import io.github.jonestimd.vgeditor.model.RectangleModel;
 import io.github.jonestimd.vgeditor.scene.control.selection.SelectionController;
+import io.github.jonestimd.vgeditor.scene.model.RectangleModel;
 import io.github.jonestimd.vgeditor.svg.SvgParser;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;

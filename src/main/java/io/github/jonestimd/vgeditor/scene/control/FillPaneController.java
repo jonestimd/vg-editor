@@ -21,7 +21,7 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
-import io.github.jonestimd.vgeditor.model.AnchoredShapeModel;
+import io.github.jonestimd.vgeditor.scene.model.AnchoredShapeModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;

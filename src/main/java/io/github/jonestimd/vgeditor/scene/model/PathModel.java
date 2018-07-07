@@ -19,30 +19,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.model;
+package io.github.jonestimd.vgeditor.scene.model;
 
-import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.shape.Shape;
+import javafx.scene.shape.Path;
 
-public abstract class AnchoredShapeModel<T extends Shape> extends ShapeModel<T> implements AnchoredModel {
-    private NodeAnchor anchor = NodeAnchor.TOP_LEFT;
+public class PathModel extends ShapeModel<Path> {
+    public PathModel(Group group) {
+        super(group, new Path());
+    }
 
-    protected AnchoredShapeModel(Group group, T shape) {
+    public PathModel(Group group, Path shape) {
         super(group, shape);
     }
 
-    public NodeAnchor getAnchor() {
-        return anchor;
-    }
-
-    public void setAnchor(NodeAnchor anchor) {
-        this.anchor = anchor;
-        anchor.translate(shape, getWidth(), getHeight());
-    }
-
-    public NodeAnchor getResizeAnchor(Point2D screenPoint) {
-        return NodeAnchor.forResize(shape.screenToLocal(screenPoint), getX(), getY(), getWidth(), getHeight());
+    @Override
+    public boolean isInSelectionRange(Point2D screenPoint) {
+        return false;
     }
 }

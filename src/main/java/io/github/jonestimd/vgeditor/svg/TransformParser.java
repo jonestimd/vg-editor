@@ -29,7 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import io.github.jonestimd.vgeditor.model.NodeModel;
+import io.github.jonestimd.vgeditor.scene.model.NodeModel;
 import javafx.scene.Node;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;

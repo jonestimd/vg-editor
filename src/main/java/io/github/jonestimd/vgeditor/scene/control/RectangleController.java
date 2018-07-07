@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.function.DoubleConsumer;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.jonestimd.vgeditor.model.RectangleModel;
+import io.github.jonestimd.vgeditor.scene.model.RectangleModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;

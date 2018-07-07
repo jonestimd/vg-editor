@@ -19,19 +19,63 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.model;
+package io.github.jonestimd.vgeditor.scene.model;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Ellipse;
 
-public class PolygonModel extends ShapeModel<Polygon> {
-    public PolygonModel(Group group, double...points) {
-        super(group, new Polygon(points));
+public class EllipseModel extends AnchoredShapeModel<Ellipse> {
+    public EllipseModel(Group group) {
+        super(group, new Ellipse());
+    }
+
+    public EllipseModel(Group group, double cx, double cy, double rx, double ry) {
+        super(group, new Ellipse(cx, cy, rx, ry));
+    }
+
+    @Override
+    public double getX() {
+        return shape.getCenterX();
+    }
+
+    @Override
+    public void setX(double x) {
+        shape.setCenterX(x);
+    }
+
+    @Override
+    public double getY() {
+        return shape.getCenterY();
+    }
+
+    @Override
+    public void setY(double y) {
+        shape.setCenterY(y);
+    }
+
+    @Override
+    public double getWidth() {
+        return shape.getRadiusX();
+    }
+
+    @Override
+    public void setWidth(double width) {
+        shape.setRadiusX(width);
+    }
+
+    @Override
+    public double getHeight() {
+        return shape.getRadiusY();
+    }
+
+    @Override
+    public void setHeight(double height) {
+        shape.setRadiusY(height);
     }
 
     @Override
     public boolean isInSelectionRange(Point2D screenPoint) {
-        return false;
+        return shape.contains(shape.screenToLocal(screenPoint));
     }
 }

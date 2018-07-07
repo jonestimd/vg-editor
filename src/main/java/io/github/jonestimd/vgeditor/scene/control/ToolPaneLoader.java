@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import io.github.jonestimd.vgeditor.model.AnchoredShapeModel;
+import io.github.jonestimd.vgeditor.scene.model.AnchoredShapeModel;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
