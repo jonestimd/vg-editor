@@ -27,6 +27,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -44,6 +45,7 @@ import static org.assertj.core.api.Assertions.*;
 
 public class SelectionControllerTest extends SceneTest {
     private Circle marker = new Circle();
+    private Rectangle shape = new Rectangle(10, 10);
     private SelectionController controller;
 
     @Override
@@ -51,6 +53,7 @@ public class SelectionControllerTest extends SceneTest {
         super.setUpScene();
         marker.setVisible(false);
         controller = new SelectionController(diagram, marker);
+        diagram.getChildren().add(shape);
     }
 
     @Test
@@ -203,8 +206,13 @@ public class SelectionControllerTest extends SceneTest {
         return new Point2D((bounds.getMinX()+bounds.getMaxX())/2, (bounds.getMinY()+bounds.getMaxY())/2);
     }
 
-    private void checkHighlight(double x, double y, Node expectedHighlight, double markerX, double markerY) {
+    private void checkHighlight(double x, double y, Node expectedHighlight, double markerX, double markerY) throws Exception {
+        setControllerValue(controller, "highlighted", shape);
+        shape.setEffect(new ColorAdjust(-.25, 0.2, 0.5, 0));
+
         controller.handle(getEvent(MouseEvent.MOUSE_MOVED, x, y, null));
+
+        assertThat(shape.getEffect()).isNull();
         assertThat(controller.getHighlighted()).isSameAs(expectedHighlight);
         if (expectedHighlight != null) {
             assertThat(marker.isVisible()).isTrue();

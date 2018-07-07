@@ -92,6 +92,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
     }
 
     private void showMarker(Node node, double screenX, double screenY) {
+        if (highlighted != null && highlighted != node) highlighted.setEffect(null);
         highlighted = node;
         highlighted.setEffect(highlightEffect);
         if (node instanceof Path) {
