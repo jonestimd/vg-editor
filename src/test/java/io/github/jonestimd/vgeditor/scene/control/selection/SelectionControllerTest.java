@@ -22,6 +22,7 @@
 package io.github.jonestimd.vgeditor.scene.control.selection;
 
 import io.github.jonestimd.vgeditor.scene.SceneTest;
+import io.github.jonestimd.vgeditor.scene.model.RectangleModel;
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -36,7 +37,6 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.junit.Test;
 
@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.*;
 
 public class SelectionControllerTest extends SceneTest {
     private Circle marker = new Circle();
-    private Rectangle shape = new Rectangle(10, 10);
+    private RectangleModel shape;
     private SelectionController controller;
 
     @Override
@@ -53,7 +53,7 @@ public class SelectionControllerTest extends SceneTest {
         super.setUpScene();
         marker.setVisible(false);
         controller = new SelectionController(diagram, marker);
-        diagram.getChildren().add(shape);
+        shape = new RectangleModel(diagram, 0, 0, 10, 10);
     }
 
     @Test
@@ -114,10 +114,9 @@ public class SelectionControllerTest extends SceneTest {
     public void highlightsHollowRectangle() throws Exception {
         final int x = 20, y = 30;
         final int width = 40, height = 50;
-        Rectangle rectangle = new Rectangle(x, y, width, height);
-        rectangle.setStroke(Color.BLACK);
-        rectangle.setFill(null);
-        diagram.getChildren().add(rectangle);
+        RectangleModel model = new RectangleModel(diagram, x, y, width, height);
+        model.setStroke(Color.BLACK);
+        model.setFill(null);
         final Point2D[] corners = {new Point2D(x, y), new Point2D(x+width, y), new Point2D(x+width, y+height), new Point2D(x, y+height)};
 
         for (int i = 0; i < corners.length; i++) {
@@ -127,18 +126,18 @@ public class SelectionControllerTest extends SceneTest {
             checkHighlight(corner.getX()+HIGHLIGHT_OFFSET, corner.getY()+HIGHLIGHT_OFFSET, null, 0, 0);
             checkHighlight(corner.getX()-HIGHLIGHT_OFFSET, corner.getY()+HIGHLIGHT_OFFSET, null, 0, 0);
 
-            checkHighlight(corner.getX()-HIGHLIGHT_OFFSET+1, corner.getY(), rectangle, corner.getX(), corner.getY());
-            checkHighlight(corner.getX()+HIGHLIGHT_OFFSET-1, corner.getY(), rectangle, corner.getX(), corner.getY());
-            checkHighlight(corner.getX(), corner.getY()-HIGHLIGHT_OFFSET+1, rectangle, corner.getX(), corner.getY());
-            checkHighlight(corner.getX(), corner.getY()+HIGHLIGHT_OFFSET-1, rectangle, corner.getX(), corner.getY());
+            checkHighlight(corner.getX()-HIGHLIGHT_OFFSET+1, corner.getY(), model.getShape(), corner.getX(), corner.getY());
+            checkHighlight(corner.getX()+HIGHLIGHT_OFFSET-1, corner.getY(), model.getShape(), corner.getX(), corner.getY());
+            checkHighlight(corner.getX(), corner.getY()-HIGHLIGHT_OFFSET+1, model.getShape(), corner.getX(), corner.getY());
+            checkHighlight(corner.getX(), corner.getY()+HIGHLIGHT_OFFSET-1, model.getShape(), corner.getX(), corner.getY());
 
             Point2D next = corners[(i+1) & 3];
             double xOffset = Math.signum(next.getX()-corner.getX())*(HIGHLIGHT_OFFSET+1);
             double yOffset = Math.signum(next.getY()-corner.getY())*(HIGHLIGHT_OFFSET+1);
             double mx = (corner.getX()+next.getX())/2;
             double my = (corner.getY()+next.getY())/2;
-            checkHighlight(corner.getX()+xOffset, corner.getY()+yOffset, rectangle, mx, my);
-            checkHighlight(next.getX()-xOffset, next.getY()-yOffset, rectangle, mx, my);
+            checkHighlight(corner.getX()+xOffset, corner.getY()+yOffset, model.getShape(), mx, my);
+            checkHighlight(next.getX()-xOffset, next.getY()-yOffset, model.getShape(), mx, my);
         }
     }
 
@@ -146,9 +145,8 @@ public class SelectionControllerTest extends SceneTest {
     public void highlightsFilledRectangle() throws Exception {
         final int x = 20, y = 30;
         final int width = 40, height = 50;
-        Rectangle rectangle = new Rectangle(x, y, width, height);
-        rectangle.setStroke(Color.BLACK);
-        diagram.getChildren().add(rectangle);
+        RectangleModel model = new RectangleModel(diagram, x, y, width, height);
+        model.setStroke(Color.BLACK);
         final Point2D[] corners = {new Point2D(x, y), new Point2D(x+width, y), new Point2D(x+width, y+height), new Point2D(x, y+height)};
 
         for (int i = 0; i < corners.length; i++) {
@@ -157,18 +155,18 @@ public class SelectionControllerTest extends SceneTest {
             double xOffset = Math.signum(next.getX()-corner.getX());
             double yOffset = Math.signum(next.getY()-corner.getY());
 
-            checkHighlight(corner.getX(), corner.getY(), rectangle, corner.getX(), corner.getY());
-            checkHighlight(corner.getX(), corner.getY(), rectangle, corner.getX(), corner.getY());
-            checkHighlight(corner.getX()+xOffset, corner.getY()+yOffset, rectangle, corner.getX(), corner.getY());
-            checkHighlight(corner.getX()+xOffset, corner.getY()+yOffset, rectangle, corner.getX(), corner.getY());
+            checkHighlight(corner.getX(), corner.getY(), model.getShape(), corner.getX(), corner.getY());
+            checkHighlight(corner.getX(), corner.getY(), model.getShape(), corner.getX(), corner.getY());
+            checkHighlight(corner.getX()+xOffset, corner.getY()+yOffset, model.getShape(), corner.getX(), corner.getY());
+            checkHighlight(corner.getX()+xOffset, corner.getY()+yOffset, model.getShape(), corner.getX(), corner.getY());
 
             checkHighlight(corner.getX()-xOffset, corner.getY()-yOffset, null, 0, 0);
             checkHighlight(next.getX()+xOffset, next.getY()+yOffset, null, 0, 0);
 
             double mx = (corner.getX()+next.getX())/2;
             double my = (corner.getY()+next.getY())/2;
-            checkHighlight(corner.getX()+xOffset*(HIGHLIGHT_OFFSET+1), corner.getY()+yOffset*(HIGHLIGHT_OFFSET+1), rectangle, mx, my);
-            checkHighlight(next.getX()-xOffset*(HIGHLIGHT_OFFSET+1), next.getY()-yOffset*(HIGHLIGHT_OFFSET+1), rectangle, mx, my);
+            checkHighlight(corner.getX()+xOffset*(HIGHLIGHT_OFFSET+1), corner.getY()+yOffset*(HIGHLIGHT_OFFSET+1), model.getShape(), mx, my);
+            checkHighlight(next.getX()-xOffset*(HIGHLIGHT_OFFSET+1), next.getY()-yOffset*(HIGHLIGHT_OFFSET+1), model.getShape(), mx, my);
         }
     }
 
@@ -207,12 +205,12 @@ public class SelectionControllerTest extends SceneTest {
     }
 
     private void checkHighlight(double x, double y, Node expectedHighlight, double markerX, double markerY) throws Exception {
-        setValue(controller, "highlighted", shape);
-        shape.setEffect(new ColorAdjust(-.25, 0.2, 0.5, 0));
+        setValue(controller, "highlighted", shape.getShape());
+        shape.getShape().setEffect(new ColorAdjust(-.25, 0.2, 0.5, 0));
 
         controller.handle(getEvent(MouseEvent.MOUSE_MOVED, x, y, null));
 
-        assertThat(shape.getEffect()).isNull();
+        assertThat(shape.getShape().getEffect()).isNull();
         assertThat(controller.getHighlighted()).isSameAs(expectedHighlight);
         if (expectedHighlight != null) {
             assertThat(marker.isVisible()).isTrue();
@@ -226,11 +224,10 @@ public class SelectionControllerTest extends SceneTest {
     public void selectsRectangleOnPrimaryPress() throws Exception {
         final int x = 20, y = 30;
         final int width = 40, height = 50;
-        Rectangle rectangle = new Rectangle(x, y, width, height);
-        diagram.getChildren().add(rectangle);
+        RectangleModel model = new RectangleModel(diagram, x, y, width, height);
 
-        checkSelection(x, y, rectangle);
-        checkSelection(x+width-1, y+height-1, rectangle);
+        checkSelection(x, y, model.getShape());
+        checkSelection(x+width-1, y+height-1, model.getShape());
 
         checkSelection(x-1, y, null);
         checkSelection(x, y-1, null);
@@ -247,8 +244,7 @@ public class SelectionControllerTest extends SceneTest {
     @Test
     public void ignoresSecondaryPress() throws Exception {
         final int x = 20, y = 30;
-        Rectangle rectangle = new Rectangle(x, y, 40, 50);
-        diagram.getChildren().add(rectangle);
+        new RectangleModel(diagram, x, y, 40, 50);
         controller.handle(getEvent(MouseEvent.MOUSE_MOVED, x, y, null));
 
         controller.handle(getEvent(MouseEvent.MOUSE_PRESSED, x, y, MouseButton.SECONDARY));
@@ -259,8 +255,7 @@ public class SelectionControllerTest extends SceneTest {
     @Test
     public void ignoresMouseDrag() throws Exception {
         final int x = 20, y = 30;
-        Rectangle rectangle = new Rectangle(x, y, 40, 50);
-        diagram.getChildren().add(rectangle);
+        new RectangleModel(diagram, x, y, 40, 50);
         controller.handle(getEvent(MouseEvent.MOUSE_MOVED, x, y, null));
 
         controller.handle(getEvent(MouseEvent.MOUSE_DRAGGED, x, y, MouseButton.PRIMARY));
