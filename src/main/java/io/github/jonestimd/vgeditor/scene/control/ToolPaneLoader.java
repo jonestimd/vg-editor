@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import io.github.jonestimd.vgeditor.scene.model.AnchoredShapeModel;
+import io.github.jonestimd.vgeditor.scene.model.NodeModel;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
@@ -43,14 +43,12 @@ import javafx.util.Pair;
 public class ToolPaneLoader {
     private static final double MIN_WIDTH = 250;
     private final Group diagram;
-    private final FXMLLoader loader = new FXMLLoader();
     private final Stage stage = new Stage(StageStyle.UTILITY);
     private String fileName;
     private Pair<NodeController<?>, Pane> controllerPane;
     private final Map<String, Pair<NodeController<?>, Pane>> fileControllers = new HashMap<>();
 
     public ToolPaneLoader(Group diagram) {
-        loader.setResources(ResourceBundle.getBundle("io.github.jonestimd.vgeditor.labels"));
         this.diagram = diagram;
         Scene scene = new Scene(new VBox());
         scene.getAccelerators().putAll(diagram.getScene().getAccelerators());
@@ -64,7 +62,7 @@ public class ToolPaneLoader {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends AnchoredShapeModel> NodeController<T> show(String fileName) {
+    public <T extends NodeModel> NodeController<T> show(String fileName) {
         if (fileControllers.isEmpty()) locateWindow();
         if (!fileName.equals(this.fileName)) {
             this.fileName = fileName;
@@ -88,6 +86,8 @@ public class ToolPaneLoader {
 
     private Pair<NodeController<?>, Pane> load(String fileName) {
         try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setResources(ResourceBundle.getBundle("io.github.jonestimd.vgeditor.labels"));
             loader.setLocation(getClass().getResource(fileName));
             Pane root = loader.load();
             return new Pair<>(loader.getController(), root);

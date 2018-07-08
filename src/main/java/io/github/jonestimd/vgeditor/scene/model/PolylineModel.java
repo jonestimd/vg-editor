@@ -39,7 +39,7 @@ public class PolylineModel extends ShapeModel<Polyline> {
     }
 
     protected PolylineModel(Group group, Polyline polyline) {
-        super(group, polyline);
+        super(group, "", polyline);
     }
 
     @Override

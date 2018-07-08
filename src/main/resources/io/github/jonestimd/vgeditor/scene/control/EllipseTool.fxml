@@ -23,38 +23,25 @@
   ~ SOFTWARE.
   -->
 
-<?import io.github.jonestimd.vgeditor.scene.control.NumericFormatter?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <VBox style="-fx-border-width: 2; -fx-border-style: solid; -fx-border-color: transparent;"
       xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="io.github.jonestimd.vgeditor.scene.control.RectangleController"
+      fx:controller="io.github.jonestimd.vgeditor.scene.control.EllipseController"
       styleClass="form">
     <fx:define>
         <ToggleGroup fx:id="anchor"/>
     </fx:define>
     <HBox alignment="CENTER">
-        <Label text="%title.rectangle" underline="true" styleClass="heading"/>
+        <Label text="%title.ellipse" underline="true" styleClass="heading"/>
     </HBox>
     <fx:include source="BasicShapeForm.fxml" fx:id="basicShape"/>
-    <Label text="%corner.arc"/>
-    <GridPane styleClass="form, control-group">
-        <TextField fx:id="arcWidth" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS">
-            <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
-        </TextField>
-        <Label text="%corner.arc.width" mnemonicParsing="true" labelFor="$arcWidth" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="RIGHT"/>
-        <TextField fx:id="arcHeight" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="1">
-            <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
-        </TextField>
-        <Label text="%corner.arc.height" mnemonicParsing="true" labelFor="$arcHeight" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.halignment="RIGHT"/>
-    </GridPane>
     <Label text="%anchor"/>
     <GridPane fx:id="anchorParent" styleClass="control-group" alignment="CENTER" hgap="3" vgap="3">
         <RadioButton toggleGroup="$anchor" id="TOP_LEFT" onAction="#onAnchorChange" GridPane.columnIndex="0" GridPane.rowIndex="0"/>

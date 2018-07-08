@@ -42,7 +42,7 @@ public class PathModel extends ShapeModel<Path> {
     }
 
     public PathModel(Group group, Path shape) {
-        super(group, shape);
+        super(group, "", shape);
         pathVisitor = new PathVisitor(shape);
     }
 

@@ -19,24 +19,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.scene.model;
+package io.github.jonestimd.vgeditor.scene.control;
 
-import javafx.geometry.Point2D;
-import javafx.scene.Group;
-import javafx.scene.shape.Polygon;
+import io.github.jonestimd.vgeditor.scene.model.EllipseModel;
 
-public class PolygonModel extends ShapeModel<Polygon> {
-    public PolygonModel(Group group, double...points) {
-        super(group, "", new Polygon(points));
+public class EllipseController extends ShapeController<EllipseModel> {
+    public EllipseController() {
+        super(EllipseModel::new);
     }
 
     @Override
-    public boolean isInSelectionRange(double screenX, double screenY) {
-        return false;
-    }
-
-    @Override
-    public Point2D getMarkerLocation(double screenX, double screenY) {
-        throw new UnsupportedOperationException();
+    public void initialize() {
+        super.initialize();
     }
 }

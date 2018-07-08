@@ -29,8 +29,8 @@ import javafx.scene.shape.Shape;
 public abstract class AnchoredShapeModel<T extends Shape> extends ShapeModel<T> implements AnchoredModel {
     private NodeAnchor anchor = NodeAnchor.TOP_LEFT;
 
-    protected AnchoredShapeModel(Group group, T shape) {
-        super(group, shape);
+    protected AnchoredShapeModel(Group group, String toolFxml, T shape) {
+        super(group, toolFxml, shape);
     }
 
     public NodeAnchor getAnchor() {

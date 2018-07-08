@@ -27,11 +27,15 @@ import javafx.scene.shape.Circle;
 
 public class CircleModel extends AnchoredShapeModel<Circle> {
     public CircleModel(Group group) {
-        super(group, new Circle());
+        this(group, new Circle());
     }
 
     public CircleModel(Group group, double cx, double cy, double radius) {
-        super(group, new Circle(cx, cy, radius));
+        this(group, new Circle(cx, cy, radius));
+    }
+
+    protected CircleModel(Group group, Circle circle) {
+        super(group, "", circle);
     }
 
     @Override

@@ -23,6 +23,7 @@ package io.github.jonestimd.vgeditor.scene.model;
 
 import java.util.List;
 
+import io.github.jonestimd.vgeditor.scene.control.ToolPaneLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.transform.Transform;
 
@@ -30,6 +31,11 @@ import javafx.scene.transform.Transform;
  * The interface for a model that contains a {@link javafx.scene.Node}.
  */
 public interface NodeModel {
+    /**
+     * Edit the associated {@link javafx.scene.Node} in the scene.
+     */
+    void edit(ToolPaneLoader toolPaneLoader);
+
     /**
      * Remove the associated {@link javafx.scene.Node} from the scene.
      */

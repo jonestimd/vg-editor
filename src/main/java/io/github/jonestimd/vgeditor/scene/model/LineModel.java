@@ -27,11 +27,15 @@ import javafx.scene.shape.Line;
 
 public class LineModel extends ShapeModel<Line> {
     public LineModel(Group group) {
-        super(group, new Line());
+        this(group, new Line());
     }
 
     public LineModel(Group group, double x1, double y1, double x2, double y2) {
-        super(group, new Line(x1, y1, x2, y2));
+        this(group, new Line(x1, y1, x2, y2));
+    }
+
+    protected LineModel(Group group, Line line) {
+        super(group, "", line);
     }
 
     public double getStartX() {

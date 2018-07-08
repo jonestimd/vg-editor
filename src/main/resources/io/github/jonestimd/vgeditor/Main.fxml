@@ -24,6 +24,8 @@
   ~ SOFTWARE.
   -->
 
+<?import io.github.jonestimd.vgeditor.scene.model.EllipseModel?>
+<?import io.github.jonestimd.vgeditor.scene.model.RectangleModel?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -49,7 +51,12 @@
                 <MenuItem onAction="#exitApplication" text="E_xit" />
             </Menu>
             <Menu text="%menu.insert">
-                <MenuItem accelerator="%insert.rectangle.accelerator" onAction="#addRectangle" text="%insert.rectangle" />
+                <MenuItem accelerator="%insert.ellipse.accelerator" onAction="#addShape" text="%insert.ellipse">
+                    <userData><EllipseModel fx:constant="TOOL_FXML"/></userData>
+                </MenuItem>
+                <MenuItem accelerator="%insert.rectangle.accelerator" onAction="#addShape" text="%insert.rectangle">
+                    <userData><RectangleModel fx:constant="TOOL_FXML"/></userData>
+                </MenuItem>
             </Menu>
         </MenuBar>
     </top>

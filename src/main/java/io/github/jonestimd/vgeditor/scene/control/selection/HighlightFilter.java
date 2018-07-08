@@ -28,9 +28,6 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Rectangle;
 
 import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
 
@@ -49,9 +46,7 @@ public class HighlightFilter implements Predicate<Node> {
     }
 
     public boolean test(Node node) {
-        if (node instanceof Polyline) return ((NodeModel) node.getUserData()).isInSelectionRange(screenX, screenY);
-        if (node instanceof Path) return ((NodeModel) node.getUserData()).isInSelectionRange(screenX, screenY);
-        if (node instanceof Rectangle) return ((NodeModel) node.getUserData()).isInSelectionRange(screenX, screenY);
+        if (node.getUserData() instanceof NodeModel) return ((NodeModel) node.getUserData()).isInSelectionRange(screenX, screenY);
         Bounds nodeBounds = node.getBoundsInLocal();
         if (node instanceof Parent || nodeBounds.getWidth() < HIGHLIGHT_SIZE || nodeBounds.getHeight() < HIGHLIGHT_SIZE) {
             return node.screenToLocal(bounds).intersects(nodeBounds);

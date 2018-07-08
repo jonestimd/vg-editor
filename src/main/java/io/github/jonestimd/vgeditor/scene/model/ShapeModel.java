@@ -23,6 +23,8 @@ package io.github.jonestimd.vgeditor.scene.model;
 
 import java.util.List;
 
+import io.github.jonestimd.vgeditor.scene.control.NodeController;
+import io.github.jonestimd.vgeditor.scene.control.ToolPaneLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
@@ -33,9 +35,11 @@ import javafx.scene.transform.Transform;
 import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
 
 public abstract class ShapeModel<T extends Shape> implements NodeModel {
+    private final transient String formFxml;
     protected final transient T shape;
 
-    protected ShapeModel(Group group, T shape) {
+    protected ShapeModel(Group group, String formFxml, T shape) {
+        this.formFxml = formFxml;
         this.shape = shape;
         group.getChildren().add(shape);
         shape.setUserData(this);
@@ -43,6 +47,12 @@ public abstract class ShapeModel<T extends Shape> implements NodeModel {
 
     public T getShape() {
         return shape;
+    }
+
+    @Override
+    public void edit(ToolPaneLoader toolPaneLoader) {
+        NodeController<ShapeModel<T>> controller = toolPaneLoader.show(formFxml);
+        controller.setModel(this);
     }
 
     @Override

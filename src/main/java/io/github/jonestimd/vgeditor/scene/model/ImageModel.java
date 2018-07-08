@@ -24,6 +24,7 @@ package io.github.jonestimd.vgeditor.scene.model;
 import java.util.List;
 
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
+import io.github.jonestimd.vgeditor.scene.control.ToolPaneLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -44,6 +45,11 @@ public class ImageModel implements NodeModel, AnchoredModel {
 
     public ImageView getImageView() {
         return imageView;
+    }
+
+    @Override
+    public void edit(ToolPaneLoader toolPaneLoader) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

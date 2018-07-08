@@ -81,6 +81,7 @@ public class ShapeController<T extends AnchoredShapeModel> implements NodeContro
     }
 
     public void initialize() {
+        selectAnchor();
         basicShapeController.addListener(change -> {
             if (isValid()) {
                 if (model == null) createNode();
@@ -216,10 +217,14 @@ public class ShapeController<T extends AnchoredShapeModel> implements NodeContro
     private void selectAnchor(NodeAnchor anchor) {
         if (anchor != this.nodeAnchor) {
             this.nodeAnchor = anchor;
-            anchorParent.getChildren().stream().filter(node1 -> anchor.name().equals(node1.getId())).findFirst()
-                    .ifPresent(button -> ((RadioButton) button).setSelected(true));
+            selectAnchor();
             if (model != null) model.setAnchor(anchor);
         }
+    }
+
+    private void selectAnchor() {
+        anchorParent.getChildren().stream().filter(node1 -> nodeAnchor.name().equals(node1.getId())).findFirst()
+                .ifPresent(button -> ((RadioButton) button).setSelected(true));
     }
 
     protected void setSizeInputs(Dimension2D size) {

@@ -27,6 +27,8 @@ import javafx.scene.Group;
 import javafx.scene.shape.Rectangle;
 
 public class RectangleModel extends AnchoredShapeModel<Rectangle> {
+    public static final String TOOL_FXML = "RectangleTool.fxml";
+
     public RectangleModel(Group group) {
         this(group, new Rectangle());
     }
@@ -36,7 +38,7 @@ public class RectangleModel extends AnchoredShapeModel<Rectangle> {
     }
 
     protected RectangleModel(Group group, Rectangle rectangle) {
-        super(group, rectangle);
+        super(group, TOOL_FXML, rectangle);
     }
 
     @Override

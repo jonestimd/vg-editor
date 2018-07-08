@@ -21,10 +21,10 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
-import io.github.jonestimd.vgeditor.scene.model.AnchoredShapeModel;
+import io.github.jonestimd.vgeditor.scene.model.NodeModel;
 import javafx.scene.Group;
 
-public interface NodeController<T extends AnchoredShapeModel> {
+public interface NodeController<T extends NodeModel> {
     void setDiagram(Group diagram);
 
     MouseInputHandler getMouseHandler();

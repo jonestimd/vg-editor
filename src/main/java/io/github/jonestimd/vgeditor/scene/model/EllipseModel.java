@@ -26,12 +26,18 @@ import javafx.scene.Group;
 import javafx.scene.shape.Ellipse;
 
 public class EllipseModel extends AnchoredShapeModel<Ellipse> {
+    public static final String TOOL_FXML = "EllipseTool.fxml";
+
     public EllipseModel(Group group) {
-        super(group, new Ellipse());
+        this(group, new Ellipse());
     }
 
     public EllipseModel(Group group, double cx, double cy, double rx, double ry) {
-        super(group, new Ellipse(cx, cy, rx, ry));
+        this(group, new Ellipse(cx, cy, rx, ry));
+    }
+
+    protected EllipseModel(Group group, Ellipse ellipse) {
+        super(group, TOOL_FXML, ellipse);
     }
 
     @Override
@@ -56,22 +62,22 @@ public class EllipseModel extends AnchoredShapeModel<Ellipse> {
 
     @Override
     public double getWidth() {
-        return shape.getRadiusX();
+        return shape.getRadiusX()*2;
     }
 
     @Override
     public void setWidth(double width) {
-        shape.setRadiusX(width);
+        shape.setRadiusX(width/2);
     }
 
     @Override
     public double getHeight() {
-        return shape.getRadiusY();
+        return shape.getRadiusY()*2;
     }
 
     @Override
     public void setHeight(double height) {
-        shape.setRadiusY(height);
+        shape.setRadiusY(height/2);
     }
 
     @Override

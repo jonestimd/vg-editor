@@ -24,7 +24,7 @@ package io.github.jonestimd.vgeditor.scene.control;
 import java.io.File;
 
 import io.github.jonestimd.vgeditor.scene.control.selection.SelectionController;
-import io.github.jonestimd.vgeditor.scene.model.RectangleModel;
+import io.github.jonestimd.vgeditor.scene.model.NodeModel;
 import io.github.jonestimd.vgeditor.svg.SvgParser;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -33,7 +33,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
@@ -59,12 +61,14 @@ public class MainController {
 
     private SelectionController selectionController;
 
+    private final ChangeListener<Node> selectionChangeListener = (observable, oldValue, newValue) -> {
+        if (newValue != null && newValue.getUserData() instanceof NodeModel) ((NodeModel) newValue.getUserData()).edit(toolPaneLoader);
+    };
+
     public void initialize() {
         scrollPane.setPrefSize(600, 500);
         selectionController = new SelectionController(diagram, marker);
-        selectionController.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && newValue.getUserData() instanceof RectangleModel) editRectangle((RectangleModel) newValue.getUserData());
-        });
+        selectionController.selectedProperty().addListener(selectionChangeListener);
         diagram.sceneProperty().addListener(new ChangeListener<Scene>() {
             @Override
             public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
@@ -124,13 +128,8 @@ public class MainController {
         Platform.exit();
     }
 
-    public void addRectangle() {
-        toolPaneLoader.show("RectangleTool.fxml");
-    }
-
-    public void editRectangle(RectangleModel model) {
-        NodeController<RectangleModel> controller = toolPaneLoader.show("RectangleTool.fxml");
-        controller.setModel(model);
+    public void addShape(ActionEvent event) {
+        toolPaneLoader.show((String) ((MenuItem) event.getSource()).getUserData());
     }
 
     private void onClose(WindowEvent event) {
