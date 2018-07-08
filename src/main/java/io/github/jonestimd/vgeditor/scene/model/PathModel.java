@@ -24,8 +24,8 @@ package io.github.jonestimd.vgeditor.scene.model;
 import java.util.function.Predicate;
 
 import io.github.jonestimd.vgeditor.scene.Geometry;
-import io.github.jonestimd.vgeditor.scene.shape.path.PathSegment;
-import io.github.jonestimd.vgeditor.scene.shape.path.PathVisitor;
+import io.github.jonestimd.vgeditor.scene.model.path.PathSegment;
+import io.github.jonestimd.vgeditor.scene.model.path.PathVisitor;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;

@@ -19,16 +19,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.scene.shape.path;
+package io.github.jonestimd.vgeditor.scene.model.path;
 
 import javafx.geometry.Point2D;
-import javafx.scene.shape.QuadCurveTo;
+import javafx.scene.shape.CubicCurveTo;
 import org.assertj.core.data.Offset;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class QuadCurveToSegmentTest {
+public class CubicCurveToSegmentTest {
     private static final int START_X = 0;
     private static final int START_Y = 20;
     private static final int END_X = 30;
@@ -37,35 +37,35 @@ public class QuadCurveToSegmentTest {
 
     @Test
     public void getMidPoint() throws Exception {
-        QuadCurveTo curveTo = new QuadCurveTo(END_X, START_Y, END_X, END_Y);
-        QuadCurveToSegment segment = new QuadCurveToSegment(START, curveTo);
+        CubicCurveTo curveTo = new CubicCurveTo(START_X+5, START_Y, END_X, END_Y+5, END_X, END_Y);
+        CubicCurveToSegment segment = new CubicCurveToSegment(START, curveTo);
 
         Point2D midpoint = segment.getMidpoint();
 
-        assertThat(midpoint.getX()).isEqualTo(22.5);
-        assertThat(midpoint.getY()).isEqualTo(15);
+        assertThat(midpoint.getX()).isEqualTo(16.875);
+        assertThat(midpoint.getY()).isEqualTo(11.875);
     }
 
     @Test
     public void getMidPoint_Relative() throws Exception {
-        QuadCurveTo curveTo = new QuadCurveTo(END_X-START_X, 0, END_X-START_X, END_Y-START_Y);
+        CubicCurveTo curveTo = new CubicCurveTo(5, 0, END_X-START_X, END_Y-START_Y+5, END_X-START_X, END_Y-START_Y);
         curveTo.setAbsolute(false);
-        QuadCurveToSegment segment = new QuadCurveToSegment(START, curveTo);
+        CubicCurveToSegment segment = new CubicCurveToSegment(START, curveTo);
 
         Point2D midpoint = segment.getMidpoint();
 
-        assertThat(midpoint.getX()).isEqualTo(22.5);
-        assertThat(midpoint.getY()).isEqualTo(15);
+        assertThat(midpoint.getX()).isEqualTo(16.875);
+        assertThat(midpoint.getY()).isEqualTo(11.875);
     }
 
     @Test
     public void getDistanceSquared() throws Exception {
-        QuadCurveTo curveTo = new QuadCurveTo(END_X, START_Y, END_X, END_Y);
-        QuadCurveToSegment segment = new QuadCurveToSegment(START, curveTo);
+        CubicCurveTo curveTo = new CubicCurveTo(START_X+5, START_Y, END_X, END_Y+5, END_X, END_Y);
+        CubicCurveToSegment segment = new CubicCurveToSegment(START, curveTo);
 
         assertThat(segment.getDistanceSquared(START)).isEqualTo(0);
         assertThat(segment.getDistanceSquared(new Point2D(END_X, END_Y))).isEqualTo(0);
-        assertThat(segment.getDistanceSquared(new Point2D(START_X, START_Y+5))).isEqualTo(25, Offset.offset(BezierPathSegment.ERROR*10));
+        assertThat(segment.getDistanceSquared(new Point2D(START_X, START_Y+5))).isEqualTo(25, Offset.offset(BezierPathSegment.ERROR));
         assertThat(segment.getDistanceSquared(new Point2D(END_X+5, END_Y))).isEqualTo(25, Offset.offset(BezierPathSegment.ERROR));
     }
 }
