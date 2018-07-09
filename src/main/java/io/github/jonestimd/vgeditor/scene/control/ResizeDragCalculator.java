@@ -32,7 +32,7 @@ public class ResizeDragCalculator implements BiFunction<Point2D, Point2D, Offset
     private final int widthFactor, heightFactor;
     private final double cos, sin;
 
-    public ResizeDragCalculator(NodeAnchor resizeAnchor, NodeAnchor nodeAnchor, double rotation) {
+    public ResizeDragCalculator(NodeAnchor resizeAnchor, NodeAnchor nodeAnchor, double rotation, int scale) {
         double angle = Math.toRadians(rotation);
         cos = Math.cos(angle);
         sin = Math.sin(angle);
@@ -42,8 +42,8 @@ public class ResizeDragCalculator implements BiFunction<Point2D, Point2D, Offset
         xyFactor = xFactor*sin;
         yxFactor = yFactor*sin;
         yyFactor = yFactor*cos;
-        widthFactor = nodeAnchor.dx == 0 ? 2*resizeAnchor.dx : resizeAnchor.dx;
-        heightFactor = nodeAnchor.dy == 0 ? 2*resizeAnchor.dy : resizeAnchor.dy;
+        widthFactor = nodeAnchor.dx == 0 ? scale*resizeAnchor.dx : resizeAnchor.dx;
+        heightFactor = nodeAnchor.dy == 0 ? scale*resizeAnchor.dy : resizeAnchor.dy;
     }
 
     @Override

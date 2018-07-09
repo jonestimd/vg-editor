@@ -45,4 +45,10 @@ public abstract class AnchoredShapeModel<T extends Shape> extends ShapeModel<T> 
     public NodeAnchor getResizeAnchor(Point2D screenPoint) {
         return NodeAnchor.forResize(shape.screenToLocal(screenPoint), getX(), getY(), getWidth(), getHeight());
     }
+
+    @Override
+    public void setRotate(double angle) {
+        super.setRotate(angle);
+        anchor.translate(shape, getWidth(), getHeight());
+    }
 }

@@ -21,11 +21,12 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.model;
 
+import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.shape.Circle;
 
-public class CircleModel extends AnchoredShapeModel<Circle> {
+public class CircleModel extends ShapeModel<Circle> implements LocationModel, SizeModel {
     public CircleModel(Group group) {
         this(group, new Circle());
     }
@@ -79,8 +80,13 @@ public class CircleModel extends AnchoredShapeModel<Circle> {
     }
 
     @Override
-    public boolean isInSelectionRange(double screenX, double screenY) {
-        return shape.contains(shape.screenToLocal(screenX, screenY));
+    public NodeAnchor getResizeAnchor(Point2D screenPoint) {
+        return null; // TODO
+    }
+
+    @Override
+    protected boolean isInSelectionRange(Point2D localCursor) {
+        return shape.contains(localCursor);
     }
 
     @Override

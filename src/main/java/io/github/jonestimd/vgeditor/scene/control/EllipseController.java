@@ -21,7 +21,13 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.control;
 
+import java.util.function.BiConsumer;
+
+import io.github.jonestimd.vgeditor.scene.NodeAnchor;
+import io.github.jonestimd.vgeditor.scene.control.ResizeDragCalculator.Offset2D;
 import io.github.jonestimd.vgeditor.scene.model.EllipseModel;
+import javafx.geometry.Dimension2D;
+import javafx.geometry.Point2D;
 
 public class EllipseController extends ShapeController<EllipseModel> {
     public EllipseController() {
@@ -31,5 +37,34 @@ public class EllipseController extends ShapeController<EllipseModel> {
     @Override
     public void initialize() {
         super.initialize();
+    }
+
+    @Override
+    protected Dimension2D getNewNodeSize(Point2D diagramStart, Point2D diagramEnd) {
+        return new Dimension2D(Math.abs(diagramEnd.getX()-diagramStart.getX()), Math.abs(diagramEnd.getY()-diagramStart.getY()));
+    }
+
+    @Override
+    protected BiConsumer<Point2D, Point2D> getResizeDragHandler(NodeAnchor resizeAnchor) {
+        return new ResizeDragHandler(resizeAnchor, getModel());
+    }
+
+    private class ResizeDragHandler implements BiConsumer<Point2D, Point2D> {
+        private final double startWidth, startHeight;
+        private final ResizeDragCalculator resizeDragCalculator;
+
+        public ResizeDragHandler(NodeAnchor resizeAnchor, EllipseModel model) {
+            resizeDragCalculator = new ResizeDragCalculator(resizeAnchor, NodeAnchor.CENTER, model.getRotate(), 1);
+            this.startWidth = model.getWidth();
+            this.startHeight = model.getHeight();
+        }
+
+        @Override
+        public void accept(Point2D start, Point2D end) {
+            Offset2D adjustment = resizeDragCalculator.apply(start, end);
+            setNodeLocation();
+            setSizeInputs(Math.abs(startWidth+adjustment.dWidth), Math.abs(startHeight+adjustment.dHeight));
+            setNodeSize();
+        }
     }
 }

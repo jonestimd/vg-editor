@@ -26,7 +26,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.shape.Rectangle;
 
-public class RectangleModel extends AnchoredShapeModel<Rectangle> {
+public class RectangleModel extends AnchoredShapeModel<Rectangle> implements LocationModel, SizeModel {
     public static final String TOOL_FXML = "RectangleTool.fxml";
 
     public RectangleModel(Group group) {
@@ -102,8 +102,7 @@ public class RectangleModel extends AnchoredShapeModel<Rectangle> {
         shape.setArcHeight(value*2);
     }
 
-    public boolean isInSelectionRange(double screenX, double screenY) {
-        Point2D localPoint = shape.screenToLocal(screenX, screenY);
+    protected boolean isInSelectionRange(Point2D localPoint) {
         if (shape.getFill() == null) {
             return isInBounds(shape.getX(), shape.getWidth(), localPoint.getX()) && isInBounds(shape.getY(), shape.getHeight(), localPoint.getY()) &&
                     (isNotInside(shape.getX(), shape.getWidth(), localPoint.getX()) || isNotInside(shape.getY(), shape.getHeight(), localPoint.getY()));

@@ -24,35 +24,30 @@ package io.github.jonestimd.vgeditor.scene.control;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.DoubleConsumer;
 import java.util.function.Function;
-import java.util.function.ObjDoubleConsumer;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
-import io.github.jonestimd.vgeditor.scene.control.ResizeDragCalculator.Offset2D;
-import io.github.jonestimd.vgeditor.scene.model.AnchoredShapeModel;
-import javafx.event.ActionEvent;
+import io.github.jonestimd.vgeditor.scene.model.LocationModel;
+import io.github.jonestimd.vgeditor.scene.model.ShapeModel;
+import io.github.jonestimd.vgeditor.scene.model.SizeModel;
 import javafx.fxml.FXML;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
-import javafx.scene.layout.GridPane;
 
-public class ShapeController<T extends AnchoredShapeModel> implements NodeController<T> {
-    private static final String ID_ANCHOR_X = "anchorX";
-    private static final String ID_ANCHOR_Y = "anchorY";
-    private static final String ID_WIDTH = "width";
-    private static final String ID_HEIGHT = "height";
-    private static final String ID_ROTATION = "rotation";
-    private static final List<String> REQUIRED_FIELDS = ImmutableList.of(ID_ANCHOR_X, ID_ANCHOR_Y, ID_WIDTH, ID_HEIGHT);
-    private static final Map<String, Double> DEFAULT_VALUES = ImmutableMap.of(ID_ROTATION, 0d);
+public abstract class ShapeController<T extends ShapeModel & LocationModel & SizeModel> implements NodeController<T> {
+    protected static final String ID_ANCHOR_X = "anchorX";
+    protected static final String ID_ANCHOR_Y = "anchorY";
+    protected static final String ID_WIDTH = "width";
+    protected static final String ID_HEIGHT = "height";
+    protected static final String ID_ROTATION = "rotation";
+    protected static final List<String> REQUIRED_FIELDS = ImmutableList.of(ID_ANCHOR_X, ID_ANCHOR_Y, ID_WIDTH, ID_HEIGHT);
+    protected static final Map<String, Double> DEFAULT_VALUES = ImmutableMap.of(ID_ROTATION, 0d);
 
-    private NodeAnchor nodeAnchor = NodeAnchor.TOP_LEFT;
-    @FXML
-    private GridPane anchorParent;
     @FXML
     private FormController basicShapeController;
     @FXML
@@ -69,24 +64,23 @@ public class ShapeController<T extends AnchoredShapeModel> implements NodeContro
 
     private final MouseInputHandler mouseInputHandler = new MouseInputHandler(this::startDrag, this::continueDrag, this::endDrag);
     private final Function<Group, T> modelFactory;
-    private final Map<String, ObjDoubleConsumer<T>> fieldHandlers = ImmutableMap.of(
-            ID_ANCHOR_X, AnchoredShapeModel::setX,
-            ID_ANCHOR_Y, AnchoredShapeModel::setY,
-            ID_WIDTH, AnchoredShapeModel::setWidth,
-            ID_HEIGHT, AnchoredShapeModel::setHeight,
-            ID_ROTATION, AnchoredShapeModel::setRotate);
+    private final Map<String, DoubleConsumer> fieldHandlers = ImmutableMap.of(
+            ID_ANCHOR_X, (x) -> model.setX(x),
+            ID_ANCHOR_Y, (y) -> model.setY(y),
+            ID_WIDTH, (width) -> model.setWidth(width),
+            ID_HEIGHT, (height) -> model.setHeight(height),
+            ID_ROTATION, (rotate) -> model.setRotate(rotate));
 
     protected ShapeController(Function<Group, T> modelFactory) {
         this.modelFactory = modelFactory;
     }
 
     public void initialize() {
-        selectAnchor();
         basicShapeController.addListener(change -> {
             if (isValid()) {
                 if (model == null) createNode();
                 String fieldId = change.getPropertyName();
-                fieldHandlers.get(fieldId).accept(model, getFieldValue(fieldId));
+                fieldHandlers.get(fieldId).accept(getFieldValue(fieldId));
             }
             else if (model != null) {
                 model.remove();
@@ -122,7 +116,6 @@ public class ShapeController<T extends AnchoredShapeModel> implements NodeContro
         setLocationInputs(model.getX(), model.getY());
         setSizeInputs(model.getWidth(), model.getHeight());
         basicShapeController.setValue(ID_ROTATION, model.getRotate());
-        selectAnchor(model.getAnchor());
         fillPaneController.editNode(model);
         strokePaneController.editNode(model);
         basicShapeController.getField(ID_ANCHOR_X).requestFocus();
@@ -152,20 +145,12 @@ public class ShapeController<T extends AnchoredShapeModel> implements NodeContro
         onNewNode();
     }
 
-    public void onAnchorChange(ActionEvent event) {
-        NodeAnchor nodeAnchor = NodeAnchor.valueOf(((RadioButton) event.getSource()).getId());
-        if (this.nodeAnchor != nodeAnchor) {
-            this.nodeAnchor = nodeAnchor;
-            if (model != null) model.setAnchor(nodeAnchor);
-        }
-    }
-
-    private void setNodeLocation() {
+    protected void setNodeLocation() {
         model.setX(getFieldValue(ID_ANCHOR_X));
         model.setY(getFieldValue(ID_ANCHOR_Y));
     }
 
-    private void setNodeSize() {
+    protected void setNodeSize() {
         model.setWidth(getFieldValue(ID_WIDTH));
         model.setHeight(getFieldValue(ID_HEIGHT));
     }
@@ -174,7 +159,7 @@ public class ShapeController<T extends AnchoredShapeModel> implements NodeContro
         if (model != null && model.isInSelectionRange(screenPoint.getX(), screenPoint.getY())) {
             if (isShortcutDown) {
                 NodeAnchor resizeAnchor = model.getResizeAnchor(screenPoint);
-                if (resizeAnchor != null) drag = new ResizeDragHandler(resizeAnchor);
+                if (resizeAnchor != null) drag = getResizeDragHandler(resizeAnchor);
             }
             else drag = new MoveDrag();
         }
@@ -191,6 +176,8 @@ public class ShapeController<T extends AnchoredShapeModel> implements NodeContro
         return drag != null;
     }
 
+    protected abstract BiConsumer<Point2D, Point2D> getResizeDragHandler(NodeAnchor resizeAnchor);
+
     protected void setLocationInputs(double x, double y) {
         basicShapeController.setValue(ID_ANCHOR_X, x);
         basicShapeController.setValue(ID_ANCHOR_Y, y);
@@ -206,25 +193,12 @@ public class ShapeController<T extends AnchoredShapeModel> implements NodeContro
 
     protected void createNode() {
         model = modelFactory.apply(diagram);
-        model.setAnchor(nodeAnchor);
+        // model.setAnchor(nodeAnchor);
         setNodeLocation();
         model.setRotate(getFieldValue(ID_ROTATION));
         setNodeSize();
         fillPaneController.newNode(model);
         strokePaneController.newNode(model);
-    }
-
-    private void selectAnchor(NodeAnchor anchor) {
-        if (anchor != this.nodeAnchor) {
-            this.nodeAnchor = anchor;
-            selectAnchor();
-            if (model != null) model.setAnchor(anchor);
-        }
-    }
-
-    private void selectAnchor() {
-        anchorParent.getChildren().stream().filter(node1 -> nodeAnchor.name().equals(node1.getId())).findFirst()
-                .ifPresent(button -> ((RadioButton) button).setSelected(true));
     }
 
     protected void setSizeInputs(Dimension2D size) {
@@ -236,13 +210,14 @@ public class ShapeController<T extends AnchoredShapeModel> implements NodeContro
         basicShapeController.setValue(ID_HEIGHT, height);
     }
 
+    protected abstract Dimension2D getNewNodeSize(Point2D diagramStart, Point2D diagramEnd);
+
     private class NewNodeDrag implements BiConsumer<Point2D, Point2D> {
         @Override
         public void accept(Point2D screenStart, Point2D screenEnd) {
             Point2D start = diagram.screenToLocal(screenStart);
             Point2D end = diagram.screenToLocal(screenEnd);
-            selectAnchor(nodeAnchor.adjust(start, end));
-            setSizeInputs(nodeAnchor.getSize(start, end));
+            setSizeInputs(getNewNodeSize(start, end));
             if (isValid()) {
                 if (model == null) createNode();
                 else setNodeSize();
@@ -267,40 +242,6 @@ public class ShapeController<T extends AnchoredShapeModel> implements NodeContro
         public void accept(Point2D start, Point2D end) { // TODO compensate for axis adjustment at top and left screen border
             setLocationInputs(startX+end.getX()-start.getX(), startY+end.getY()-start.getY());
             setNodeLocation();
-        }
-    }
-
-    private class ResizeDragHandler implements BiConsumer<Point2D, Point2D> {
-        private final double startX, startY;
-        private final double startWidth, startHeight;
-        private final ResizeDragCalculator resizeDragCalculator;
-        private int swapX = 1, swapY = 1;
-
-        public ResizeDragHandler(NodeAnchor resizeAnchor) {
-            resizeDragCalculator = new ResizeDragCalculator(resizeAnchor, nodeAnchor, model.getRotate());
-            this.startX = model.getX();
-            this.startY = model.getY();
-            this.startWidth = model.getWidth();
-            this.startHeight = model.getHeight();
-        }
-
-        @Override
-        public void accept(Point2D start, Point2D end) {
-            Offset2D adjustment = resizeDragCalculator.apply(start, end);
-            setLocationInputs(startX+adjustment.dx, startY+adjustment.dy);
-            setNodeLocation();
-            double width = swapX*(startWidth+adjustment.dWidth);
-            double height = swapY*(startHeight+adjustment.dHeight);
-            if (width < 0) {
-                selectAnchor(nodeAnchor.swapX());
-                swapX = -swapX;
-            }
-            if (height < 0) {
-                selectAnchor(nodeAnchor.swapY());
-                swapY = -swapY;
-            }
-            setSizeInputs(Math.abs(width), Math.abs(height));
-            setNodeSize();
         }
     }
 }

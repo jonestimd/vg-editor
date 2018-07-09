@@ -21,9 +21,10 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.model;
 
-import io.github.jonestimd.vgeditor.scene.NodeAnchor;
+public interface SizeModel {
+    double getWidth();
+    void setWidth(double width);
 
-public interface AnchoredModel extends LocationModel, SizeModel {
-    NodeAnchor getAnchor();
-    void setAnchor(NodeAnchor anchor);
+    double getHeight();
+    void setHeight(double height);
 }

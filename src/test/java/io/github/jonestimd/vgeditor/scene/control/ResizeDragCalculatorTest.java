@@ -166,7 +166,7 @@ public class ResizeDragCalculatorTest {
     }
 
     public void testResize(NodeAnchor nodeAnchor, NodeAnchor resizeAnchor, double rotation, double dx, double dy, double dWidth, double dHeight) {
-        ResizeDragCalculator resizeDragCalculator = new ResizeDragCalculator(resizeAnchor, nodeAnchor, rotation);
+        ResizeDragCalculator resizeDragCalculator = new ResizeDragCalculator(resizeAnchor, nodeAnchor, rotation, 2);
 
         Offset2D adjustment = resizeDragCalculator.apply(POINT1, POINT2);
 

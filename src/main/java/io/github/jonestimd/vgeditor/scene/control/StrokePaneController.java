@@ -24,7 +24,7 @@ package io.github.jonestimd.vgeditor.scene.control;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import io.github.jonestimd.vgeditor.scene.model.AnchoredShapeModel;
+import io.github.jonestimd.vgeditor.scene.model.ShapeModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
@@ -42,13 +42,13 @@ public class StrokePaneController {
     private TextField strokeWidthInput;
 
     private double strokeWidth = DEFAULT_STROKE_WIDTH;
-    private AnchoredShapeModel model;
+    private ShapeModel model;
 
     public void initialize() {
         strokeColor.setValue(Color.BLACK);
     }
 
-    public void editNode(AnchoredShapeModel model) {
+    public void editNode(ShapeModel model) {
         this.model = model;
         if (model.getStroke() != null) {
             setEnabled(true);
@@ -65,7 +65,7 @@ public class StrokePaneController {
         strokeWidthInput.setDisable(!enabled);
     }
 
-    public void newNode(AnchoredShapeModel model) {
+    public void newNode(ShapeModel model) {
         this.model = model;
         setNodeStroke();
     }

@@ -31,7 +31,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyEvent;
 
-public class RectangleController extends ShapeController<RectangleModel> {
+public class RectangleController extends AnchoredShapeController<RectangleModel> {
     public static final String ID_ARC_WIDTH = "arcWidth";
     public static final String ID_ARC_HEIGHT = "arcHeight";
 

@@ -71,7 +71,7 @@ public class LineModel extends ShapeModel<Line> {
     }
 
     @Override
-    public boolean isInSelectionRange(double screenX, double screenY) {
+    protected boolean isInSelectionRange(Point2D localCursor) {
         return false;
     }
 

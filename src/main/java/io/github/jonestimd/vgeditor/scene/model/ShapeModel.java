@@ -25,6 +25,7 @@ import java.util.List;
 
 import io.github.jonestimd.vgeditor.scene.control.NodeController;
 import io.github.jonestimd.vgeditor.scene.control.ToolPaneLoader;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
@@ -101,6 +102,15 @@ public abstract class ShapeModel<T extends Shape> implements NodeModel {
     public void setStrokeWidth(double strokeWidth) {
         shape.setStrokeWidth(strokeWidth);
     }
+
+    @Override
+    public boolean isInSelectionRange(double screenX, double screenY) {
+        Point2D cursor = shape.screenToLocal(screenX, screenY);
+        return shape.intersects(cursor.getX()-HIGHLIGHT_OFFSET, cursor.getY()-HIGHLIGHT_OFFSET, HIGHLIGHT_SIZE, HIGHLIGHT_SIZE)
+                && isInSelectionRange(cursor);
+    }
+
+    protected abstract boolean isInSelectionRange(Point2D localCursor);
 
     protected static boolean isInBounds(double min, double size, double value) {
         return value > min-HIGHLIGHT_OFFSET && value < min+size+HIGHLIGHT_OFFSET;

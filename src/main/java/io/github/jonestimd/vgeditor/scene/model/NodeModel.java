@@ -23,6 +23,7 @@ package io.github.jonestimd.vgeditor.scene.model;
 
 import java.util.List;
 
+import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import io.github.jonestimd.vgeditor.scene.control.ToolPaneLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.transform.Transform;
@@ -43,6 +44,10 @@ public interface NodeModel {
 
     double getRotate();
     void setRotate(double angle);
+
+    default NodeAnchor getResizeAnchor(Point2D screenPoint) {
+        return null;
+    }
 
     List<Transform> getTransforms();
 

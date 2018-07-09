@@ -37,9 +37,6 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Effect;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
 import static io.github.jonestimd.vgeditor.scene.Nodes.*;
@@ -88,15 +85,7 @@ public class SelectionController implements EventHandler<MouseEvent> {
         if (highlighted != null && highlighted != node) highlighted.setEffect(null);
         highlighted = node;
         highlighted.setEffect(highlightEffect);
-        if (node instanceof Path) {
-            Point2D cursor = ((NodeModel) node.getUserData()).getMarkerLocation(screenX, screenY);
-            setMarker(node, cursor.getX(), cursor.getY());
-        }
-        else if (node instanceof Polyline) {
-            Point2D cursor = ((NodeModel) node.getUserData()).getMarkerLocation(screenX, screenY);
-            setMarker(node, cursor.getX(), cursor.getY());
-        }
-        else if (node instanceof Rectangle) {
+        if (node.getUserData() instanceof NodeModel) {
             Point2D cursor = ((NodeModel) node.getUserData()).getMarkerLocation(screenX, screenY);
             setMarker(node, cursor.getX(), cursor.getY());
         }

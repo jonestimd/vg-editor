@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import io.github.jonestimd.vgeditor.scene.Geometry;
 import javafx.collections.ObservableList;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.shape.Polyline;
@@ -43,12 +42,8 @@ public class PolylineModel extends ShapeModel<Polyline> {
     }
 
     @Override
-    public boolean isInSelectionRange(double screenX, double screenY) {
-        Point2D cursor = shape.screenToLocal(screenX, screenY);
-        Bounds bounds = shape.getBoundsInLocal();
-        return isInBounds(bounds.getMinX(), bounds.getWidth(), cursor.getX())
-                && isInBounds(bounds.getMinY(), bounds.getHeight(), cursor.getY())
-                && findSegment(cursor).isPresent();
+    protected boolean isInSelectionRange(Point2D localCursor) {
+        return findSegment(localCursor).isPresent();
     }
 
     @Override

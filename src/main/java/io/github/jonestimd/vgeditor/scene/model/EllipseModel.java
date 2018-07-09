@@ -21,11 +21,14 @@
 // SOFTWARE.
 package io.github.jonestimd.vgeditor.scene.model;
 
+import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.shape.Ellipse;
 
-public class EllipseModel extends AnchoredShapeModel<Ellipse> {
+import static io.github.jonestimd.vgeditor.scene.control.selection.SelectionController.*;
+
+public class EllipseModel extends ShapeModel<Ellipse> implements LocationModel, SizeModel {
     public static final String TOOL_FXML = "EllipseTool.fxml";
 
     public EllipseModel(Group group) {
@@ -62,31 +65,77 @@ public class EllipseModel extends AnchoredShapeModel<Ellipse> {
 
     @Override
     public double getWidth() {
-        return shape.getRadiusX()*2;
+        return shape.getRadiusX();
     }
 
     @Override
     public void setWidth(double width) {
-        shape.setRadiusX(width/2);
+        shape.setRadiusX(width);
     }
 
     @Override
     public double getHeight() {
-        return shape.getRadiusY()*2;
+        return shape.getRadiusY();
     }
 
     @Override
     public void setHeight(double height) {
-        shape.setRadiusY(height/2);
+        shape.setRadiusY(height);
     }
 
     @Override
-    public boolean isInSelectionRange(double screenX, double screenY) {
-        return shape.contains(shape.screenToLocal(screenX, screenY));
+    public NodeAnchor getResizeAnchor(Point2D screenPoint) {
+        Point2D delta = shape.screenToLocal(screenPoint).subtract(shape.getCenterX(), shape.getCenterY());
+        if (Math.abs(delta.getY()) < shape.getRadiusY()/4 && Math.abs(delta.getX()) > shape.getRadiusX()*3/4) {
+            return delta.getX() > 0 ? NodeAnchor.RIGHT : NodeAnchor.LEFT;
+        }
+        if (Math.abs(delta.getY()) > shape.getRadiusY()*3/4 && Math.abs(delta.getX()) < shape.getRadiusX()*4) {
+            return delta.getY() > 0 ? NodeAnchor.BOTTOM : NodeAnchor.TOP;
+        }
+        if (delta.getY() > 0) {
+            return delta.getX() > 0 ? NodeAnchor.BOTTOM_RIGHT : NodeAnchor.BOTTOM_LEFT;
+        }
+        return delta.getX() > 0 ? NodeAnchor.TOP_RIGHT : NodeAnchor.TOP_LEFT;
+    }
+
+    @Override
+    protected boolean isInSelectionRange(Point2D localCursor) {
+        Point2D delta = localCursor.subtract(shape.getCenterX(), shape.getCenterY());
+        double dxSquared = getSquare(delta.getX()), dySquared = getSquare(delta.getY());
+        if (shape.getFill() != null) return isInside(dxSquared, dySquared, 0);
+        return isInside(dxSquared, dySquared, HIGHLIGHT_OFFSET) && !isInside(dxSquared, dySquared, -HIGHLIGHT_OFFSET);
+    }
+
+    private boolean isInside(double dxSquared, double dySquared, int offset) {
+        return dxSquared/getSquare(shape.getRadiusX()+offset)+dySquared/getSquare(shape.getRadiusY()+offset) <= 1;
+    }
+
+    private static double getSquare(double value) {
+        return value*value;
     }
 
     @Override
     public Point2D getMarkerLocation(double screenX, double screenY) {
-        throw new UnsupportedOperationException();
+        double angle = getAngle(shape.screenToLocal(screenX, screenY));
+        return new Point2D(getX(angle), getY(angle));
+    }
+
+    private double getAngle(Point2D cursor) {
+        Point2D delta = cursor.subtract(shape.getCenterX(), shape.getCenterY());
+        if (Math.abs(delta.getY()) < shape.getRadiusY()/4 && Math.abs(delta.getX()) > shape.getRadiusX()*3/4) {
+            return delta.getX() > 0 ? 0 : Math.PI;
+        }
+        if (Math.abs(delta.getY()) > shape.getRadiusY()*3/4 && Math.abs(delta.getX()) < shape.getRadiusX()*4) {
+            return Math.signum(delta.getY())*Math.PI/2;
+        }
+        return Math.signum(delta.getY())*(Math.PI/4 + (delta.getX() > 0 ? 0 : Math.PI/2));
+    }
+
+    private double getX(double angle) {
+        return shape.getCenterX()+shape.getRadiusX()*Math.cos(angle);
+    }
+
+    private double getY(double angle) {
+        return shape.getCenterY()+shape.getRadiusY()*Math.sin(angle);
     }
 }
