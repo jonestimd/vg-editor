@@ -29,15 +29,15 @@ import javafx.scene.Node;
 import static java.lang.Math.*;
 
 public enum NodeAnchor {
-    TOP_LEFT(-1, -1),
-    TOP(0, -1),
-    TOP_RIGHT(1, -1),
-    LEFT(-1, 0),
-    CENTER(0, 0),
-    RIGHT(1, 0),
-    BOTTOM_LEFT(-1, 1),
-    BOTTOM(0, 1),
-    BOTTOM_RIGHT(1, 1);
+    TOP_LEFT(-1, -1, -Math.PI*3/4),
+    TOP(0, -1, -Math.PI/2),
+    TOP_RIGHT(1, -1, -Math.PI/4),
+    LEFT(-1, 0, Math.PI),
+    CENTER(0, 0, Double.NaN),
+    RIGHT(1, 0, 0),
+    BOTTOM_LEFT(-1, 1, Math.PI*3/4),
+    BOTTOM(0, 1, Math.PI/2),
+    BOTTOM_RIGHT(1, 1, Math.PI/4);
 
     private static double alignLeftX(double halfWidth, double angle) {
         return halfWidth*cos(angle);
@@ -58,10 +58,12 @@ public enum NodeAnchor {
     // normalized anchor offset from center
     public final int dy;
     public final int dx;
+    public final double angle;
 
-    NodeAnchor(int dx, int dy) {
+    NodeAnchor(int dx, int dy, double angle) {
         this.dx = dx;
         this.dy = dy;
+        this.angle = angle;
     }
 
     /**

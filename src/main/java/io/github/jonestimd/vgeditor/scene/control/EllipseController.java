@@ -22,9 +22,9 @@
 package io.github.jonestimd.vgeditor.scene.control;
 
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
-import io.github.jonestimd.vgeditor.scene.control.ResizeDragCalculator.Offset2D;
 import io.github.jonestimd.vgeditor.scene.model.EllipseModel;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
@@ -51,20 +51,41 @@ public class EllipseController extends ShapeController<EllipseModel> {
 
     private class ResizeDragHandler implements BiConsumer<Point2D, Point2D> {
         private final double startWidth, startHeight;
-        private final ResizeDragCalculator resizeDragCalculator;
+        private final ResizeCalculator resizeDragCalculator;
 
         public ResizeDragHandler(NodeAnchor resizeAnchor, EllipseModel model) {
-            resizeDragCalculator = new ResizeDragCalculator(resizeAnchor, NodeAnchor.CENTER, model.getRotate(), 1);
+            resizeDragCalculator = new ResizeCalculator(resizeAnchor, model.getRotate());
             this.startWidth = model.getWidth();
             this.startHeight = model.getHeight();
         }
 
         @Override
         public void accept(Point2D start, Point2D end) {
-            Offset2D adjustment = resizeDragCalculator.apply(start, end);
-            setNodeLocation();
-            setSizeInputs(Math.abs(startWidth+adjustment.dWidth), Math.abs(startHeight+adjustment.dHeight));
+            Dimension2D adjustment = resizeDragCalculator.apply(start, end);
+            setSizeInputs(Math.abs(startWidth+adjustment.getWidth()), Math.abs(startHeight+adjustment.getHeight()));
             setNodeSize();
+        }
+    }
+
+    private static class ResizeCalculator implements BiFunction<Point2D, Point2D, Dimension2D> {
+        private final double widthFactor, heightFactor;
+        private final double cos, sin;
+
+        public ResizeCalculator(NodeAnchor resizeAnchor, double rotation) {
+            double angle = Math.toRadians(rotation);
+            cos = Math.cos(angle);
+            sin = Math.sin(angle);
+            widthFactor = resizeAnchor.dx == 0 ? 0 : 1/Math.cos(resizeAnchor.angle);
+            heightFactor = resizeAnchor.dy == 0 ? 0 : 1/Math.sin(resizeAnchor.angle);
+        }
+
+        @Override
+        public Dimension2D apply(Point2D start, Point2D end) {
+            double dx = end.getX()-start.getX();
+            double dy = end.getY()-start.getY();
+            double dWidth = (dx*cos+dy*sin)*widthFactor;
+            double dHeight = (-dx*sin+dy*cos)*heightFactor;
+            return new Dimension2D(dWidth, dHeight);
         }
     }
 }

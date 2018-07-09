@@ -24,7 +24,6 @@ package io.github.jonestimd.vgeditor.scene.control;
 import java.util.function.BiFunction;
 
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
-import io.github.jonestimd.vgeditor.scene.control.ResizeDragCalculator.Offset2D;
 import javafx.geometry.Point2D;
 
 public class ResizeDragCalculator implements BiFunction<Point2D, Point2D, Offset2D> {
@@ -53,17 +52,5 @@ public class ResizeDragCalculator implements BiFunction<Point2D, Point2D, Offset
         double dWidth = (dx*cos+dy*sin)*widthFactor;
         double dHeight = (-dx*sin+dy*cos)*heightFactor;
         return new Offset2D(dWidth*xxFactor-dHeight*yxFactor, dWidth*xyFactor+dHeight*yyFactor, dWidth, dHeight);
-    }
-
-    public static class Offset2D {
-        public final double dx, dy;
-        public final double dWidth, dHeight;
-
-        public Offset2D(double dx, double dy, double dWidth, double dHeight) {
-            this.dx = dx;
-            this.dy = dy;
-            this.dWidth = dWidth;
-            this.dHeight = dHeight;
-        }
     }
 }

@@ -42,6 +42,19 @@ public class NodeAnchorTest {
     }
 
     @Test
+    public void angle() throws Exception {
+        assertThat(NodeAnchor.TOP_LEFT.angle).isEqualTo(-Math.PI*3/4);
+        assertThat(NodeAnchor.TOP.angle).isEqualTo(-Math.PI/2);
+        assertThat(NodeAnchor.TOP_RIGHT.angle).isEqualTo(-Math.PI/4);
+        assertThat(NodeAnchor.LEFT.angle).isEqualTo(Math.PI);
+        assertThat(NodeAnchor.CENTER.angle).isEqualTo(Double.NaN);
+        assertThat(NodeAnchor.RIGHT.angle).isEqualTo(0);
+        assertThat(NodeAnchor.BOTTOM_RIGHT.angle).isEqualTo(Math.PI/4);
+        assertThat(NodeAnchor.BOTTOM.angle).isEqualTo(Math.PI/2);
+        assertThat(NodeAnchor.BOTTOM_LEFT.angle).isEqualTo(Math.PI*3/4);
+    }
+
+    @Test
     public void translateTopLeft() throws Exception {
         testTranslate(NodeAnchor.TOP_LEFT, 0, 0, 0);
         testTranslate(NodeAnchor.TOP_LEFT, 90, -WIDTH/2-HEIGHT/2, WIDTH/2-HEIGHT/2);

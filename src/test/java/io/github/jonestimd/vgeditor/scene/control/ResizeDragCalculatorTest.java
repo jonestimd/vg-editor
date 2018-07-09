@@ -22,7 +22,6 @@
 package io.github.jonestimd.vgeditor.scene.control;
 
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
-import io.github.jonestimd.vgeditor.scene.control.ResizeDragCalculator.Offset2D;
 import javafx.geometry.Point2D;
 import org.assertj.core.data.Offset;
 import org.junit.Test;

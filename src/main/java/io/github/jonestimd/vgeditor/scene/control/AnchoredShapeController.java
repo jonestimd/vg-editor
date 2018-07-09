@@ -25,7 +25,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import io.github.jonestimd.vgeditor.scene.NodeAnchor;
-import io.github.jonestimd.vgeditor.scene.control.ResizeDragCalculator.Offset2D;
 import io.github.jonestimd.vgeditor.scene.model.AnchoredShapeModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

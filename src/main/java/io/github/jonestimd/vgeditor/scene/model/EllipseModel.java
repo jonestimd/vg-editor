@@ -116,11 +116,11 @@ public class EllipseModel extends ShapeModel<Ellipse> implements LocationModel, 
 
     @Override
     public Point2D getMarkerLocation(double screenX, double screenY) {
-        double angle = getAngle(shape.screenToLocal(screenX, screenY));
+        double angle = getMarkerAngle(shape.screenToLocal(screenX, screenY));
         return new Point2D(getX(angle), getY(angle));
     }
 
-    private double getAngle(Point2D cursor) {
+    private double getMarkerAngle(Point2D cursor) {
         Point2D delta = cursor.subtract(shape.getCenterX(), shape.getCenterY());
         if (Math.abs(delta.getY()) < shape.getRadiusY()/4 && Math.abs(delta.getX()) > shape.getRadiusX()*3/4) {
             return delta.getX() > 0 ? 0 : Math.PI;
