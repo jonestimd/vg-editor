@@ -29,9 +29,11 @@ import java.util.Stack;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.ButtonBar;
 
 public class Nodes {
     public static double boundingArea(Node node) {
@@ -71,10 +73,18 @@ public class Nodes {
     }
 
     public static <T extends Node> Optional<T> findFirstById(Parent root, String id, Class<T> type) {
-        for (Node node : root.getChildrenUnmodifiable()) {
+        return findFirstById(id, type, root.getChildrenUnmodifiable());
+    }
+
+    private static <T extends Node> Optional<T> findFirstById(String id, Class<T> type, ObservableList<Node> children) {
+        for (Node node : children) {
             if (type.isInstance(node) && id.equals(node.getId())) return Optional.of(type.cast(node));
-            if (node instanceof Parent) {
-                Optional<T> child = findFirstById((Parent) node, id, type);
+            if (node instanceof ButtonBar) {
+                Optional<T> child = findFirstById(id, type, ((ButtonBar) node).getButtons());
+                if (child.isPresent()) return child;
+            }
+            else if (node instanceof Parent) {
+                Optional<T> child = findFirstById(id, type, ((Parent) node).getChildrenUnmodifiable());
                 if (child.isPresent()) return child;
             }
         }

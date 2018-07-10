@@ -167,10 +167,6 @@ public abstract class ShapeController<T extends ShapeModel & LocationModel & Siz
             onNewNode();
             Point2D point = diagram.screenToLocal(screenPoint);
             setLocationInputs(point.getX(), point.getY());
-            if (isValid()) {
-                model.setX(point.getX());
-                model.setY(point.getY());
-            }
             drag = new NewNodeDrag();
         }
         return drag != null;

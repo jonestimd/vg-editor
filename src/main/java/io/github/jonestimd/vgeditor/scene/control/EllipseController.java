@@ -29,14 +29,12 @@ import io.github.jonestimd.vgeditor.scene.model.EllipseModel;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 
+/**
+ * Controller for the Ellipse tool window.
+ */
 public class EllipseController extends ShapeController<EllipseModel> {
     public EllipseController() {
         super(EllipseModel::new);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
     }
 
     @Override

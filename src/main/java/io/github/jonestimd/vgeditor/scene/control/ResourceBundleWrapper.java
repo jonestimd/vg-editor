@@ -19,35 +19,43 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-package io.github.jonestimd.vgeditor.scene;
+package io.github.jonestimd.vgeditor.scene.control;
 
-import java.lang.reflect.Field;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.Set;
 
-import io.github.jonestimd.vgeditor.JavafxTest;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import org.junit.Before;
+/** Fix for null class loader when using <fx:include> with resources attribute */
+public class ResourceBundleWrapper extends ResourceBundle {
+    private final ResourceBundle bundle;
 
-public abstract class SceneTest extends JavafxTest {
-    protected Group diagram = new Group();
-    protected Scene scene = new Scene(diagram);
-
-    @Before
-    public void setUpScene() throws Exception {
-        Stage window = new Stage();
-        window.setX(0);
-        window.setY(0);
-        window.setScene(scene);
+    ResourceBundleWrapper(ResourceBundle bundle) {
+        this.bundle = bundle;
     }
 
-    @SuppressWarnings("unchecked")
-    protected void setScene(Node node) throws Exception {
-        Field sceneField = Node.class.getDeclaredField("scene");
-        sceneField.setAccessible(true);
-        ReadOnlyObjectWrapper<Scene> sceneProperty = (ReadOnlyObjectWrapper<Scene>) sceneField.get(node);
-        sceneProperty.set(scene);
+    @Override
+    protected Object handleGetObject(String key) {
+        return bundle.getObject(key);
+    }
+
+    @Override
+    public Enumeration<String> getKeys() {
+        return bundle.getKeys();
+    }
+
+    @Override
+    public Locale getLocale() {
+        return bundle.getLocale();
+    }
+
+    @Override
+    public boolean containsKey(String key) {
+        return bundle.containsKey(key);
+    }
+
+    @Override
+    public Set<String> keySet() {
+        return bundle.keySet();
     }
 }

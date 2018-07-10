@@ -29,10 +29,18 @@ public abstract class JavafxTest {
     @Rule
     public JavaFxThreadingRule rule = new JavaFxThreadingRule();
 
-    protected void setValue(Object target, String fieldName, Object value) throws Exception {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(target, value);
+    protected void setValue(Object target, String fieldName, Object value) throws IllegalAccessException {
+        Class<?> fieldOwner = target.getClass();
+        while (fieldOwner != null) {
+            try {
+                Field field = fieldOwner.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                field.set(target, value);
+                return;
+            } catch (NoSuchFieldException e) {
+                fieldOwner = fieldOwner.getSuperclass();
+            }
+        }
     }
 
     protected <T> T getValue(Object target, String fieldName, Class<T> valueClass) throws Exception {
