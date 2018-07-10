@@ -73,6 +73,7 @@ public class ToolPaneLoader {
             controllerPane = fileControllers.computeIfAbsent(fileName, this::load);
             controllerPane.getKey().setDiagram(diagram);
             stage.getScene().setRoot(controllerPane.getValue());
+            stage.sizeToScene();
         }
         stage.show();
         stage.requestFocus();
