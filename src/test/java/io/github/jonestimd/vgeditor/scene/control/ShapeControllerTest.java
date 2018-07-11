@@ -32,12 +32,10 @@ import io.github.jonestimd.vgeditor.scene.Nodes;
 import io.github.jonestimd.vgeditor.scene.SceneTest;
 import io.github.jonestimd.vgeditor.scene.model.EllipseModel;
 import javafx.collections.FXCollections;
-import javafx.event.EventType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import org.junit.Test;
@@ -372,10 +370,5 @@ public class ShapeControllerTest extends SceneTest {
         assertThat(controller.getModel().getY()).isEqualTo(startY);
         assertThat(controller.getModel().getWidth()).isEqualTo(width);
         assertThat(controller.getModel().getHeight()).isEqualTo(height);
-    }
-
-    private MouseEvent getMouseEvent(EventType<MouseEvent> eventType, double x, double y, boolean controlDown) {
-        return new MouseEvent(diagram, diagram, eventType, x, y, x, y, MouseButton.PRIMARY, 0,
-                false, controlDown, false, false, true, false, false, false, false, false, null);
     }
 }

@@ -25,9 +25,12 @@ import java.lang.reflect.Field;
 
 import io.github.jonestimd.vgeditor.JavafxTest;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.event.EventType;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.junit.Before;
 
@@ -49,5 +52,10 @@ public abstract class SceneTest extends JavafxTest {
         sceneField.setAccessible(true);
         ReadOnlyObjectWrapper<Scene> sceneProperty = (ReadOnlyObjectWrapper<Scene>) sceneField.get(node);
         sceneProperty.set(scene);
+    }
+
+    protected MouseEvent getMouseEvent(EventType<MouseEvent> eventType, double x, double y, boolean controlDown) {
+        return new MouseEvent(diagram, diagram, eventType, x, y, x, y, MouseButton.PRIMARY, 0,
+                false, controlDown, false, false, true, false, false, false, false, false, null);
     }
 }

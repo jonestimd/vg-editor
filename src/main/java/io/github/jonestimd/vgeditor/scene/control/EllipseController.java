@@ -65,7 +65,7 @@ public class EllipseController extends ShapeController<EllipseModel> {
         }
     }
 
-    private static class ResizeCalculator implements BiFunction<Point2D, Point2D, Dimension2D> {
+    protected static class ResizeCalculator implements BiFunction<Point2D, Point2D, Dimension2D> {
         private final double widthFactor, heightFactor;
         private final double cos, sin;
 
