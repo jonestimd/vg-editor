@@ -105,8 +105,6 @@ public class MouseInputHandlerTest {
 
     @Test
     public void ignoresReleaseWhenNotDragging() throws Exception {
-        when(startDrag.test(any(Point2D.class), anyBoolean())).thenReturn(false);
-
         mouseInputHandler.handle(parent, getMouseEvent(MouseEvent.MOUSE_PRESSED, start.getX(), start.getY(), MouseButton.PRIMARY, false));
         mouseInputHandler.handle(parent, getMouseEvent(MouseEvent.MOUSE_RELEASED, move.getX(), move.getY(), MouseButton.PRIMARY, false));
 

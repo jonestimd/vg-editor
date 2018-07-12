@@ -23,11 +23,26 @@ package io.github.jonestimd.vgeditor.scene.control;
 
 import io.github.jonestimd.vgeditor.JavafxTest;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.*;
 
 public class TextFieldsTest extends JavafxTest {
+    @Test
+    public void parseDoubleParsesEventSourceFieldValue() throws Exception {
+        TextField field = new TextField("6");
+
+        assertThat(TextFields.parseDouble(getKeyEvent(field, KeyEvent.KEY_PRESSED, ""), 0d)).isEqualTo(6d);
+    }
+
+    @Test
+    public void parseDoubleFallsBackToDefaultValue() throws Exception {
+        TextField field = new TextField("");
+
+        assertThat(TextFields.parseDouble(getKeyEvent(field, KeyEvent.KEY_PRESSED, ""), 0d)).isEqualTo(0d);
+    }
+
     @Test
     public void parseDoubleReturnsNoneForNoDigits() throws Exception {
         assertThat(TextFields.parseDouble(new TextField("-")).isPresent()).isFalse();

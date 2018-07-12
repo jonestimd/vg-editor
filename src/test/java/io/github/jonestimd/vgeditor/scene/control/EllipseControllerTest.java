@@ -45,7 +45,6 @@ public class EllipseControllerTest extends SceneTest {
     private FormController basicShapeController = mock(FormController.class);
     private FillPaneController fillPaneController = mock(FillPaneController.class);
     private StrokePaneController strokePaneController = mock(StrokePaneController.class);
-    private TextField anchorXField;
     private final Map<String, Double> fieldValues = new HashMap<>();
 
     private Object getController(Class<?> type) {
@@ -67,7 +66,7 @@ public class EllipseControllerTest extends SceneTest {
         loader.load();
         controller = loader.getController();
         controller.setDiagram(diagram);
-        anchorXField = mock(TextField.class);
+        TextField anchorXField = mock(TextField.class);
         when(basicShapeController.getField(ID_ANCHOR_X)).thenReturn(anchorXField);
         doAnswer(invocation -> {
             String key = (String) invocation.getArguments()[0];
