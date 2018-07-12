@@ -119,7 +119,7 @@ public class FormControllerTest extends JavafxTest {
         field.setText("5678");
 
         controller.removeListener(listener);
-        controller.onKeyEvent(new KeyEvent(field, null, KeyEvent.KEY_PRESSED, "", "", null, false, false, false, false));
+        controller.onKeyEvent(getKeyEvent(field, KeyEvent.KEY_PRESSED, ""));
 
         verifyZeroInteractions(listener);
     }
@@ -131,7 +131,7 @@ public class FormControllerTest extends JavafxTest {
         controller.setValue(FIELD_ID, 1234d);
         field.setText("5678");
 
-        controller.onKeyEvent(new KeyEvent(field, null, KeyEvent.KEY_PRESSED, "", "", null, false, false, false, false));
+        controller.onKeyEvent(getKeyEvent(field, KeyEvent.KEY_PRESSED, ""));
 
         ArgumentCaptor<PropertyChangeEvent> captor = ArgumentCaptor.forClass(PropertyChangeEvent.class);
         verify(listener).propertyChange(captor.capture());
@@ -148,7 +148,7 @@ public class FormControllerTest extends JavafxTest {
         controller.setValue(FIELD_ID, 1234d);
         field.setText("");
 
-        controller.onKeyEvent(new KeyEvent(field, null, KeyEvent.KEY_PRESSED, "", "", null, false, false, false, false));
+        controller.onKeyEvent(getKeyEvent(field, KeyEvent.KEY_PRESSED, ""));
 
         ArgumentCaptor<PropertyChangeEvent> captor = ArgumentCaptor.forClass(PropertyChangeEvent.class);
         verify(listener).propertyChange(captor.capture());

@@ -62,7 +62,7 @@ public class EllipseControllerTest extends SceneTest {
         scene.setRoot(diagram);
         FXMLLoader loader = new FXMLLoader();
         loader.setResources(new ResourceBundleWrapper(ResourceBundle.getBundle("io.github.jonestimd.vgeditor.labels")));
-        loader.setLocation(getClass().getResource("EllipseTool.fxml"));
+        loader.setLocation(getClass().getResource(EllipseModel.TOOL_FXML));
         loader.setControllerFactory(this::getController);
         loader.load();
         controller = loader.getController();

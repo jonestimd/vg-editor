@@ -23,29 +23,38 @@ package io.github.jonestimd.vgeditor;
 
 import java.lang.reflect.Field;
 
+import javafx.event.EventType;
+import javafx.scene.control.TextInputControl;
+import javafx.scene.input.KeyEvent;
 import org.junit.Rule;
 
 public abstract class JavafxTest {
     @Rule
     public JavaFxThreadingRule rule = new JavaFxThreadingRule();
 
-    protected void setValue(Object target, String fieldName, Object value) throws IllegalAccessException {
+    protected void setValue(Object target, String fieldName, Object value) throws Exception {
+        getField(target, fieldName).set(target, value);
+    }
+
+    protected <T> T getValue(Object target, String fieldName, Class<T> valueClass) throws Exception {
+        return valueClass.cast(getField(target, fieldName).get(target));
+    }
+
+    private Field getField(Object target, String fieldName) throws NoSuchFieldException {
         Class<?> fieldOwner = target.getClass();
         while (fieldOwner != null) {
             try {
                 Field field = fieldOwner.getDeclaredField(fieldName);
                 field.setAccessible(true);
-                field.set(target, value);
-                return;
+                return field;
             } catch (NoSuchFieldException e) {
                 fieldOwner = fieldOwner.getSuperclass();
             }
         }
+        throw new NoSuchFieldException(target.getClass().getName() + "." + fieldName);
     }
 
-    protected <T> T getValue(Object target, String fieldName, Class<T> valueClass) throws Exception {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return valueClass.cast(field.get(target));
+    protected KeyEvent getKeyEvent(TextInputControl field, EventType<KeyEvent> eventType, String text) {
+        return new KeyEvent(field, null, eventType, text, text, null, false, false, false, false);
     }
 }
