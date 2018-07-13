@@ -26,7 +26,6 @@ import java.beans.PropertyChangeSupport;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.OptionalDouble;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextInputControl;
@@ -41,7 +40,7 @@ public class FormController {
     private Pane root;
 
     private final Map<String, TextInputControl> fields = new HashMap<>();
-    private final Map<String, Double> values = new HashMap<>();
+    private final Map<String, String> values = new HashMap<>();
     private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
     public void initialize() {
@@ -60,19 +59,22 @@ public class FormController {
         return fields.get(fieldId);
     }
 
+    public String getText(String fieldId) {
+        return values.get(fieldId);
+    }
+
+    public void setText(String fieldId, String value) {
+        fields.get(fieldId).setText(value == null ? "" : value);
+        if (value == null) values.remove(fieldId);
+        else values.put(fieldId, value);
+    }
+
     public Double getValue(String fieldId, Double defaultValue) {
-        return values.getOrDefault(fieldId, defaultValue);
+        return values.containsKey(fieldId) ? Double.valueOf(values.get(fieldId)) : defaultValue;
     }
 
     public void setValue(String fieldId, Double value) {
-        if (value == null) {
-            values.remove(fieldId);
-            fields.get(fieldId).setText("");
-        }
-        else {
-            values.put(fieldId, value);
-            fields.get(fieldId).setText(Preferences.numberFormat().format(value));
-        }
+        setText(fieldId, value == null ? null : Preferences.numberFormat().format(value));
     }
 
     public Collection<String> validFields() {
@@ -86,10 +88,9 @@ public class FormController {
 
     public void onKeyEvent(KeyEvent event) {
         TextInputControl source = (TextInputControl) event.getSource();
-        Double oldValue = values.get(source.getId());
-        OptionalDouble optionalValue = TextFields.parseDouble(source);
-        if (optionalValue.isPresent()) {
-            values.put(source.getId(), optionalValue.getAsDouble());
+        String oldValue = values.get(source.getId());
+        if (source.getText().trim().length() > 0) {
+            values.put(source.getId(), source.getText());
         }
         else values.remove(source.getId());
         changeSupport.firePropertyChange(source.getId(), oldValue, values.get(source.getId()));

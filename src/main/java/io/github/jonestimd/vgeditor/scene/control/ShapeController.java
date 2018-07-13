@@ -33,13 +33,16 @@ import io.github.jonestimd.vgeditor.scene.NodeAnchor;
 import io.github.jonestimd.vgeditor.scene.model.LocationModel;
 import io.github.jonestimd.vgeditor.scene.model.ShapeModel;
 import io.github.jonestimd.vgeditor.scene.model.SizeModel;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextInputControl;
 
-public abstract class ShapeController<T extends ShapeModel & LocationModel & SizeModel> implements NodeController<T> {
+public abstract class ShapeController<T extends ShapeModel<?> & LocationModel & SizeModel> implements NodeController<T> {
+    protected static final String ID_NAME = "name";
     protected static final String ID_ANCHOR_X = "anchorX";
     protected static final String ID_ANCHOR_Y = "anchorY";
     protected static final String ID_WIDTH = "width";
@@ -80,7 +83,8 @@ public abstract class ShapeController<T extends ShapeModel & LocationModel & Siz
             if (isValid()) {
                 if (model == null) createNode();
                 String fieldId = change.getPropertyName();
-                fieldHandlers.get(fieldId).accept(getFieldValue(fieldId));
+                if (ID_NAME.equals(fieldId)) model.setId(basicShapeController.getText(fieldId));
+                else fieldHandlers.get(fieldId).accept(getFieldValue(fieldId));
             }
             else if (model != null) {
                 model.remove();
@@ -88,6 +92,8 @@ public abstract class ShapeController<T extends ShapeModel & LocationModel & Siz
             }
             newButton.setDisable(!isValid());
         });
+        TextInputControl anchorXField = basicShapeController.getField(ID_ANCHOR_X);
+        anchorXField.getParent().sceneProperty().addListener((observable, oldValue, newValue) -> anchorXField.requestFocus());
     }
 
     private Double getFieldValue(String fieldId) {
@@ -113,6 +119,7 @@ public abstract class ShapeController<T extends ShapeModel & LocationModel & Siz
     @SuppressWarnings("unchecked")
     public void setModel(T model) {
         this.model = model;
+        basicShapeController.setText(ID_NAME, model.getId());
         setLocationInputs(model.getX(), model.getY());
         setSizeInputs(model.getWidth(), model.getHeight());
         basicShapeController.setValue(ID_ROTATION, model.getRotate());
@@ -122,9 +129,10 @@ public abstract class ShapeController<T extends ShapeModel & LocationModel & Siz
     }
 
     public void onNewNode() {
+        newButton.setDisable(true);
         clearModel();
         basicShapeController.clear();
-        basicShapeController.getField(ID_ANCHOR_X).requestFocus();
+        Platform.runLater(() -> basicShapeController.getField(ID_ANCHOR_X).requestFocus());
     }
 
     private void clearModel() {

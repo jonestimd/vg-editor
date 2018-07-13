@@ -42,6 +42,9 @@ public interface NodeModel {
      */
     void remove();
 
+    String getId();
+    void setId(String id);
+
     double getRotate();
     void setRotate(double angle);
 

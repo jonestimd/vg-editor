@@ -59,14 +59,9 @@ public class EllipseControllerTest extends SceneTest {
     public void setUpScene() throws Exception {
         super.setUpScene();
         scene.setRoot(diagram);
-        FXMLLoader loader = new FXMLLoader();
-        loader.setResources(new ResourceBundleWrapper(ResourceBundle.getBundle("io.github.jonestimd.vgeditor.labels")));
-        loader.setLocation(getClass().getResource(EllipseModel.TOOL_FXML));
-        loader.setControllerFactory(this::getController);
-        loader.load();
-        controller = loader.getController();
-        controller.setDiagram(diagram);
-        TextField anchorXField = mock(TextField.class);
+        createScene();
+        TextField anchorXField = new TextField();
+        createScene().getChildren().add(anchorXField);
         when(basicShapeController.getField(ID_ANCHOR_X)).thenReturn(anchorXField);
         doAnswer(invocation -> {
             String key = (String) invocation.getArguments()[0];
@@ -77,6 +72,13 @@ public class EllipseControllerTest extends SceneTest {
         when(basicShapeController.getValue(anyString(), anyDouble())).thenAnswer(invocation -> {
             return fieldValues.getOrDefault(invocation.getArguments()[0], (Double) invocation.getArguments()[1]);
         });
+        FXMLLoader loader = new FXMLLoader();
+        loader.setResources(new ResourceBundleWrapper(ResourceBundle.getBundle("io.github.jonestimd.vgeditor.labels")));
+        loader.setLocation(getClass().getResource(EllipseModel.TOOL_FXML));
+        loader.setControllerFactory(this::getController);
+        loader.load();
+        controller = loader.getController();
+        controller.setDiagram(diagram);
     }
 
     @Test

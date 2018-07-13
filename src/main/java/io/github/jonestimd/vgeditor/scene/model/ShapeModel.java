@@ -65,6 +65,16 @@ public abstract class ShapeModel<T extends Shape> implements NodeModel {
     }
 
     @Override
+    public String getId() {
+        return shape.getId();
+    }
+
+    @Override
+    public void setId(String id) {
+        shape.setId(id);
+    }
+
+    @Override
     public double getRotate() {
         return shape.getRotate();
     }

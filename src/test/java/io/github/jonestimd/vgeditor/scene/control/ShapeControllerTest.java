@@ -46,6 +46,7 @@ import static org.assertj.core.api.Java6Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ShapeControllerTest extends SceneTest {
+    private static final String SHAPE_NAME = "shape name";
     private EllipseController controller;
     private FormController basicShapeController = mock(FormController.class);
     private FillPaneController fillPaneController = mock(FillPaneController.class);
@@ -66,15 +67,8 @@ public class ShapeControllerTest extends SceneTest {
     public void setUpScene() throws Exception {
         super.setUpScene();
         scene.setRoot(diagram);
-        FXMLLoader loader = new FXMLLoader();
-        loader.setResources(new ResourceBundleWrapper(ResourceBundle.getBundle("io.github.jonestimd.vgeditor.labels")));
-        loader.setLocation(getClass().getResource("EllipseTool.fxml"));
-        loader.setControllerFactory(this::getController);
-        Pane form = loader.load();
-        controller = loader.getController();
-        controller.setDiagram(diagram);
-        newButton = Nodes.findFirstById(form, "newButton", Button.class).get();
-        anchorXField = mock(TextField.class);
+        anchorXField = spy(new TextField());
+        createScene().getChildren().add(anchorXField);
         when(basicShapeController.getField(ID_ANCHOR_X)).thenReturn(anchorXField);
         doAnswer(invocation -> {
             String key = (String) invocation.getArguments()[0];
@@ -85,6 +79,14 @@ public class ShapeControllerTest extends SceneTest {
         when(basicShapeController.getValue(anyString(), anyDouble())).thenAnswer(invocation -> {
             return fieldValues.getOrDefault(invocation.getArguments()[0], (Double) invocation.getArguments()[1]);
         });
+        FXMLLoader loader = new FXMLLoader();
+        loader.setResources(new ResourceBundleWrapper(ResourceBundle.getBundle("io.github.jonestimd.vgeditor.labels")));
+        loader.setLocation(getClass().getResource("EllipseTool.fxml"));
+        loader.setControllerFactory(this::getController);
+        Pane form = loader.load();
+        controller = loader.getController();
+        controller.setDiagram(diagram);
+        newButton = Nodes.findFirstById(form, "newButton", Button.class).get();
     }
 
     @Test
@@ -113,6 +115,40 @@ public class ShapeControllerTest extends SceneTest {
     }
 
     @Test
+    public void isValid_MissingRequiredField() throws Exception {
+        when(basicShapeController.validFields()).thenReturn(ShapeController.REQUIRED_FIELDS.subList(0, 1));
+
+        assertThat(controller.isValid()).isFalse();
+    }
+
+    @Test
+    public void isValid_RequiresNonzeroWidth() throws Exception {
+        when(basicShapeController.validFields()).thenReturn(ShapeController.REQUIRED_FIELDS);
+        when(basicShapeController.getValue(ID_WIDTH, null)).thenReturn(0d);
+        when(basicShapeController.getValue(ID_HEIGHT, null)).thenReturn(10d);
+
+        assertThat(controller.isValid()).isFalse();
+    }
+
+    @Test
+    public void isValid_RequiresNonzeroHeight() throws Exception {
+        when(basicShapeController.validFields()).thenReturn(ShapeController.REQUIRED_FIELDS);
+        when(basicShapeController.getValue(ID_WIDTH, null)).thenReturn(10d);
+        when(basicShapeController.getValue(ID_HEIGHT, null)).thenReturn(0d);
+
+        assertThat(controller.isValid()).isFalse();
+    }
+
+    @Test
+    public void isValid() throws Exception {
+        when(basicShapeController.validFields()).thenReturn(ShapeController.REQUIRED_FIELDS);
+        when(basicShapeController.getValue(ID_WIDTH, null)).thenReturn(10d);
+        when(basicShapeController.getValue(ID_HEIGHT, null)).thenReturn(10d);
+
+        assertThat(controller.isValid()).isTrue();
+    }
+
+    @Test
     public void onNewNode() throws Exception {
         final double cx = 5d, cy = 6d, rx = 30d, ry = 20d;
         EllipseModel model = new EllipseModel(diagram, cx, cy, rx, ry);
@@ -124,7 +160,6 @@ public class ShapeControllerTest extends SceneTest {
         verify(fillPaneController).newNode(null);
         verify(strokePaneController).newNode(null);
         verify(basicShapeController).clear();
-        verify(anchorXField).requestFocus();
     }
 
     @Test
@@ -135,7 +170,6 @@ public class ShapeControllerTest extends SceneTest {
         verify(fillPaneController).newNode(null);
         verify(strokePaneController).newNode(null);
         verify(basicShapeController).clear();
-        verify(anchorXField).requestFocus();
     }
 
     @Test
@@ -151,7 +185,6 @@ public class ShapeControllerTest extends SceneTest {
         verify(fillPaneController).newNode(null);
         verify(strokePaneController).newNode(null);
         verify(basicShapeController).clear();
-        verify(anchorXField).requestFocus();
     }
 
     @Test
@@ -177,6 +210,7 @@ public class ShapeControllerTest extends SceneTest {
         final double cx = 5d, cy = 6d, rx = 30d, ry = 20d, rotation = 15d;
         EllipseModel model = new EllipseModel(diagram, cx*2, cy*2, rx*2, ry*2);
         setValue(controller, "model", model);
+        when(basicShapeController.getText(ID_NAME)).thenReturn(SHAPE_NAME);
         when(basicShapeController.getValue(ID_ANCHOR_X, null)).thenReturn(cx);
         when(basicShapeController.getValue(ID_ANCHOR_Y, null)).thenReturn(cy);
         when(basicShapeController.getValue(ID_WIDTH, null)).thenReturn(rx);
@@ -186,6 +220,7 @@ public class ShapeControllerTest extends SceneTest {
         ArgumentCaptor<PropertyChangeListener> listenerCaptor = ArgumentCaptor.forClass(PropertyChangeListener.class);
         verify(basicShapeController).addListener(listenerCaptor.capture());
 
+        listenerCaptor.getValue().propertyChange(new PropertyChangeEvent(basicShapeController, ID_NAME, null, null));
         listenerCaptor.getValue().propertyChange(new PropertyChangeEvent(basicShapeController, ID_ANCHOR_X, null, null));
         listenerCaptor.getValue().propertyChange(new PropertyChangeEvent(basicShapeController, ID_ANCHOR_Y, null, null));
         listenerCaptor.getValue().propertyChange(new PropertyChangeEvent(basicShapeController, ID_WIDTH, null, null));
@@ -194,6 +229,7 @@ public class ShapeControllerTest extends SceneTest {
 
         assertThat(controller.getModel()).isSameAs(model);
         assertThat(newButton.isDisabled()).isFalse();
+        assertThat(model.getId()).isEqualTo(SHAPE_NAME);
         assertThat(model.getX()).isEqualTo(cx);
         assertThat(model.getY()).isEqualTo(cy);
         assertThat(model.getWidth()).isEqualTo(rx);
@@ -296,14 +332,15 @@ public class ShapeControllerTest extends SceneTest {
         controller.getMouseHandler().handle(diagram, getMouseEvent(MouseEvent.DRAG_DETECTED, startX, startY, false));
         controller.getMouseHandler().handle(diagram, getMouseEvent(MouseEvent.MOUSE_MOVED, endX, endY, false));
         controller.getMouseHandler().handle(diagram, getMouseEvent(MouseEvent.MOUSE_MOVED, startX, startY, false));
+        controller.getMouseHandler().handle(diagram, getMouseEvent(MouseEvent.MOUSE_MOVED, startX, startY, false));
 
         verify(diagram).startFullDrag();
         verify(basicShapeController).setValue(ID_ANCHOR_X, startX);
         verify(basicShapeController).setValue(ID_ANCHOR_Y, startY);
         verify(basicShapeController).setValue(ID_WIDTH, endX-startX);
         verify(basicShapeController).setValue(ID_HEIGHT, endY-startY);
-        verify(basicShapeController).setValue(ID_WIDTH, 0d);
-        verify(basicShapeController).setValue(ID_HEIGHT, 0d);
+        verify(basicShapeController, times(2)).setValue(ID_WIDTH, 0d);
+        verify(basicShapeController, times(2)).setValue(ID_HEIGHT, 0d);
         assertThat(controller.getModel()).isNull();
     }
 

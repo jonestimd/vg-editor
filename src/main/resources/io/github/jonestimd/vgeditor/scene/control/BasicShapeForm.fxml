@@ -30,24 +30,26 @@
 <GridPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="io.github.jonestimd.vgeditor.scene.control.FormController"
           fx:id="root" styleClass="form, control-group">
-    <TextField fx:id="anchorX" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS">
+    <TextField fx:id="name" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS"/>
+    <Label text="%name" mnemonicParsing="true" labelFor="$name" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="RIGHT"/>
+    <TextField fx:id="anchorX" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS">
         <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
     </TextField>
-    <Label text="%anchor.x" mnemonicParsing="true" labelFor="$anchorX" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="RIGHT"/>
-    <TextField fx:id="anchorY" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="1">
+    <Label text="%anchor.x" mnemonicParsing="true" labelFor="$anchorX" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.halignment="RIGHT"/>
+    <TextField fx:id="anchorY" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="2">
         <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
     </TextField>
-    <Label text="%anchor.y" mnemonicParsing="true" labelFor="$anchorY" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.halignment="RIGHT"/>
-    <TextField fx:id="width" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="2">
+    <Label text="%anchor.y" mnemonicParsing="true" labelFor="$anchorY" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.halignment="RIGHT"/>
+    <TextField fx:id="width" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="3">
         <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
     </TextField>
-    <Label text="%width" mnemonicParsing="true" labelFor="$width" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.halignment="RIGHT"/>
-    <TextField fx:id="height" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="3">
+    <Label text="%width" mnemonicParsing="true" labelFor="$width" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.halignment="RIGHT"/>
+    <TextField fx:id="height" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="4">
         <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
     </TextField>
-    <Label text="%height" mnemonicParsing="true" labelFor="$height" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.halignment="RIGHT"/>
-    <TextField fx:id="rotation" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="4">
+    <Label text="%height" mnemonicParsing="true" labelFor="$height" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.halignment="RIGHT"/>
+    <TextField fx:id="rotation" onKeyReleased="#onKeyEvent" GridPane.columnIndex="1" GridPane.rowIndex="5">
         <textFormatter><NumericFormatter fx:factory="forDouble"/></textFormatter>
     </TextField>
-    <Label text="%rotation" mnemonicParsing="true" labelFor="$rotation" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.halignment="RIGHT"/>
+    <Label text="%rotation" mnemonicParsing="true" labelFor="$rotation" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.halignment="RIGHT"/>
 </GridPane>

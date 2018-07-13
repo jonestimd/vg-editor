@@ -34,7 +34,7 @@ import javafx.scene.Group;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.GridPane;
 
-public class AnchoredShapeController<T extends AnchoredShapeModel> extends ShapeController<T> {
+public class AnchoredShapeController<T extends AnchoredShapeModel<?>> extends ShapeController<T> {
     private NodeAnchor nodeAnchor = NodeAnchor.TOP_LEFT;
     @FXML
     private GridPane anchorParent;

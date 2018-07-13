@@ -69,7 +69,7 @@ public class FormControllerTest extends JavafxTest {
         double value = Math.random()*1000;
         controller.setValue(FIELD_ID, value);
 
-        assertThat(controller.getValue(FIELD_ID, value)).isEqualTo(value);
+        assertThat(controller.getValue(FIELD_ID, value)).isEqualTo(Double.parseDouble(Preferences.numberFormat().format(value)));
     }
 
     @Test
@@ -135,8 +135,8 @@ public class FormControllerTest extends JavafxTest {
 
         ArgumentCaptor<PropertyChangeEvent> captor = ArgumentCaptor.forClass(PropertyChangeEvent.class);
         verify(listener).propertyChange(captor.capture());
-        assertThat(captor.getValue().getOldValue()).isEqualTo(1234d);
-        assertThat(captor.getValue().getNewValue()).isEqualTo(5678d);
+        assertThat(captor.getValue().getOldValue()).isEqualTo("1234");
+        assertThat(captor.getValue().getNewValue()).isEqualTo("5678");
         assertThat(controller.validFields()).containsExactly(FIELD_ID);
         assertThat(controller.getValue(FIELD_ID, null)).isEqualTo(5678d);
     }
@@ -152,7 +152,7 @@ public class FormControllerTest extends JavafxTest {
 
         ArgumentCaptor<PropertyChangeEvent> captor = ArgumentCaptor.forClass(PropertyChangeEvent.class);
         verify(listener).propertyChange(captor.capture());
-        assertThat(captor.getValue().getOldValue()).isEqualTo(1234d);
+        assertThat(captor.getValue().getOldValue()).isEqualTo("1234");
         assertThat(captor.getValue().getNewValue()).isEqualTo(null);
         assertThat(controller.validFields()).isEmpty();
         assertThat(controller.getValue(FIELD_ID, null)).isNull();

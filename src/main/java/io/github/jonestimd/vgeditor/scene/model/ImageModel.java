@@ -61,6 +61,16 @@ public class ImageModel implements NodeModel, AnchoredModel {
     }
 
     @Override
+    public String getId() {
+        return null;
+    }
+
+    @Override
+    public void setId(String id) {
+
+    }
+
+    @Override
     public NodeAnchor getAnchor() {
         return anchor;
     }

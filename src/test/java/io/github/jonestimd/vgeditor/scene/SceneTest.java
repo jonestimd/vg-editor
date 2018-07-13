@@ -31,6 +31,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.Before;
 
@@ -52,6 +53,12 @@ public abstract class SceneTest extends JavafxTest {
         sceneField.setAccessible(true);
         ReadOnlyObjectWrapper<Scene> sceneProperty = (ReadOnlyObjectWrapper<Scene>) sceneField.get(node);
         sceneProperty.set(scene);
+    }
+
+    protected Pane createScene() {
+        Pane root = new Pane();
+        new Scene(root);
+        return root;
     }
 
     protected MouseEvent getMouseEvent(EventType<MouseEvent> eventType, double x, double y, boolean controlDown) {
