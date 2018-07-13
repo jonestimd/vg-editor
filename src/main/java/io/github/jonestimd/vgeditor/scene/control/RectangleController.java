@@ -50,7 +50,7 @@ public class RectangleController extends AnchoredShapeController<RectangleModel>
 
     public void onKeyEvent(KeyEvent event) {
         TextInputControl field = (TextInputControl) event.getSource();
-        fieldHandlers.get(field.getId()).accept(TextFields.parseDouble(field).orElse(0));
+        fieldHandlers.get(field.getId()).accept(TextFields.parseDouble(field).orElse(0d));
     }
 
     @Override
@@ -71,7 +71,7 @@ public class RectangleController extends AnchoredShapeController<RectangleModel>
     @Override
     protected void createNode() {
         super.createNode();
-        getModel().setArcWidth(TextFields.parseDouble(arcWidth).orElse(0));
-        getModel().setArcHeight(TextFields.parseDouble(arcHeight).orElse(0));
+        getModel().setArcWidth(TextFields.parseDouble(arcWidth).orElse(0d));
+        getModel().setArcHeight(TextFields.parseDouble(arcHeight).orElse(0d));
     }
 }

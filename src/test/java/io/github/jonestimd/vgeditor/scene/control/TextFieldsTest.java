@@ -52,14 +52,14 @@ public class TextFieldsTest extends JavafxTest {
 
     @Test
     public void parseDoubleReturnsValueForValidNumber() throws Exception {
-        assertThat(TextFields.parseDouble(new TextField("0")).getAsDouble()).isEqualTo(0d);
-        assertThat(TextFields.parseDouble(new TextField(".0")).getAsDouble()).isEqualTo(0d);
-        assertThat(TextFields.parseDouble(new TextField("1")).getAsDouble()).isEqualTo(1d);
-        assertThat(TextFields.parseDouble(new TextField("1.5")).getAsDouble()).isEqualTo(1.5d);
-        assertThat(TextFields.parseDouble(new TextField("-0")).getAsDouble()).isEqualTo(-0d);
-        assertThat(TextFields.parseDouble(new TextField("-.5")).getAsDouble()).isEqualTo(-0.5d);
-        assertThat(TextFields.parseDouble(new TextField("-1")).getAsDouble()).isEqualTo(-1d);
-        assertThat(TextFields.parseDouble(new TextField("-1.")).getAsDouble()).isEqualTo(-1d);
-        assertThat(TextFields.parseDouble(new TextField("-1.5")).getAsDouble()).isEqualTo(-1.5d);
+        assertThat(TextFields.parseDouble(new TextField("0")).get()).isEqualTo(0d);
+        assertThat(TextFields.parseDouble(new TextField(".0")).get()).isEqualTo(0d);
+        assertThat(TextFields.parseDouble(new TextField("1")).get()).isEqualTo(1d);
+        assertThat(TextFields.parseDouble(new TextField("1.5")).get()).isEqualTo(1.5d);
+        assertThat(TextFields.parseDouble(new TextField("-0")).get()).isEqualTo(-0d);
+        assertThat(TextFields.parseDouble(new TextField("-.5")).get()).isEqualTo(-0.5d);
+        assertThat(TextFields.parseDouble(new TextField("-1")).get()).isEqualTo(-1d);
+        assertThat(TextFields.parseDouble(new TextField("-1.")).get()).isEqualTo(-1d);
+        assertThat(TextFields.parseDouble(new TextField("-1.5")).get()).isEqualTo(-1.5d);
     }
 }

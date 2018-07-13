@@ -70,7 +70,7 @@ public class FormController {
     }
 
     public Double getValue(String fieldId, Double defaultValue) {
-        return values.containsKey(fieldId) ? Double.valueOf(values.get(fieldId)) : defaultValue;
+        return TextFields.parseDouble(values.getOrDefault(fieldId, "")).orElse(defaultValue);
     }
 
     public void setValue(String fieldId, Double value) {
