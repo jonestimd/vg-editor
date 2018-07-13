@@ -89,10 +89,12 @@ public class FormController {
     public void onKeyEvent(KeyEvent event) {
         TextInputControl source = (TextInputControl) event.getSource();
         String oldValue = values.get(source.getId());
-        if (source.getText().trim().length() > 0) {
-            values.put(source.getId(), source.getText());
-        }
+        if (isValidValue(source, source.getText())) values.put(source.getId(), source.getText());
         else values.remove(source.getId());
         changeSupport.firePropertyChange(source.getId(), oldValue, values.get(source.getId()));
+    }
+
+    private boolean isValidValue(TextInputControl field, String value) {
+        return value.trim().length() > 0 && !(field.getTextFormatter() instanceof NumericFormatter && !value.matches("-?\\d.*"));
     }
 }
